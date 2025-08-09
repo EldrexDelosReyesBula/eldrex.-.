@@ -467,3 +467,233 @@
             footer.style.opacity = '1';
         }, 500);
     });
+
+
+            // Add this to your <head> or right after opening <body>
+            const antiCopyCSS = `
+  body {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+  
+  img {
+    pointer-events: none;
+  }
+`;
+
+            const antiCopyStyle = document.createElement('style');
+            antiCopyStyle.textContent = antiCopyCSS;
+            document.head.appendChild(antiCopyStyle);
+
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
+
+            // Disable keyboard shortcuts (Ctrl+C, Ctrl+A, etc.)
+            document.addEventListener('keydown', (e) => {
+                // Disable Ctrl+C, Ctrl+A, Ctrl+X, Ctrl+Shift+I, F12
+                if (e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A') ||
+                    e.key === 'F12' ||
+                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j'))) {
+                    e.preventDefault();
+                    alert('Content protection is enabled');
+                }
+            });
+
+            // Additional protection for mobile (long press)
+            document.addEventListener('long-press', (e) => {
+                e.preventDefault();
+            }, {
+                passive: false
+            });
+
+            // Fallback for browsers that override user-select
+            document.addEventListener('selectionchange', () => {
+                window.getSelection().removeAllRanges();
+            });
+            // Only reveal link on actual click
+            document.querySelectorAll('a').forEach(link => {
+                const realUrl = link.href;
+                link.dataset.url = realUrl;
+                link.href = 'javascript:void(0)';
+
+                link.addEventListener('click', function(e) {
+                    if (e.timeStamp - e.currentTarget.dataset.lastTouch < 500) {
+                        // Normal click
+                        window.location.href = realUrl;
+                    }
+                    e.currentTarget.dataset.lastTouch = e.timeStamp;
+                });
+
+                // Prevent long press
+                link.addEventListener('touchstart', function(e) {
+                    e.currentTarget.dataset.lastTouch = e.timeStamp;
+                    setTimeout(() => {
+                        if (e.currentTarget.dataset.longPress) {
+                            e.preventDefault();
+                        }
+                    }, 300);
+                });
+
+                link.addEventListener('touchend', function(e) {
+                    e.currentTarget.dataset.longPress =
+                        (e.timeStamp - e.currentTarget.dataset.lastTouch > 300);
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const gallery = document.querySelector('.image-scroll-gallery');
+                const scrollContainer = document.querySelector('.scroll-container');
+                const leftBtn = document.querySelector('.scroll-btn.left');
+                const rightBtn = document.querySelector('.scroll-btn.right');
+
+                // Scroll buttons functionality
+                leftBtn.addEventListener('click', () => {
+                    gallery.scrollBy({
+                        left: -300,
+                        behavior: 'smooth'
+                    });
+                });
+
+                rightBtn.addEventListener('click', () => {
+                    gallery.scrollBy({
+                        left: 300,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // Hide/show scroll buttons based on scroll position
+                function updateScrollButtons() {
+                    const scrollLeft = gallery.scrollLeft;
+                    const maxScroll = scrollContainer.scrollWidth - gallery.clientWidth;
+
+                    leftBtn.style.visibility = scrollLeft > 0 ? 'visible' : 'hidden';
+                    rightBtn.style.visibility = scrollLeft < maxScroll - 5 ? 'visible' : 'hidden';
+                }
+
+                gallery.addEventListener('scroll', updateScrollButtons);
+                window.addEventListener('resize', updateScrollButtons);
+
+                // Initialize button visibility
+                updateScrollButtons();
+
+                // Add keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') {
+                        gallery.scrollBy({
+                            left: -300,
+                            behavior: 'smooth'
+                        });
+                    } else if (e.key === 'ArrowRight') {
+                        gallery.scrollBy({
+                            left: 300,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+const memberCards = document.querySelectorAll('.member-card');
+                const scrollContainer = document.querySelector('.members-scroll-container');
+
+                memberCards.forEach((card, index) => {
+                    card.setAttribute('tabindex', '0');
+                    card.setAttribute('role', 'button');
+                    card.setAttribute('aria-label', `View ${card.querySelector('p').textContent}'s profile`);
+
+                    // Click handler
+                    card.addEventListener('click', function(e) {
+                        if (e.key && e.key !== 'Enter' && e.key !== ' ') return;
+                        showMemberDetails(this);
+                    });
+
+                    // Keyboard support
+                    card.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            showMemberDetails(this);
+                        }
+                    });
+                });
+
+                // Make scroll container keyboard navigable
+                if (scrollContainer) {
+                    scrollContainer.setAttribute('tabindex', '0');
+                    scrollContainer.setAttribute('role', 'region');
+                    scrollContainer.setAttribute('aria-label', 'Squad members list');
+
+                    // Keyboard scroll
+                    scrollContainer.addEventListener('keydown', function(e) {
+                        if (e.key === 'ArrowLeft') {
+                            this.scrollBy({
+                                left: -100,
+                                behavior: 'smooth'
+                            });
+                        } else if (e.key === 'ArrowRight') {
+                            this.scrollBy({
+                                left: 100,
+                                behavior: 'smooth'
+                            });
+                        }
+                    });
+                }
+
+                // Function to handle member selection
+                function showMemberDetails(card) {
+                    const memberName = card.querySelector('p').textContent;
+                    console.log('Viewing details for:', memberName);
+                    // Implement your member detail view logic here
+                    // Could open a modal or update another part of the UI
+                }
+
+                // Improved drag scrolling with better accessibility
+                let isDragging = false;
+                let startX, scrollLeft;
+
+                if (scrollContainer) {
+                    // Mouse events
+                    scrollContainer.addEventListener('mousedown', (e) => {
+                        isDragging = true;
+                        startX = e.pageX - scrollContainer.offsetLeft;
+                        scrollLeft = scrollContainer.scrollLeft;
+                        scrollContainer.style.cursor = 'grabbing';
+                        scrollContainer.style.userSelect = 'none';
+                    });
+
+                    scrollContainer.addEventListener('mousemove', (e) => {
+                        if (!isDragging) return;
+                        e.preventDefault();
+                        const x = e.pageX - scrollContainer.offsetLeft;
+                        const walk = (x - startX) * 2;
+                        scrollContainer.scrollLeft = scrollLeft - walk;
+                    });
+
+                    const endDrag = () => {
+                        isDragging = false;
+                        scrollContainer.style.cursor = 'grab';
+                        scrollContainer.style.removeProperty('user-select');
+                    };
+
+                    scrollContainer.addEventListener('mouseleave', endDrag);
+                    scrollContainer.addEventListener('mouseup', endDrag);
+
+                    // Touch events
+                    scrollContainer.addEventListener('touchstart', (e) => {
+                        isDragging = true;
+                        startX = e.touches[0].pageX - scrollContainer.offsetLeft;
+                        scrollLeft = scrollContainer.scrollLeft;
+                    });
+
+                    scrollContainer.addEventListener('touchmove', (e) => {
+                        if (!isDragging) return;
+                        const x = e.touches[0].pageX - scrollContainer.offsetLeft;
+                        const walk = (x - startX) * 2;
+                        scrollContainer.scrollLeft = scrollLeft - walk;
+                    });
+
+                    scrollContainer.addEventListener('touchend', endDrag);
+                }
+                });
