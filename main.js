@@ -440,3 +440,30 @@
                 });
             }
         }
+
+    // Add mouse position tracking for dynamic refraction effect
+    document.addEventListener('mousemove', function(e) {
+        const footer = document.getElementById('pageFooter');
+        const highlight = footer.querySelector('.refraction-highlight');
+        
+        // Get mouse position relative to footer
+        const footerRect = footer.getBoundingClientRect();
+        const mouseX = e.clientX - footerRect.left;
+        const mouseY = e.clientY - footerRect.top;
+        
+        // Update CSS variables
+        footer.style.setProperty('--mouse-x', mouseX + 'px');
+        footer.style.setProperty('--mouse-y', mouseY + 'px');
+        
+        // Adjust highlight position
+        highlight.style.transform = `translate(${mouseX - 50}px, ${mouseY - 50}px)`;
+    });
+    
+    // Show footer with animation
+    window.addEventListener('load', function() {
+        const footer = document.getElementById('pageFooter');
+        setTimeout(() => {
+            footer.style.transform = 'translateY(0)';
+            footer.style.opacity = '1';
+        }, 500);
+    });
