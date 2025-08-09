@@ -1,158 +1,193 @@
 /**
- * Security.js - Comprehensive protection for eldrex.neocities.org
+ * SECURITY.JS - Eldrex Content Protection System
  * Version: 1.0
- * Author: Eldrex
+ * Author: Eldrex Delos Reyes Bula
+ * Protected Domains: eldrex.neocities.org
  * License: https://eldrex.neocities.org/license.html
  */
 
 (function() {
-    'use strict';
-
-    // Allowed domains configuration
-    const ALLOWED_DOMAINS = [
-        'eldrex.neocities.org',
-        'eldrex.vercel.app'
-    ];
-
-    // Current domain information
-    const currentDomain = window.location.hostname;
-    const isSecure = window.location.protocol === 'https:';
-    const isEmbedded = window.self !== window.top;
-    const isAllowedDomain = ALLOWED_DOMAINS.includes(currentDomain);
-
-    // Security functions
-    const Security = {
-        /**
-         * Enforce HTTPS
-         */
-        enforceHTTPS: function() {
-            if (!isSecure && currentDomain === 'eldrex.neocities.org') {
-                window.location.href = 'https://eldrex.neocities.org' + window.location.pathname;
-            }
-        },
-
-        /**
-         * Prevent embedding in unauthorized sites
-         */
-        preventEmbedding: function() {
-            if (isEmbedded && !isAllowedDomain) {
-                document.body.innerHTML = `
-                    <style>
-                        .embed-error {
-                            font-family: Arial, sans-serif;
-                            text-align: center;
-                            padding: 50px;
-                            color: #ff4444;
-                        }
-                        .embed-error a {
-                            color: #4444ff;
-                        }
-                    </style>
-                    <div class="embed-error">
-                        <h1>Embedding Not Allowed</h1>
-                        <p>This content cannot be embedded on external websites.</p>
-                        <p>Please visit <a href="https://eldrex.neocities.org">https://eldrex.neocities.org</a> directly.</p>
-                    </div>
-                `;
-            }
-        },
-
-        /**
-         * Hide paths and redirect all requests to index.html
-         */
-        handleRouting: function() {
-            const path = window.location.pathname;
-            
-            // Redirect direct access to security.js
-            if (path.includes('security.js')) {
-                window.location.href = 'https://eldrex.neocities.org/license.html';
-                return;
-            }
-
-            // Handle file requests (simulate SPA behavior)
-            const fileExtensions = ['.css', '.js'];
-            const isFileRequest = fileExtensions.some(ext => path.endsWith(ext));
-            
-            if (isFileRequest && !path.includes('security.js')) {
-                // For other files, redirect to index.html (they'll be handled by the JS)
-                window.location.href = '/index.html';
-            }
-        },
-
-        /**
-         * Load appropriate content based on path
-         */
-        loadContent: function() {
-            const path = window.location.pathname;
-            
-            // Skip if this is a direct file request
-            if (path.endsWith('.js') || path.endsWith('.css')) return;
-
-            // Determine which page to load
-            let page = 'main';
-            if (path.includes('about')) page = 'about';
-            if (path.includes('license')) page = 'license';
-
-            // Inject the appropriate CSS and JS
-            this.injectResources(page);
-            
-            // Load the page content
-            this.loadPageContent(page);
-        },
-
-        /**
-         * Inject CSS and JS resources for the current page
-         */
-        injectResources: function(page) {
-            // Base URL for resources
-            const baseUrl = 'https://eldrex.vercel.app';
-            
-            // Remove any existing dynamically added resources
-            document.querySelectorAll('link[data-dynamic], script[data-dynamic]').forEach(el => el.remove());
-            
-            // Inject CSS
-            const cssLink = document.createElement('link');
-            cssLink.rel = 'stylesheet';
-            cssLink.href = `${baseUrl}/css/${page}.css`;
-            cssLink.setAttribute('data-dynamic', 'true');
-            document.head.appendChild(cssLink);
-            
-            // Inject JS (except for main page which already has security.js)
-            if (page !== 'main') {
-                const jsScript = document.createElement('script');
-                jsScript.src = `${baseUrl}/functions/${page}.js`;
-                jsScript.setAttribute('data-dynamic', 'true');
-                document.body.appendChild(jsScript);
-            }
-        },
-
-        /**
-         * Load page content dynamically
-         */
-        loadPageContent: function(page) {
-            // In a real implementation, you would fetch or generate content here
-            // For this example, we'll just update the title
-            document.title = `Eldrex - ${page.charAt(0).toUpperCase() + page.slice(1)}`;
-            
-            // You would typically have a more sophisticated content loading system
-            console.log(`Loading content for ${page} page`);
-        },
-
-        /**
-         * Initialize all security measures
-         */
-        init: function() {
-            this.enforceHTTPS();
-            this.preventEmbedding();
-            this.handleRouting();
-            
-            // Only load content if we're on the allowed domain
-            if (isAllowedDomain) {
-                this.loadContent();
-            }
-        }
+    // ======================
+    // SECURITY CONFIGURATION
+    // ======================
+    const SECURITY_CONFIG = {
+        ALLOWED_DOMAINS: [
+            'eldrex.neocities.org',
+            'www.eldrex.neocities.org'
+        ],
+        LICENSE_PAGE: 'https://eldrex.neocities.org/license.html',
+        MAIN_PAGE: 'https://eldrex.neocities.org',
+        FILE_PROTECTION: [
+            'security.js',
+            'main.js',
+            'main.css'
+        ],
+        EMBED_PROTECTION: true
     };
 
-    // Initialize security measures
-    Security.init();
+    // =====================
+    // SECURITY VERIFICATION
+    // =====================
+    function verifyEnvironment() {
+        // Block direct access to security.js
+        if (window.location.pathname.includes('security.js')) {
+            enforceLicenseRedirect();
+            return false;
+        }
+
+        // Verify domain
+        const currentDomain = window.location.hostname;
+        const isAllowedDomain = SECURITY_CONFIG.ALLOWED_DOMAINS.some(domain => 
+            currentDomain === domain || currentDomain.endsWith('.' + domain)
+        );
+
+        if (!isAllowedDomain) {
+            enforceLicenseRedirect();
+            return false;
+        }
+
+        // Enforce HTTPS
+        if (window.location.protocol !== 'https:') {
+            window.location.href = 'https://' + window.location.host + window.location.pathname;
+            return false;
+        }
+
+        // Hide all paths (redirect to main page)
+        if (window.location.pathname !== '/' && !window.location.pathname.includes('index.html')) {
+            window.history.replaceState({}, document.title, '/');
+            return true;
+        }
+
+        return true;
+    }
+
+    // =================
+    // SECURITY FEATURES
+    // =================
+    function enforceLicenseRedirect() {
+        window.location.href = SECURITY_CONFIG.LICENSE_PAGE;
+    }
+
+    function applyContentProtection() {
+        // Anti-copy measures
+        const antiCopyCSS = `
+            body {
+                user-select: none !important;
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+            }
+            
+            img {
+                pointer-events: none !important;
+            }
+        `;
+        
+        const style = document.createElement('style');
+        style.textContent = antiCopyCSS;
+        document.head.appendChild(style);
+
+        // Disable right-click
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Disable keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A') ||
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j'))) {
+                e.preventDefault();
+            }
+        });
+
+        // Prevent selection
+        document.addEventListener('selectstart', (e) => e.preventDefault());
+        document.addEventListener('selectionchange', () => {
+            window.getSelection().removeAllRanges();
+        });
+    }
+
+    function preventEmbedding() {
+        // Frame busting
+        if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+
+        // X-Frame-Options equivalent
+        try {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (window !== window.top) {
+                    window.top.location.href = window.location.href;
+                }
+            });
+        } catch (e) {
+            window.location.href = SECURITY_CONFIG.MAIN_PAGE;
+        }
+    }
+
+    function loadProtectedResources() {
+        // Load CSS
+        const cssLink = document.createElement('link');
+        cssLink.rel = 'stylesheet';
+        cssLink.href = '/css/main.css';
+        cssLink.onerror = () => {
+            console.warn('Failed to load main.css');
+            document.head.removeChild(cssLink);
+        };
+        document.head.appendChild(cssLink);
+
+        // Load main JS
+        const jsScript = document.createElement('script');
+        jsScript.src = '/functions/main.js';
+        jsScript.onerror = () => {
+            console.warn('Failed to load main.js');
+            document.head.removeChild(jsScript);
+        };
+        document.head.appendChild(jsScript);
+    }
+
+    // ================
+    // INITIALIZATION
+    // ================
+    if (verifyEnvironment()) {
+        // Apply security features
+        applyContentProtection();
+        preventEmbedding();
+        
+        // Load protected resources
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProtectedResources();
+            
+            // Hide loading state
+            setTimeout(() => {
+                const loadingElement = document.getElementById('loading-container');
+                if (loadingElement) {
+                    loadingElement.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingElement.style.display = 'none';
+                    }, 500);
+                }
+            }, 1500);
+        });
+
+        // Clean exit transition
+        window.addEventListener('beforeunload', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+        });
+    }
+
+    // =====================
+    // ANTI-TAMPERING CHECKS
+    // =====================
+    setInterval(() => {
+        // Check if security.js was modified
+        if (typeof verifyEnvironment !== 'function') {
+            enforceLicenseRedirect();
+        }
+
+        // Check if we're in an iframe (redundant check)
+        if (SECURITY_CONFIG.EMBED_PROTECTION && window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+    }, 5000);
 })();
