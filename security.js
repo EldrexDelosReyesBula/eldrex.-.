@@ -1,193 +1,194 @@
 /**
- * SECURITY.JS - Eldrex Content Protection System
- * Version: 1.0
- * Author: Eldrex Delos Reyes Bula
- * Protected Domains: eldrex.neocities.org
- * License: https://eldrex.neocities.org/license.html
+ * Enhanced Security.js for Eldrex Neocities
+ * With fallbacks, error handling, and performance optimizations
  */
 
-(function() {
-    // ======================
-    // SECURITY CONFIGURATION
-    // ======================
-    const SECURITY_CONFIG = {
-        ALLOWED_DOMAINS: [
-            'eldrex.neocities.org',
-            'www.eldrex.neocities.org'
-        ],
-        LICENSE_PAGE: 'https://eldrex.neocities.org/license.html',
-        MAIN_PAGE: 'https://eldrex.neocities.org',
-        FILE_PROTECTION: [
-            'security.js',
-            'main.js',
-            'main.css'
-        ],
-        EMBED_PROTECTION: true
+// Load tiny libraries from CDN with fallbacks
+const loadScript = (url, integrity, fallback) => {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = url;
+    if (integrity) script.integrity = integrity;
+    script.crossOrigin = 'anonymous';
+    script.onload = resolve;
+    script.onerror = () => {
+      if (fallback) {
+        const fallbackScript = document.createElement('script');
+        fallbackScript.src = fallback;
+        document.head.appendChild(fallbackScript);
+        fallbackScript.onload = resolve;
+        fallbackScript.onerror = reject;
+      } else {
+        reject();
+      }
     };
+    document.head.appendChild(script);
+  });
+};
 
-    // =====================
-    // SECURITY VERIFICATION
-    // =====================
-    function verifyEnvironment() {
-        // Block direct access to security.js
-        if (window.location.pathname.includes('security.js')) {
-            enforceLicenseRedirect();
-            return false;
+const loadStyle = (url, fallback) => {
+  return new Promise((resolve, reject) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = url;
+    link.onload = resolve;
+    link.onerror = () => {
+      if (fallback) {
+        const fallbackLink = document.createElement('link');
+        fallbackLink.rel = 'stylesheet';
+        fallbackLink.href = fallback;
+        document.head.appendChild(fallbackLink);
+        fallbackLink.onload = resolve;
+        fallbackLink.onerror = reject;
+      } else {
+        reject();
+      }
+    };
+    document.head.appendChild(link);
+  });
+};
+
+// Main security function wrapped in IIFE
+(function() {
+  // Configuration with fallbacks
+  const CONFIG = {
+    allowedDomains: ['eldrex.neocities.org', 'eldrex.vercel.app'],
+    blockedUrl: 'https://eldrex.vercel.app/blocked.html',
+    resources: {
+      js: {
+        main: [
+          'https://cdn.jsdelivr.net/npm/umbrellajs@3.3.3/umbrella.min.js',
+          'https://eldrex.vercel.app/functions/main.js'
+        ],
+        about: [
+          'https://cdn.jsdelivr.net/npm/umbrellajs@3.3.3/umbrella.min.js',
+          'https://eldrex.vercel.app/functions/about.js'
+        ],
+        security: 'https://eldrex.vercel.app/security.js'
+      },
+      css: {
+        main: 'https://eldrex.vercel.app/css/main.css',
+        about: 'https://eldrex.vercel.app/css/about.css'
+      },
+      fallbacks: {
+        js: {
+          main: 'https://cdn.jsdelivr.net/gh/franciscop/umbrella@3.3.3/umbrella.min.js',
+          about: 'https://cdn.jsdelivr.net/gh/franciscop/umbrella@3.3.3/umbrella.min.js'
+        },
+        css: {
+          main: 'https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css',
+          about: 'https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css'
         }
+      }
+    },
+    version: '1.0.2'
+  };
 
-        // Verify domain
-        const currentDomain = window.location.hostname;
-        const isAllowedDomain = SECURITY_CONFIG.ALLOWED_DOMAINS.some(domain => 
-            currentDomain === domain || currentDomain.endsWith('.' + domain)
-        );
+  // Current environment checks
+  const currentEnv = {
+    domain: window.location.hostname,
+    protocol: window.location.protocol,
+    path: window.location.pathname,
+    isEmbedded: window.self !== window.top,
+    isDirectAccess: /security\.js\/?$/.test(window.location.pathname),
+    isAboutPage: /about\.html|about\/?$/.test(window.location.pathname)
+  };
 
-        if (!isAllowedDomain) {
-            enforceLicenseRedirect();
-            return false;
-        }
-
-        // Enforce HTTPS
-        if (window.location.protocol !== 'https:') {
-            window.location.href = 'https://' + window.location.host + window.location.pathname;
-            return false;
-        }
-
-        // Hide all paths (redirect to main page)
-        if (window.location.pathname !== '/' && !window.location.pathname.includes('index.html')) {
-            window.history.replaceState({}, document.title, '/');
-            return true;
-        }
-
-        return true;
+  // Security validation
+  const securityChecks = {
+    isAllowedDomain: CONFIG.allowedDomains.includes(currentEnv.domain),
+    isHTTPS: currentEnv.protocol === 'https:',
+    isValidAccess: function() {
+      return this.isAllowedDomain && this.isHTTPS && 
+             !currentEnv.isEmbedded && !currentEnv.isDirectAccess;
     }
+  };
 
-    // =================
-    // SECURITY FEATURES
-    // =================
-    function enforceLicenseRedirect() {
-        window.location.href = SECURITY_CONFIG.LICENSE_PAGE;
+  // Block unauthorized access with multiple checks
+  if (!securityChecks.isValidAccess()) {
+    if (!window.location.href.startsWith(CONFIG.blockedUrl)) {
+      // Store attempt in sessionStorage to prevent loops
+      const redirectAttempts = sessionStorage.getItem('redirectAttempts') || 0;
+      if (redirectAttempts < 3) {
+        sessionStorage.setItem('redirectAttempts', parseInt(redirectAttempts) + 1);
+        window.location.href = CONFIG.blockedUrl;
+      } else {
+        document.write('<h1>Access Blocked</h1><p>Too many redirect attempts</p>');
+        document.close();
+      }
     }
+    return;
+  }
 
-    function applyContentProtection() {
-        // Anti-copy measures
-        const antiCopyCSS = `
-            body {
-                user-select: none !important;
-                -webkit-user-select: none !important;
-                -moz-user-select: none !important;
-                -ms-user-select: none !important;
-            }
-            
-            img {
-                pointer-events: none !important;
-            }
-        `;
-        
-        const style = document.createElement('style');
-        style.textContent = antiCopyCSS;
-        document.head.appendChild(style);
+  // Reset redirect attempts on valid access
+  sessionStorage.removeItem('redirectAttempts');
 
-        // Disable right-click
-        document.addEventListener('contextmenu', (e) => e.preventDefault());
+  // Main functionality for valid access
+  document.addEventListener('DOMContentLoaded', async function() {
+    try {
+      // Clean URL
+      if (history.replaceState) {
+        history.replaceState(null, null, window.location.origin + '/');
+      }
 
-        // Disable keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A') ||
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j'))) {
-                e.preventDefault();
-            }
-        });
+      // Load CSS with fallback
+      const cssUrl = currentEnv.isAboutPage ? CONFIG.resources.css.about : CONFIG.resources.css.main;
+      const cssFallback = currentEnv.isAboutPage ? CONFIG.fallbacks.css.about : CONFIG.fallbacks.css.main;
+      
+      await loadStyle(cssUrl, cssFallback).catch(err => {
+        console.error('Failed to load main CSS, using fallback', err);
+      });
 
-        // Prevent selection
-        document.addEventListener('selectstart', (e) => e.preventDefault());
-        document.addEventListener('selectionchange', () => {
-            window.getSelection().removeAllRanges();
-        });
-    }
+      // Load JS with fallback
+      const jsUrls = currentEnv.isAboutPage ? CONFIG.resources.js.about : CONFIG.resources.js.main;
+      const jsFallback = currentEnv.isAboutPage ? CONFIG.fallbacks.js.about : CONFIG.fallbacks.js.main;
+      
+      // Load umbrella.js first (lightweight jQuery alternative)
+      await loadScript(jsUrls[0], 'sha256-xyz', jsFallback);
+      // Then load page-specific JS
+      await loadScript(jsUrls[1]).catch(err => {
+        console.error('Failed to load page-specific JS', err);
+      });
 
-    function preventEmbedding() {
-        // Frame busting
-        if (window.top !== window.self) {
-            window.top.location.href = window.self.location.href;
-        }
-
-        // X-Frame-Options equivalent
+      // Handle client-side routing for non-about pages
+      if (!currentEnv.isAboutPage && currentEnv.path !== '/' && !currentEnv.path.endsWith('index.html')) {
         try {
-            document.addEventListener('DOMContentLoaded', () => {
-                if (window !== window.top) {
-                    window.top.location.href = window.location.href;
-                }
-            });
-        } catch (e) {
-            window.location.href = SECURITY_CONFIG.MAIN_PAGE;
+          const response = await fetch('/index.html');
+          if (response.ok) {
+            const html = await response.text();
+            document.open();
+            document.write(html);
+            document.close();
+          } else {
+            window.location.href = '/';
+          }
+        } catch (error) {
+          window.location.href = '/';
         }
+      }
+    } catch (error) {
+      console.error('Initialization error:', error);
+      // Basic fallback content if everything fails
+      if (!document.body.innerHTML.trim()) {
+        document.body.innerHTML = `
+          <h1>Welcome to Eldrex</h1>
+          <p>Sorry, we're having trouble loading resources.</p>
+          <a href="/">Try again</a>
+        `;
+      }
+    }
+  });
+
+  // Additional security measures
+  window.addEventListener('load', function() {
+    // Prevent embedding
+    if (window.self !== window.top) {
+      window.top.location = window.self.location;
     }
 
-    function loadProtectedResources() {
-        // Load CSS
-        const cssLink = document.createElement('link');
-        cssLink.rel = 'stylesheet';
-        cssLink.href = '/css/main.css';
-        cssLink.onerror = () => {
-            console.warn('Failed to load main.css');
-            document.head.removeChild(cssLink);
-        };
-        document.head.appendChild(cssLink);
-
-        // Load main JS
-        const jsScript = document.createElement('script');
-        jsScript.src = '/functions/main.js';
-        jsScript.onerror = () => {
-            console.warn('Failed to load main.js');
-            document.head.removeChild(jsScript);
-        };
-        document.head.appendChild(jsScript);
+    // Force HTTPS (redundant check)
+    if (location.protocol !== 'https:') {
+      location.replace(`https:${location.href.substring(location.protocol.length)}`);
     }
-
-    // ================
-    // INITIALIZATION
-    // ================
-    if (verifyEnvironment()) {
-        // Apply security features
-        applyContentProtection();
-        preventEmbedding();
-        
-        // Load protected resources
-        document.addEventListener('DOMContentLoaded', () => {
-            loadProtectedResources();
-            
-            // Hide loading state
-            setTimeout(() => {
-                const loadingElement = document.getElementById('loading-container');
-                if (loadingElement) {
-                    loadingElement.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingElement.style.display = 'none';
-                    }, 500);
-                }
-            }, 1500);
-        });
-
-        // Clean exit transition
-        window.addEventListener('beforeunload', () => {
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.3s ease';
-        });
-    }
-
-    // =====================
-    // ANTI-TAMPERING CHECKS
-    // =====================
-    setInterval(() => {
-        // Check if security.js was modified
-        if (typeof verifyEnvironment !== 'function') {
-            enforceLicenseRedirect();
-        }
-
-        // Check if we're in an iframe (redundant check)
-        if (SECURITY_CONFIG.EMBED_PROTECTION && window.top !== window.self) {
-            window.top.location.href = window.self.location.href;
-        }
-    }, 5000);
+  });
 })();
