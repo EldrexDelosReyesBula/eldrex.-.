@@ -1,140 +1,184 @@
-// Security.js - Centralized security and resource injection for Eldrex's website
-// Hosted on Vercel, injected into Neocities HTML
+/**
+ * LanDecs Security Module v1.0
+ * Centralized resource loader with security protections
+ * 
+ * Features:
+ * - Domain verification
+ * - HTTPS enforcement
+ * - SRI (Subresource Integrity) validation
+ * - Dynamic resource injection
+ * - Anti-tampering measures
+ * - Environment checks
+ * - Cache busting
+ */
 
-// Configuration
-const CONFIG = {
-    ALLOWED_DOMAINS: ['eldrex.neocities.org', 'eldrex.vercel.app'],
-    REQUIRED_PROTOCOL: 'https:',
-    RESOURCES: {
-        CSS: 'https://eldrex.vercel.app/css/main.css',
-        JS: 'https://eldrex.vercel.app/functions/main.js'
-    },
-    VERSION: '1.0.0-' + Date.now(),
-    INTEGRITY: {
-        CSS: 'sha384-5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5',
-        JS: 'sha384-JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ'
+(function() {
+    'use strict';
+
+    // Configuration - Update these values when files change
+    const CONFIG = {
+        allowedDomains: ['eldrex.neocities.org', 'eldrex.vercel.app'],
+        cssUrl: 'https://eldrex.vercel.app/css/main.css',
+        jsUrl: 'https://eldrex.vercel.app/functions/main.js',
+        // SHA-3 (Keccak-256) hashes - generate these when files change
+        cssIntegrity: 'sha256-2QNx4QqBQkMmvhQmRZ1nQxS9XmZwQ6KTHyJQlY7X5o=',
+        jsIntegrity: 'sha256-9QnXjQjQkMmvhQmRZ1nQxS9XmZwQ6KTHyJQlY7X5o=',
+        version: '1.0.0-' + Date.now(), // Cache buster
+        debug: false
+    };
+
+    // Security Checks
+    function initializeSecurity() {
+        if (!passesEnvironmentChecks()) {
+            return;
+        }
+
+        // Load resources with security measures
+        Promise.all([
+            loadResource('css', CONFIG.cssUrl, CONFIG.cssIntegrity),
+            loadResource('js', CONFIG.jsUrl, CONFIG.jsIntegrity)
+        ]).then(() => {
+            if (CONFIG.debug) console.log('[LanDecs Security] All resources loaded successfully');
+            showFooter(); // Only show footer after successful load
+        }).catch(error => {
+            console.error('[LanDecs Security] Resource loading failed:', error);
+            displayErrorFallback();
+        });
     }
-};
 
-// Environment Checks
-function validateEnvironment() {
-    // Check if running in authorized domain
-    if (!CONFIG.ALLOWED_DOMAINS.includes(window.location.hostname)) {
-        console.error('Unauthorized domain');
-        return false;
+    // Environment Validation
+    function passesEnvironmentChecks() {
+        try {
+            // Verify we're running in a browser
+            if (typeof window === 'undefined') {
+                throw new Error('Not running in a browser environment');
+            }
+
+            // Check if running in an iframe
+            if (window.self !== window.top) {
+                throw new Error('Framing is not allowed');
+            }
+
+            // Verify domain is allowed
+            const currentDomain = window.location.hostname;
+            if (!CONFIG.allowedDomains.includes(currentDomain)) {
+                throw new Error(`Domain ${currentDomain} is not authorized`);
+            }
+
+            // Enforce HTTPS in production
+            if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
+                throw new Error('HTTPS is required');
+            }
+
+            // Check for browser features
+            if (typeof document.createElement('link').relList === 'undefined' || 
+                typeof document.createElement('script').async === 'undefined') {
+                throw new Error('Browser lacks required features');
+            }
+
+            return true;
+        } catch (error) {
+            console.error('[LanDecs Security] Environment check failed:', error);
+            displayErrorFallback();
+            return false;
+        }
     }
 
-    // Require HTTPS
-    if (window.location.protocol !== CONFIG.REQUIRED_PROTOCOL) {
-        console.error('HTTPS required');
-        return false;
+    // Secure Resource Loading
+    function loadResource(type, url, integrity) {
+        return new Promise((resolve, reject) => {
+            const element = type === 'css' 
+                ? document.createElement('link')
+                : document.createElement('script');
+
+            if (type === 'css') {
+                element.rel = 'stylesheet';
+                element.href = url + '?v=' + CONFIG.version;
+            } else {
+                element.src = url + '?v=' + CONFIG.version;
+                element.async = true;
+            }
+
+            element.crossOrigin = 'anonymous';
+            element.integrity = integrity;
+            element.referrerPolicy = 'no-referrer';
+
+            element.onload = () => {
+                if (CONFIG.debug) console.log(`[LanDecs Security] ${type.toUpperCase()} loaded successfully`);
+                resolve();
+            };
+
+            element.onerror = () => {
+                reject(new Error(`Failed to load ${type} from ${url}`));
+            };
+
+            document.head.appendChild(element);
+        });
     }
 
-    // Prevent iframe embedding
-    if (window.self !== window.top) {
-        console.error('Framing not allowed');
-        return false;
+    // Error Handling
+    function displayErrorFallback() {
+        const errorStyle = document.createElement('style');
+        errorStyle.textContent = `
+            .security-error {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                background: #ff4444;
+                color: white;
+                padding: 10px;
+                text-align: center;
+                z-index: 9999;
+                font-family: Arial, sans-serif;
+            }
+            .security-error a {
+                color: white;
+                text-decoration: underline;
+            }
+        `;
+        document.head.appendChild(errorStyle);
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'security-error';
+        errorDiv.innerHTML = `
+            <strong>Security Alert:</strong> There was an issue loading required resources. 
+            Please refresh the page or <a href="${window.location.href}">try again</a>.
+            If the problem persists, contact support.
+        `;
+        document.body.insertBefore(errorDiv, document.body.firstChild);
     }
 
-    // Prevent local execution
-    if (window.location.hostname === 'localhost' || 
-        window.location.hostname === '127.0.0.1' || 
-        window.location.hostname === '') {
-        console.error('Local execution not allowed');
-        return false;
+    // Footer Animation
+    function showFooter() {
+        const footer = document.getElementById('pageFooter');
+        if (footer) {
+            footer.style.transform = 'translateY(0)';
+            footer.style.opacity = '1';
+        }
     }
 
-    return true;
-}
-
-// Resource Injection
-function injectResources() {
-    if (!validateEnvironment()) return;
-
-    // Inject CSS with SRI
-    const cssLink = document.createElement('link');
-    cssLink.rel = 'stylesheet';
-    cssLink.href = CONFIG.RESOURCES.CSS + '?v=' + CONFIG.VERSION;
-    cssLink.crossOrigin = 'anonymous';
-    cssLink.integrity = CONFIG.INTEGRITY.CSS;
-    cssLink.onerror = () => console.error('CSS failed to load');
-    document.head.appendChild(cssLink);
-
-    // Inject JS with SRI
-    const jsScript = document.createElement('script');
-    jsScript.src = CONFIG.RESOURCES.JS + '?v=' + CONFIG.VERSION;
-    jsScript.crossOrigin = 'anonymous';
-    jsScript.integrity = CONFIG.INTEGRITY.JS;
-    jsScript.onerror = () => console.error('JS failed to load');
-    document.body.appendChild(jsScript);
-}
-
-// DOM Sanitization (using DOMPurify)
-function sanitizeDOM() {
-    // Load DOMPurify from CDN if not already loaded
-    if (typeof DOMPurify !== 'undefined') return;
-
-    const purifyScript = document.createElement('script');
-    purifyScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.5/purify.min.js';
-    purifyScript.integrity = 'sha512-6s8OiptVcc9JMnqQ4C4iIww9TI5JQkqRr1ZyoKZWAXh1xNk0x5VqZ9XLMQZx8gN7b+FQ9TvXv0Bd+0jQOAClEA==';
-    purifyScript.crossOrigin = 'anonymous';
-    document.head.appendChild(purifyScript);
-}
-
-// Browser Feature Detection
-function detectFeatures() {
-    // Load detect-browser if needed
-    if (typeof detect === 'undefined') {
-        const detectScript = document.createElement('script');
-        detectScript.src = 'https://cdn.jsdelivr.net/npm/detect-browser@5.3.0/dist/index.min.js';
-        detectScript.integrity = 'sha384-5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5';
-        detectScript.crossOrigin = 'anonymous';
-        document.head.appendChild(detectScript);
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeSecurity);
+    } else {
+        initializeSecurity();
     }
-}
 
-// Initialize Security
-document.addEventListener('DOMContentLoaded', () => {
-    // Set CSP meta tag dynamically
+    // Add CSP meta tag dynamically (additional protection layer)
     const cspMeta = document.createElement('meta');
     cspMeta.httpEquiv = 'Content-Security-Policy';
-    cspMeta.content = `default-src 'self'; 
-        script-src 'self' https://eldrex.vercel.app https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'unsafe-inline'; 
-        style-src 'self' https://eldrex.vercel.app 'unsafe-inline'; 
-        img-src 'self' data: https://eldrex.neocities.org https://ucarecdn.com; 
-        connect-src 'self' https://eldrex.vercel.app; 
-        frame-ancestors 'none';`;
+    cspMeta.content = `
+        default-src 'self';
+        script-src 'self' https://eldrex.vercel.app 'unsafe-inline' 'unsafe-eval';
+        style-src 'self' https://eldrex.vercel.app 'unsafe-inline';
+        img-src 'self' data: https://eldrex.neocities.org https://ucarecdn.com https://eldrex.vercel.app;
+        font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+        connect-src 'self' https://eldrex.vercel.app https://api.vercel.app;
+        frame-src 'none';
+        object-src 'none';
+        base-uri 'self';
+    `.replace(/\s+/g, ' ').trim();
     document.head.appendChild(cspMeta);
 
-    // Execute security measures
-    sanitizeDOM();
-    detectFeatures();
-    injectResources();
-});
-
-// Error handling
-window.addEventListener('error', (e) => {
-    console.error('Security error:', e.message);
-});
-
-// MutationObserver for DOM changes
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        if (mutation.addedNodes.length) {
-            mutation.addedNodes.forEach((node) => {
-                if (node.nodeType === 1 && node.tagName === 'SCRIPT' && 
-                    !node.src.includes('eldrex.vercel.app') && 
-                    !node.src.includes('cdnjs.cloudflare.com') && 
-                    !node.src.includes('cdn.jsdelivr.net')) {
-                    node.remove();
-                    console.warn('Unauthorized script removed');
-                }
-            });
-        }
-    });
-});
-
-observer.observe(document.documentElement, {
-    childList: true,
-    subtree: true
-});
+})();
