@@ -9,7 +9,7 @@
         config: {
             authorizedDomains: [
                 'eldrex.neocities.org',
-                'www.eldrex.neocities.org',
+                'https://eldrex.neocities.org',
                 'eldrex.vercel.app' // For development/testing
             ],
             requiredFeatures: [
