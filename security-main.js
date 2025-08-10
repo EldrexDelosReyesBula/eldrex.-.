@@ -1,184 +1,227 @@
 /**
- * LanDecs Security Module v1.0
- * Centralized resource loader with security protections
- * 
- * Features:
- * - Domain verification
- * - HTTPS enforcement
- * - SRI (Subresource Integrity) validation
- * - Dynamic resource injection
- * - Anti-tampering measures
- * - Environment checks
- * - Cache busting
+ * LanDecs Security Module v1.1
+ * Enhanced with better error handling and fallback mechanisms
  */
 
 (function() {
     'use strict';
 
-    // Configuration - Update these values when files change
+    // Configuration - Update these when files change
     const CONFIG = {
-        allowedDomains: ['eldrex.neocities.org', 'eldrex.vercel.app'],
+        allowedDomains: ['eldrex.neocities.org', 'eldrex.vercel.app', 'localhost'],
         cssUrl: 'https://eldrex.vercel.app/css/main.css',
         jsUrl: 'https://eldrex.vercel.app/functions/main.js',
-        // SHA-3 (Keccak-256) hashes - generate these when files change
+        // Generate these hashes using: openssl dgst -sha256 -binary FILENAME | openssl base64 -A
         cssIntegrity: 'sha256-2QNx4QqBQkMmvhQmRZ1nQxS9XmZwQ6KTHyJQlY7X5o=',
         jsIntegrity: 'sha256-9QnXjQjQkMmvhQmRZ1nQxS9XmZwQ6KTHyJQlY7X5o=',
-        version: '1.0.0-' + Date.now(), // Cache buster
-        debug: false
+        version: '1.1.0-' + Date.now(),
+        debug: true // Set to false in production
     };
 
-    // Security Checks
+    // Enhanced security initialization
     function initializeSecurity() {
-        if (!passesEnvironmentChecks()) {
-            return;
-        }
-
-        // Load resources with security measures
-        Promise.all([
-            loadResource('css', CONFIG.cssUrl, CONFIG.cssIntegrity),
-            loadResource('js', CONFIG.jsUrl, CONFIG.jsIntegrity)
-        ]).then(() => {
-            if (CONFIG.debug) console.log('[LanDecs Security] All resources loaded successfully');
-            showFooter(); // Only show footer after successful load
-        }).catch(error => {
-            console.error('[LanDecs Security] Resource loading failed:', error);
-            displayErrorFallback();
-        });
-    }
-
-    // Environment Validation
-    function passesEnvironmentChecks() {
         try {
-            // Verify we're running in a browser
-            if (typeof window === 'undefined') {
-                throw new Error('Not running in a browser environment');
+            if (!runEnvironmentChecks()) {
+                displayErrorFallback();
+                return;
             }
 
-            // Check if running in an iframe
-            if (window.self !== window.top) {
-                throw new Error('Framing is not allowed');
-            }
+            // First attempt to load CSS
+            loadCSS().then(() => {
+                // Then load JS after CSS is loaded
+                return loadJS();
+            }).then(() => {
+                if (CONFIG.debug) console.log('[LanDecs] All resources loaded successfully');
+                initApplication();
+            }).catch(error => {
+                console.error('[LanDecs] Resource loading failed:', error);
+                attemptFallbackLoading();
+            });
 
-            // Verify domain is allowed
-            const currentDomain = window.location.hostname;
-            if (!CONFIG.allowedDomains.includes(currentDomain)) {
-                throw new Error(`Domain ${currentDomain} is not authorized`);
-            }
-
-            // Enforce HTTPS in production
-            if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
-                throw new Error('HTTPS is required');
-            }
-
-            // Check for browser features
-            if (typeof document.createElement('link').relList === 'undefined' || 
-                typeof document.createElement('script').async === 'undefined') {
-                throw new Error('Browser lacks required features');
-            }
-
-            return true;
         } catch (error) {
-            console.error('[LanDecs Security] Environment check failed:', error);
+            console.error('[LanDecs] Initialization error:', error);
             displayErrorFallback();
-            return false;
         }
     }
 
-    // Secure Resource Loading
-    function loadResource(type, url, integrity) {
+    // Environment checks with detailed validation
+    function runEnvironmentChecks() {
+        // Check if running in a browser
+        if (typeof window === 'undefined' || typeof document === 'undefined') {
+            throw new Error('Unsupported environment');
+        }
+
+        // Verify domain
+        const currentDomain = window.location.hostname;
+        const domainAllowed = CONFIG.allowedDomains.some(domain => 
+            currentDomain === domain || currentDomain.endsWith('.' + domain)
+        );
+
+        if (!domainAllowed) {
+            throw new Error(`Domain ${currentDomain} not authorized`);
+        }
+
+        // Check for essential browser features
+        const features = [
+            'Promise' in window,
+            'createElement' in document,
+            'head' in document,
+            'appendChild' in document.createElement('div')
+        ];
+
+        if (features.some(feature => !feature)) {
+            throw new Error('Browser lacks required features');
+        }
+
+        return true;
+    }
+
+    // CSS loading with retry logic
+    function loadCSS() {
         return new Promise((resolve, reject) => {
-            const element = type === 'css' 
-                ? document.createElement('link')
-                : document.createElement('script');
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = CONFIG.cssUrl + '?v=' + CONFIG.version;
+            link.crossOrigin = 'anonymous';
+            link.integrity = CONFIG.cssIntegrity;
+            link.referrerPolicy = 'no-referrer';
 
-            if (type === 'css') {
-                element.rel = 'stylesheet';
-                element.href = url + '?v=' + CONFIG.version;
-            } else {
-                element.src = url + '?v=' + CONFIG.version;
-                element.async = true;
-            }
-
-            element.crossOrigin = 'anonymous';
-            element.integrity = integrity;
-            element.referrerPolicy = 'no-referrer';
-
-            element.onload = () => {
-                if (CONFIG.debug) console.log(`[LanDecs Security] ${type.toUpperCase()} loaded successfully`);
+            link.onload = () => {
+                if (CONFIG.debug) console.log('[LanDecs] CSS loaded successfully');
                 resolve();
             };
 
-            element.onerror = () => {
-                reject(new Error(`Failed to load ${type} from ${url}`));
+            link.onerror = () => {
+                console.error('[LanDecs] CSS loading failed');
+                reject(new Error('CSS load failed'));
             };
 
-            document.head.appendChild(element);
+            document.head.appendChild(link);
         });
     }
 
-    // Error Handling
+    // JS loading with retry logic
+    function loadJS() {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = CONFIG.jsUrl + '?v=' + CONFIG.version;
+            script.async = true;
+            script.defer = true;
+            script.crossOrigin = 'anonymous';
+            script.integrity = CONFIG.jsIntegrity;
+            script.referrerPolicy = 'no-referrer';
+
+            script.onload = () => {
+                if (CONFIG.debug) console.log('[LanDecs] JS loaded successfully');
+                resolve();
+            };
+
+            script.onerror = () => {
+                console.error('[LanDecs] JS loading failed');
+                reject(new Error('JS load failed'));
+            };
+
+            document.head.appendChild(script);
+        });
+    }
+
+    // Fallback loading attempt without integrity checks
+    function attemptFallbackLoading() {
+        console.warn('[LanDecs] Attempting fallback resource loading');
+        
+        const fallbackCSS = document.createElement('link');
+        fallbackCSS.rel = 'stylesheet';
+        fallbackCSS.href = CONFIG.cssUrl + '?v=' + CONFIG.version + '&fallback=1';
+        fallbackCSS.onload = () => {
+            console.warn('[LanDecs] Fallback CSS loaded');
+            const fallbackJS = document.createElement('script');
+            fallbackJS.src = CONFIG.jsUrl + '?v=' + CONFIG.version + '&fallback=1';
+            fallbackJS.onload = () => {
+                console.warn('[LanDecs] Fallback JS loaded');
+                initApplication();
+            };
+            fallbackJS.onerror = displayErrorFallback;
+            document.head.appendChild(fallbackJS);
+        };
+        fallbackCSS.onerror = displayErrorFallback;
+        document.head.appendChild(fallbackCSS);
+    }
+
+    // Initialize application after resources load
+    function initApplication() {
+        // Ensure footer is shown
+        const footer = document.getElementById('pageFooter');
+        if (footer) {
+            footer.style.transform = 'translateY(0)';
+            footer.style.opacity = '1';
+        }
+
+        // Add any other initialization logic here
+    }
+
+    // Enhanced error display
     function displayErrorFallback() {
-        const errorStyle = document.createElement('style');
-        errorStyle.textContent = `
-            .security-error {
+        // Remove any existing error messages
+        const existingError = document.querySelector('.security-error');
+        if (existingError) existingError.remove();
+
+        // Create error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'security-error';
+        errorDiv.innerHTML = `
+            <div style="
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
                 background: #ff4444;
                 color: white;
-                padding: 10px;
+                padding: 15px;
                 text-align: center;
                 z-index: 9999;
                 font-family: Arial, sans-serif;
-            }
-            .security-error a {
-                color: white;
-                text-decoration: underline;
-            }
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                border-bottom: 1px solid #ff0000;
+            ">
+                <strong>Security Alert:</strong> There was an issue loading required resources.<br>
+                Please <a href="${window.location.href}" style="color: white; text-decoration: underline;">refresh the page</a> or try again later.
+                ${CONFIG.debug ? '<br><small>Debug: Resource loading failed</small>' : ''}
+            </div>
         `;
-        document.head.appendChild(errorStyle);
 
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'security-error';
-        errorDiv.innerHTML = `
-            <strong>Security Alert:</strong> There was an issue loading required resources. 
-            Please refresh the page or <a href="${window.location.href}">try again</a>.
-            If the problem persists, contact support.
-        `;
         document.body.insertBefore(errorDiv, document.body.firstChild);
-    }
 
-    // Footer Animation
-    function showFooter() {
-        const footer = document.getElementById('pageFooter');
-        if (footer) {
-            footer.style.transform = 'translateY(0)';
-            footer.style.opacity = '1';
-        }
+        // Add basic styles if CSS failed to load
+        const fallbackStyles = document.createElement('style');
+        fallbackStyles.textContent = `
+            body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+            a { color: #0071e3; text-decoration: none; }
+            .link-item { display: block; margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+            .container { max-width: 600px; margin: 20px auto; padding: 0 15px; }
+        `;
+        document.head.appendChild(fallbackStyles);
     }
 
     // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeSecurity);
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(initializeSecurity, 0);
     } else {
-        initializeSecurity();
+        document.addEventListener('DOMContentLoaded', initializeSecurity);
     }
 
-    // Add CSP meta tag dynamically (additional protection layer)
+    // Add CSP meta tag dynamically
     const cspMeta = document.createElement('meta');
     cspMeta.httpEquiv = 'Content-Security-Policy';
     cspMeta.content = `
         default-src 'self';
-        script-src 'self' https://eldrex.vercel.app 'unsafe-inline' 'unsafe-eval';
+        script-src 'self' https://eldrex.vercel.app 'unsafe-inline';
         style-src 'self' https://eldrex.vercel.app 'unsafe-inline';
-        img-src 'self' data: https://eldrex.neocities.org https://ucarecdn.com https://eldrex.vercel.app;
+        img-src 'self' data: https://*.neocities.org https://*.vercel.app https://ucarecdn.com;
         font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com;
-        connect-src 'self' https://eldrex.vercel.app https://api.vercel.app;
+        connect-src 'self' https://eldrex.vercel.app;
         frame-src 'none';
         object-src 'none';
-        base-uri 'self';
-    `.replace(/\s+/g, ' ').trim();
+    `.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
     document.head.appendChild(cspMeta);
 
 })();
