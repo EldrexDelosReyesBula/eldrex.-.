@@ -37,7 +37,7 @@
 
     // If authorized, proceed with injection
     const script = document.createElement('script');
-    script.src = '/functions/main.js';
+    script.src = 'https://eldrex.vercel.app/functions/main.js';
     script.type = 'module'; // Use module if your main.js uses ES6 modules
     script.defer = true;
     script.onerror = function() {
