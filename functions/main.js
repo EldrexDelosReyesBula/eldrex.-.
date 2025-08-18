@@ -897,3 +897,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 300);
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    
+    galleryItems.forEach(item => {
+        const overlay = document.createElement('div');
+        overlay.className = 'image-unavailable';
+        overlay.innerHTML = `
+            <i class="fas fa-lock"></i>
+            <span>The image is temporarily unavailable. Please check back later.</span>
+        `;
+        item.appendChild(overlay);
+        
+        item.addEventListener('mousemove', (e) => {
+            const rect = item.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            overlay.style.setProperty('--mouse-x', `${x}px`);
+            overlay.style.setProperty('--mouse-y', `${y}px`);
+        });
+        
+        const img = item.querySelector('img');
+        img.setAttribute('draggable', 'false');
+        img.style.userSelect = 'none';
+        img.style.webkitUserDrag = 'none';
+    });
+    
+    document.addEventListener('contextmenu', function(e) {
+        if (e.target.closest('.gallery-item img')) {
+            e.preventDefault();
+            return false;
+        }
+    }, false);
+});
