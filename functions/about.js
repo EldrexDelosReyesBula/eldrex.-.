@@ -1,12 +1,6 @@
 const contentData = {
     aboutSections: [
-        "Hi, I’m Eldrex Delos Reyes Bula. I’ve always been the type of person who can be a little crazy and kind of mindless at times. Even when I’m quiet, my thoughts don’t really stop. I spend time wondering how things actually work, not just what’s visible, but what’s happening underneath. When I notice something that could make someone’s day lighter or clearer, I tend to follow it without needing a reason.",
-
-        "I’m not someone who looks for attention. I think value comes from being thoughtful, listening well, and noticing things others might miss. I pay close attention to quiet details, like how someone reacts or what helps them feel at ease. These moments stick with me and often grow into ideas that feel worth building.",
-
-        "Life hasn’t always been smooth. I’ve gone through times that felt uncertain or slow, but they taught me to stay grounded. I’ve learned not to rush growth or force answers. I’m still learning, still adjusting, and I’ve come to see that as part of the process. To me, progress means choosing to show up and keep going, even when things feel unclear.",
-
-        "I don’t have everything figured out, and maybe I never will. But I believe in simple things done with care. I want to create work that feels honest, thoughtful, and useful in real ways. It doesn’t need to be loud. If it helps someone quietly, that’s more than enough for me. That’s the kind of path I want to follow."
+        "Hi, I’m Eldrex Delos Reyes Bula. I’ve always been the type of person who can be a little crazy and kind of mindless at times. Even when I’m quiet, my thoughts don’t really stop. I spend time wondering how things actually work, not just what’s visible, but what’s happening underneath. When I notice something that could make someone’s day lighter or clearer, I tend to follow it without needing a reason."
     ],
 
     quotes: [{
