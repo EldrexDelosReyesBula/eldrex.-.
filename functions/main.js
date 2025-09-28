@@ -1,4 +1,4 @@
-// Bottom Sheets Functionality
+/*
 function initBottomSheets() {
     const profilePicture = document.getElementById('profile-picture');
     const squadLink = document.getElementById('squad-link');
@@ -7,7 +7,7 @@ function initBottomSheets() {
     const overlay = document.getElementById('overlay');
     const closeButtons = document.querySelectorAll('.close-sheet');
 
-    // Open profile sheet with morph animation
+   
     if (profilePicture && profileSheet) {
         profilePicture.addEventListener('click', function(e) {
             const rect = profilePicture.getBoundingClientRect();
@@ -930,4 +930,747 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
     }, false);
+});
+*/
+
+
+
+
+
+
+/*=========================================*/
+
+// Enhanced Physics-Based Animations & Interactive Functions
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all components with enhanced performance
+    initEnhancedBottomSheets();
+    initMemberCards();
+    initImageGallery();
+    initContentProtection();
+    initFooterAnimation();
+    initParticleSystem();
+    
+    // Load smooth entrance animations
+    setTimeout(() => {
+        const profilePicture = document.getElementById('profile-picture');
+        if (profilePicture) profilePicture.classList.add('loaded');
+
+        // Enhanced link animations with physics
+        document.querySelectorAll('.link-item').forEach((item, index) => {
+            setTimeout(() => {
+                if (typeof gsap !== 'undefined') {
+                    gsap.fromTo(item, {
+                        opacity: 0,
+                        y: 30,
+                        scale: 0.9
+                    }, {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.7,
+                        delay: index * 0.08,
+                        ease: "back.out(1.4)",
+                        clearProps: "all"
+                    });
+                }
+            }, 150);
+        });
+    }, 300);
+});
+
+// Enhanced Bottom Sheets with Physics Animations
+function initEnhancedBottomSheets() {
+    const profilePicture = document.getElementById('profile-picture');
+    const squadLink = document.getElementById('squad-link');
+    const profileSheet = document.getElementById('profile-sheet');
+    const squadSheet = document.getElementById('squad-sheet');
+    const overlay = document.getElementById('overlay');
+    const closeButtons = document.querySelectorAll('.close-sheet');
+    
+    let activeSheet = null;
+    let isAnimating = false;
+
+    // Enhanced profile sheet opening with morph animation
+    if (profilePicture && profileSheet) {
+        profilePicture.addEventListener('click', function(e) {
+            if (isAnimating) return;
+            openSheetWithMorph(profilePicture, profileSheet);
+        });
+    }
+
+    // Enhanced squad sheet opening with optimized particles
+    if (squadLink && squadSheet) {
+        squadLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (isAnimating) return;
+            openSheetWithParticles(squadLink, squadSheet);
+        });
+    }
+
+    // Enhanced close functionality
+    function closeActiveSheet() {
+        if (!activeSheet || isAnimating) return;
+        
+        isAnimating = true;
+        
+        if (typeof gsap !== 'undefined') {
+            gsap.to(activeSheet, {
+                y: '100%',
+                duration: 0.5,
+                ease: "power2.in",
+                onComplete: () => {
+                    activeSheet.classList.remove('active');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    activeSheet = null;
+                    isAnimating = false;
+                }
+            });
+            
+            gsap.to(overlay, {
+                opacity: 0,
+                duration: 0.4,
+                ease: "power2.out"
+            });
+        } else {
+            // Fallback
+            activeSheet.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            activeSheet = null;
+            isAnimating = false;
+        }
+    }
+
+    // Close buttons
+    if (closeButtons) {
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeActiveSheet();
+            });
+        });
+    }
+
+    // Close with overlay click (preserved as requested)
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            closeActiveSheet();
+        });
+    }
+
+    // Prevent closing when clicking inside sheets
+    [profileSheet, squadSheet].forEach(sheet => {
+        if (sheet) {
+            sheet.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+    });
+
+    // Enhanced morph animation function
+    function openSheetWithMorph(triggerElement, sheetElement) {
+        isAnimating = true;
+        const rect = triggerElement.getBoundingClientRect();
+        
+        // Create morph element
+        const morphElement = document.createElement('div');
+        morphElement.className = 'morph-element';
+        morphElement.style.cssText = `
+            position: fixed;
+            width: ${rect.width}px;
+            height: ${rect.height}px;
+            left: ${rect.left}px;
+            top: ${rect.top}px;
+            border-radius: 50%;
+            background: ${getComputedStyle(triggerElement).backgroundColor};
+            z-index: 1001;
+            pointer-events: none;
+        `;
+        document.body.appendChild(morphElement);
+
+        // Physics-based morph animation
+        if (typeof gsap !== 'undefined') {
+            gsap.to(morphElement, {
+                width: '100%',
+                height: '90vh',
+                left: 0,
+                top: '10%',
+                borderRadius: '28px 28px 0 0',
+                duration: 0.8,
+                ease: "expo.inOut",
+                onComplete: () => {
+                    sheetElement.classList.add('active');
+                    overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    activeSheet = sheetElement;
+                    morphElement.remove();
+                    
+                    // Animate sheet entrance
+                    gsap.fromTo(sheetElement, {
+                        y: '100%'
+                    }, {
+                        y: '0%',
+                        duration: 0.6,
+                        ease: "back.out(1.2)",
+                        onComplete: () => {
+                            isAnimating = false;
+                        }
+                    });
+                    
+                    gsap.fromTo(overlay, {
+                        opacity: 0
+                    }, {
+                        opacity: 1,
+                        duration: 0.4,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        }
+    }
+
+    // Optimized particle animation function
+    function openSheetWithParticles(triggerElement, sheetElement) {
+        isAnimating = true;
+        const rect = triggerElement.getBoundingClientRect();
+        const startX = rect.left + rect.width / 2;
+        const startY = rect.top + rect.height / 2;
+
+        // Create optimized particle burst (small white dots only)
+        createOptimizedParticleBurst(startX, startY, () => {
+            sheetElement.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            activeSheet = sheetElement;
+            
+            // Enhanced sheet entrance animation
+            if (typeof gsap !== 'undefined') {
+                gsap.fromTo(sheetElement, {
+                    y: '100%',
+                    scale: 0.95
+                }, {
+                    y: '0%',
+                    scale: 1,
+                    duration: 0.7,
+                    ease: "back.out(1.3)",
+                    onComplete: () => {
+                        isAnimating = false;
+                    }
+                });
+                
+                gsap.fromTo(overlay, {
+                    opacity: 0
+                }, {
+                    opacity: 1,
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            } else {
+                isAnimating = false;
+            }
+        });
+    }
+}
+
+// Optimized Particle System (Small White Dots Only)
+function createOptimizedParticleBurst(x, y, callback) {
+    const burst = document.createElement('div');
+    burst.className = 'optimized-particle-burst';
+    burst.style.cssText = `
+        position: fixed;
+        left: ${x}px;
+        top: ${y}px;
+        pointer-events: none;
+        z-index: 1002;
+    `;
+    document.body.appendChild(burst);
+
+    const particleCount = 12; // Reduced for performance
+    let completedParticles = 0;
+
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'optimized-particle';
+        particle.style.cssText = `
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        `;
+        burst.appendChild(particle);
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 30 + Math.random() * 40; // Reduced distance
+        const duration = 0.4 + Math.random() * 0.3; // Shorter duration
+
+        if (typeof gsap !== 'undefined') {
+            gsap.to(particle, {
+                x: Math.cos(angle) * distance,
+                y: Math.sin(angle) * distance,
+                opacity: 1,
+                scale: 1,
+                duration: duration * 0.3,
+                ease: "power2.out"
+            });
+            
+            gsap.to(particle, {
+                opacity: 0,
+                scale: 0,
+                duration: duration * 0.7,
+                delay: duration * 0.3,
+                ease: "power2.in",
+                onComplete: () => {
+                    completedParticles++;
+                    if (completedParticles === particleCount) {
+                        burst.remove();
+                        if (callback) callback();
+                    }
+                }
+            });
+        } else {
+            // Fallback
+            setTimeout(() => {
+                burst.remove();
+                if (callback) callback();
+            }, 500);
+        }
+    }
+}
+
+// Initialize optimized particle system
+function initParticleSystem() {
+    // Add CSS for optimized particles
+    const particleStyles = `
+        .optimized-particle {
+            will-change: transform, opacity;
+        }
+        .optimized-particle-burst {
+            will-change: transform;
+        }
+    `;
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = particleStyles;
+    document.head.appendChild(styleSheet);
+}
+
+// Enhanced Member Cards with Physics
+function initMemberCards() {
+    const memberCards = document.querySelectorAll('.member-card');
+    const scrollContainer = document.querySelector('.members-scroll-container');
+
+    if (memberCards.length > 0 && scrollContainer) {
+        // Enhanced card interactions
+        memberCards.forEach((card, index) => {
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('role', 'button');
+            
+            const nameElement = card.querySelector('p');
+            if (nameElement) {
+                card.setAttribute('aria-label', `View ${nameElement.textContent}'s profile`);
+            }
+
+            // Physics-based click animation
+            card.addEventListener('click', function(e) {
+                if (e.key && e.key !== 'Enter' && e.key !== ' ') return;
+                
+                // Add ripple effect
+                createRippleEffect(e, this);
+                
+                // Scale animation
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(this, {
+                        scale: 0.95,
+                        duration: 0.1,
+                        yoyo: true,
+                        repeat: 1,
+                        ease: "power2.inOut"
+                    });
+                }
+                
+                showMemberDetails(this);
+            });
+
+            // Hover effects
+            card.addEventListener('mouseenter', function() {
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(this, {
+                        scale: 1.05,
+                        duration: 0.2,
+                        ease: "back.out(1.2)"
+                    });
+                }
+            });
+
+            card.addEventListener('mouseleave', function() {
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(this, {
+                        scale: 1,
+                        duration: 0.2,
+                        ease: "power2.out"
+                    });
+                }
+            });
+
+            // Keyboard support
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    showMemberDetails(this);
+                }
+            });
+        });
+
+        // Enhanced scroll container with momentum
+        initMomentumScroll(scrollContainer);
+    }
+}
+
+// Momentum-based scrolling
+function initMomentumScroll(container) {
+    let isDragging = false;
+    let startX, scrollLeft, velocity = 0;
+    let rafId;
+
+    const handleMouseDown = (e) => {
+        isDragging = true;
+        startX = e.pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+        velocity = 0;
+        container.style.cursor = 'grabbing';
+        container.style.userSelect = 'none';
+        
+        cancelAnimationFrame(rafId);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 2;
+        const prevScrollLeft = container.scrollLeft;
+        
+        container.scrollLeft = scrollLeft - walk;
+        velocity = container.scrollLeft - prevScrollLeft;
+    };
+
+    const handleMouseUp = () => {
+        isDragging = false;
+        container.style.cursor = 'grab';
+        container.style.removeProperty('user-select');
+        
+        // Apply momentum
+        applyMomentum();
+    };
+
+    const applyMomentum = () => {
+        velocity *= 0.95; // friction
+        
+        if (Math.abs(velocity) > 0.5) {
+            container.scrollLeft += velocity;
+            rafId = requestAnimationFrame(applyMomentum);
+        }
+    };
+
+    // Mouse events
+    container.addEventListener('mousedown', handleMouseDown);
+    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('mouseleave', handleMouseUp);
+    container.addEventListener('mouseup', handleMouseUp);
+
+    // Touch events
+    container.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startX = e.touches[0].pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+        velocity = 0;
+    });
+
+    container.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const x = e.touches[0].pageX - container.offsetLeft;
+        const walk = (x - startX) * 2;
+        container.scrollLeft = scrollLeft - walk;
+    });
+
+    container.addEventListener('touchend', handleMouseUp);
+}
+
+// Ripple effect for interactions
+function createRippleEffect(event, element) {
+    const ripple = document.createElement('div');
+    const rect = element.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+    
+    ripple.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x}px;
+        top: ${y}px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        transform: scale(0);
+        pointer-events: none;
+    `;
+    
+    element.style.position = 'relative';
+    element.style.overflow = 'hidden';
+    element.appendChild(ripple);
+    
+    if (typeof gsap !== 'undefined') {
+        gsap.to(ripple, {
+            scale: 1,
+            opacity: 0,
+            duration: 0.6,
+            ease: "power2.out",
+            onComplete: () => ripple.remove()
+        });
+    } else {
+        setTimeout(() => ripple.remove(), 600);
+    }
+}
+
+// Enhanced Image Gallery
+function initImageGallery() {
+    const gallery = document.querySelector('.image-scroll-gallery');
+    const scrollContainer = document.querySelector('.scroll-container');
+    const leftBtn = document.querySelector('.scroll-btn.left');
+    const rightBtn = document.querySelector('.scroll-btn.right');
+
+    if (!gallery || !scrollContainer || !leftBtn || !rightBtn) return;
+
+    // Enhanced scroll with physics
+    leftBtn.addEventListener('click', () => {
+        smoothScrollGallery(gallery, -300);
+    });
+
+    rightBtn.addEventListener('click', () => {
+        smoothScrollGallery(gallery, 300);
+    });
+
+    function smoothScrollGallery(element, amount) {
+        const start = element.scrollLeft;
+        const target = start + amount;
+        
+        if (typeof gsap !== 'undefined') {
+            gsap.to(element, {
+                scrollLeft: target,
+                duration: 0.6,
+                ease: "power2.inOut"
+            });
+        } else {
+            element.scrollBy({
+                left: amount,
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    // Enhanced scroll button visibility
+    function updateScrollButtons() {
+        const scrollLeft = gallery.scrollLeft;
+        const maxScroll = gallery.scrollWidth - gallery.clientWidth;
+
+        if (typeof gsap !== 'undefined') {
+            gsap.to(leftBtn, {
+                opacity: scrollLeft > 0 ? 1 : 0.3,
+                duration: 0.3
+            });
+            gsap.to(rightBtn, {
+                opacity: scrollLeft < maxScroll - 5 ? 1 : 0.3,
+                duration: 0.3
+            });
+        } else {
+            leftBtn.style.opacity = scrollLeft > 0 ? '1' : '0.3';
+            rightBtn.style.opacity = scrollLeft < maxScroll - 5 ? '1' : '0.3';
+        }
+    }
+
+    gallery.addEventListener('scroll', updateScrollButtons);
+    window.addEventListener('resize', updateScrollButtons);
+    updateScrollButtons();
+}
+
+// Enhanced Content Protection
+function initContentProtection() {
+    // Enhanced anti-copy CSS
+    const antiCopyCSS = `
+        body {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        img {
+            pointer-events: none;
+            -webkit-touch-callout: none;
+        }
+        
+        .gallery-item {
+            position: relative;
+        }
+        
+        .image-unavailable {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            border-radius: 12px;
+        }
+        
+        .gallery-item:hover .image-unavailable {
+            opacity: 1;
+        }
+    `;
+
+    const antiCopyStyle = document.createElement('style');
+    antiCopyStyle.textContent = antiCopyCSS;
+    document.head.appendChild(antiCopyStyle);
+
+    // Enhanced event listeners
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A')) || 
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j'))) {
+            e.preventDefault();
+            showProtectionMessage();
+        }
+    });
+
+    function showProtectionMessage() {
+        // Subtle protection message
+        const message = document.createElement('div');
+        message.textContent = 'Content protected';
+        message.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            z-index: 10000;
+            font-size: 14px;
+        `;
+        document.body.appendChild(message);
+        
+        setTimeout(() => {
+            if (typeof gsap !== 'undefined') {
+                gsap.to(message, {
+                    opacity: 0,
+                    y: -20,
+                    duration: 0.5,
+                    onComplete: () => message.remove()
+                });
+            } else {
+                message.remove();
+            }
+        }, 2000);
+    }
+}
+
+// Enhanced Footer Animation
+function initFooterAnimation() {
+    const footer = document.getElementById('pageFooter');
+    if (!footer) return;
+
+    // Enhanced mouse tracking with physics
+    let mouseX = 0, mouseY = 0;
+    let targetX = 0, targetY = 0;
+
+    document.addEventListener('mousemove', function(e) {
+        targetX = e.clientX;
+        targetY = e.clientY;
+    });
+
+    // Smooth interpolation for mouse movement
+    function updateMousePosition() {
+        mouseX += (targetX - mouseX) * 0.1;
+        mouseY += (targetY - mouseY) * 0.1;
+        
+        const footerRect = footer.getBoundingClientRect();
+        const relativeX = mouseX - footerRect.left;
+        const relativeY = mouseY - footerRect.top;
+        
+        footer.style.setProperty('--mouse-x', relativeX + 'px');
+        footer.style.setProperty('--mouse-y', relativeY + 'px');
+        
+        requestAnimationFrame(updateMousePosition);
+    }
+    
+    updateMousePosition();
+
+    // Enhanced footer entrance
+    window.addEventListener('load', function() {
+        setTimeout(() => {
+            if (typeof gsap !== 'undefined') {
+                gsap.to(footer, {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    ease: "back.out(1.2)"
+                });
+            } else {
+                footer.style.transform = 'translateY(0)';
+                footer.style.opacity = '1';
+            }
+        }, 500);
+    });
+}
+
+// Enhanced member details function
+function showMemberDetails(card) {
+    const memberName = card.querySelector('p');
+    if (memberName) {
+        console.log('Viewing details for:', memberName.textContent);
+        // Enhanced member detail logic can be added here
+    }
+}
+
+// Performance optimization
+window.addEventListener('load', function() {
+    // Clean up any unused resources
+    setTimeout(() => {
+        if (typeof gsap !== 'undefined') {
+            gsap.ticker.lagSmoothing(1000, 16);
+        }
+    }, 1000);
+});
+
+// Handle page visibility changes for performance
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+
+        if (typeof gsap !== 'undefined') {
+            gsap.ticker.lagSmoothing(0);
+        }
+    } else {
+        // Page is visible, restore normal operation
+        if (typeof gsap !== 'undefined') {
+            gsap.ticker.lagSmoothing(1000, 16);
+        }
+    }
 });
