@@ -1674,3 +1674,39 @@ document.addEventListener('visibilitychange', function() {
         }
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  const docsSheet = document.getElementById('docs-sheet');
+  const disagreeBtn = document.getElementById('disagree-btn');
+  const agreeBtn = document.getElementById('agree-btn');
+  
+  function showDocsSheet() {
+    docsSheet.classList.add('active', 'bounce-in');
+  }
+  
+  function hideDocsSheet() {
+    docsSheet.classList.add('bounce-out');
+    setTimeout(() => {
+      docsSheet.classList.remove('active', 'bounce-in', 'bounce-out');
+    }, 500);
+  }
+  
+  disagreeBtn.addEventListener('click', function() {
+    window.location.href = 'https://www.google.com';
+  });
+  
+  agreeBtn.addEventListener('click', function() {
+    localStorage.setItem('termsAgreed', 'true');
+    hideDocsSheet();
+  });
+  
+  if (!localStorage.getItem('termsAgreed')) {
+    setTimeout(showDocsSheet, 500);
+  }
+  
+  docsSheet.addEventListener('click', function(e) {
+    if (e.target.classList.contains('docs-sheet-overlay')) {
+      hideDocsSheet();
+    }
+  });
+});
