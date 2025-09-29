@@ -1582,3 +1582,161 @@ margin-bottom: 10px;
 .special-link-item .link-image-top::before {
     display: none;
 }
+
+.docs-sheet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: none;
+  opacity: 0;
+  transition: var(--transition-all);
+}
+
+.docs-sheet.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.docs-sheet-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: var(--transition-all);
+}
+
+.docs-sheet.active .docs-sheet-overlay {
+  opacity: 1;
+}
+
+.docs-sheet-container {
+  background: var(--card-bg);
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+  padding: 24px;
+  box-shadow: 0 -10px 30px var(--shadow-color);
+  transform: translateY(100%);
+  transition: var(--transition-all);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.docs-sheet.active .docs-sheet-container {
+  transform: translateY(0);
+}
+
+.docs-sheet-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+
+.docs-sheet-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.docs-sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 24px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.docs-sheet-content p {
+  margin: 0;
+font-size: 13px;
+}
+
+.docs-sheet-content a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.docs-sheet-content a:hover {
+  text-decoration: underline;
+}
+
+.docs-sheet-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.docs-sheet-btn {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.docs-sheet-btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.docs-sheet-btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.docs-sheet-btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.docs-sheet-btn-secondary:hover {
+  background: var(--bg-secondary);
+  transform: translateY(-2px);
+}
+
+/* Physics-based animations */
+@keyframes sheetBounceIn {
+  0% {
+    transform: translateY(100%);
+  }
+  60% {
+    transform: translateY(-10%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheetBounceOut {
+  0% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.docs-sheet.bounce-in .docs-sheet-container {
+  animation: sheetBounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.docs-sheet.bounce-out .docs-sheet-container {
+  animation: sheetBounceOut 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
