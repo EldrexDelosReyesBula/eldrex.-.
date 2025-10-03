@@ -1,945 +1,3 @@
-/*
-function initBottomSheets() {
-    const profilePicture = document.getElementById('profile-picture');
-    const squadLink = document.getElementById('squad-link');
-    const profileSheet = document.getElementById('profile-sheet');
-    const squadSheet = document.getElementById('squad-sheet');
-    const overlay = document.getElementById('overlay');
-    const closeButtons = document.querySelectorAll('.close-sheet');
-
-   
-    if (profilePicture && profileSheet) {
-        profilePicture.addEventListener('click', function(e) {
-            const rect = profilePicture.getBoundingClientRect();
-            const startX = rect.left + rect.width / 2;
-            const startY = rect.top + rect.height / 2;
-
-            // Create morph element
-            const morphElement = document.createElement('div');
-            morphElement.className = 'morph-element';
-            morphElement.style.position = 'fixed';
-            morphElement.style.width = rect.width + 'px';
-            morphElement.style.height = rect.height + 'px';
-            morphElement.style.left = rect.left + 'px';
-            morphElement.style.top = rect.top + 'px';
-            morphElement.style.borderRadius = '50%';
-            morphElement.style.backgroundColor = getComputedStyle(profilePicture).backgroundColor;
-            morphElement.style.zIndex = '1001';
-            document.body.appendChild(morphElement);
-
-            // Animate to sheet position
-            gsap.to(morphElement, {
-                width: '100%',
-                height: '90vh',
-                left: 0,
-                top: window.innerHeight * 0.1,
-                borderRadius: '28px 28px 0 0',
-                duration: 0.8,
-                ease: "expo.inOut",
-                onComplete: () => {
-                    profileSheet.classList.add('active');
-                    overlay.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                    morphElement.remove();
-                }
-            });
-        });
-    }
-
-    // Open squad sheet
-    if (squadLink && squadSheet) {
-        squadLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            const rect = squadLink.getBoundingClientRect();
-            const startX = rect.left + rect.width / 2;
-            const startY = rect.top + rect.height / 2;
-
-            // Create particle burst
-            createParticleBurst(startX, startY, () => {
-                squadSheet.classList.add('active');
-                overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            });
-        });
-    }
-
-    // Close sheets
-    if (closeButtons) {
-        closeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                if (profileSheet) profileSheet.classList.remove('active');
-                if (squadSheet) squadSheet.classList.remove('active');
-                if (overlay) overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            });
-        });
-    }
-
-    // Close with overlay click
-    if (overlay) {
-        overlay.addEventListener('click', function() {
-            if (profileSheet) profileSheet.classList.remove('active');
-            if (squadSheet) squadSheet.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        });
-    }
-
-    // Prevent closing when clicking inside sheet
-    if (profileSheet) {
-        profileSheet.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    }
-
-    if (squadSheet) {
-        squadSheet.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    }
-}
-
-// Create particle burst animation
-function createParticleBurst(x, y, callback) {
-    const burst = document.createElement('div');
-    burst.className = 'particle-burst';
-    burst.style.left = x + 'px';
-    burst.style.top = y + 'px';
-    document.body.appendChild(burst);
-
-    const particleCount = 20;
-    const colors = ['#0071e3', '#34aadc', '#5ac8fa', '#ffffff'];
-
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        burst.appendChild(particle);
-
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 50 + Math.random() * 50;
-        const duration = 0.5 + Math.random() * 0.5;
-
-        gsap.fromTo(particle, {
-            x: 0,
-            y: 0,
-            opacity: 1,
-            scale: 1
-        }, {
-            x: Math.cos(angle) * distance,
-            y: Math.sin(angle) * distance,
-            opacity: 0,
-            scale: 0,
-            duration: duration,
-            ease: "power2.out",
-            onComplete: () => {
-                if (i === particleCount - 1) {
-                    burst.remove();
-                    if (callback) callback();
-                }
-            }
-        });
-    }
-}
-
-// Member Cards Functionality
-function initMemberCards() {
-    const memberCards = document.querySelectorAll('.member-card');
-    const scrollContainer = document.querySelector('.members-scroll-container');
-
-    if (memberCards.length > 0 && scrollContainer) {
-        memberCards.forEach((card, index) => {
-            card.setAttribute('tabindex', '0');
-            card.setAttribute('role', 'button');
-            const nameElement = card.querySelector('p');
-            if (nameElement) {
-                card.setAttribute('aria-label', `View ${nameElement.textContent}'s profile`);
-            }
-
-            // Click handler
-            card.addEventListener('click', function(e) {
-                if (e.key && e.key !== 'Enter' && e.key !== ' ') return;
-                showMemberDetails(this);
-            });
-
-            // Keyboard support
-            card.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    showMemberDetails(this);
-                }
-            });
-        });
-
-        // Make scroll container keyboard navigable
-        scrollContainer.setAttribute('tabindex', '0');
-        scrollContainer.setAttribute('role', 'region');
-        scrollContainer.setAttribute('aria-label', 'Squad members list');
-
-        // Keyboard scroll
-        scrollContainer.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft') {
-                this.scrollBy({
-                    left: -100,
-                    behavior: 'smooth'
-                });
-            } else if (e.key === 'ArrowRight') {
-                this.scrollBy({
-                    left: 100,
-                    behavior: 'smooth'
-                });
-            }
-        });
-
-        // Improved drag scrolling with better accessibility
-        let isDragging = false;
-        let startX, scrollLeft;
-
-        // Mouse events
-        scrollContainer.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.pageX - scrollContainer.offsetLeft;
-            scrollLeft = scrollContainer.scrollLeft;
-            scrollContainer.style.cursor = 'grabbing';
-            scrollContainer.style.userSelect = 'none';
-        });
-
-        scrollContainer.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
-            const x = e.pageX - scrollContainer.offsetLeft;
-            const walk = (x - startX) * 2;
-            scrollContainer.scrollLeft = scrollLeft - walk;
-        });
-
-        const endDrag = () => {
-            isDragging = false;
-            scrollContainer.style.cursor = 'grab';
-            scrollContainer.style.removeProperty('user-select');
-        };
-
-        scrollContainer.addEventListener('mouseleave', endDrag);
-        scrollContainer.addEventListener('mouseup', endDrag);
-
-        // Touch events
-        scrollContainer.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            startX = e.touches[0].pageX - scrollContainer.offsetLeft;
-            scrollLeft = scrollContainer.scrollLeft;
-        });
-
-        scrollContainer.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const x = e.touches[0].pageX - scrollContainer.offsetLeft;
-            const walk = (x - startX) * 2;
-            scrollContainer.scrollLeft = scrollLeft - walk;
-        });
-
-        scrollContainer.addEventListener('touchend', endDrag);
-    }
-}
-
-// Function to handle member selection
-function showMemberDetails(card) {
-    const memberName = card.querySelector('p');
-    if (memberName) {
-        console.log('Viewing details for:', memberName.textContent);
-        // Implement your member detail view logic here
-        // Could open a modal or update another part of the UI
-    }
-}
-
-// Image Gallery Functionality
-function initImageGallery() {
-    const gallery = document.querySelector('.image-scroll-gallery');
-    const scrollContainer = document.querySelector('.scroll-container');
-    const leftBtn = document.querySelector('.scroll-btn.left');
-    const rightBtn = document.querySelector('.scroll-btn.right');
-
-    if (!gallery || !scrollContainer || !leftBtn || !rightBtn) return;
-
-    // Scroll buttons functionality
-    leftBtn.addEventListener('click', () => {
-        gallery.scrollBy({
-            left: -300,
-            behavior: 'smooth'
-        });
-    });
-
-    rightBtn.addEventListener('click', () => {
-        gallery.scrollBy({
-            left: 300,
-            behavior: 'smooth'
-        });
-    });
-
-    // Hide/show scroll buttons based on scroll position
-    function updateScrollButtons() {
-        const scrollLeft = gallery.scrollLeft;
-        const maxScroll = gallery.scrollWidth - gallery.clientWidth;
-
-        leftBtn.style.visibility = scrollLeft > 0 ? 'visible' : 'hidden';
-        rightBtn.style.visibility = scrollLeft < maxScroll - 5 ? 'visible' : 'hidden';
-    }
-
-    gallery.addEventListener('scroll', updateScrollButtons);
-    window.addEventListener('resize', updateScrollButtons);
-
-    // Initialize button visibility
-    updateScrollButtons();
-
-    // Add keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (!gallery) return;
-        
-        if (e.key === 'ArrowLeft') {
-            gallery.scrollBy({
-                left: -300,
-                behavior: 'smooth'
-            });
-        } else if (e.key === 'ArrowRight') {
-            gallery.scrollBy({
-                left: 300,
-                behavior: 'smooth'
-            });
-        }
-    });
-}
-
-// Content Protection
-function initContentProtection() {
-    const antiCopyCSS = `
-        body {
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-        
-        img {
-            pointer-events: none;
-        }
-    `;
-
-    const antiCopyStyle = document.createElement('style');
-    antiCopyStyle.textContent = antiCopyCSS;
-    document.head.appendChild(antiCopyStyle);
-
-    // Disable right-click context menu
-    document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-    });
-
-    // Disable keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A')) || 
-            e.key === 'F12' || 
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j'))) {
-            e.preventDefault();
-            alert('Content protection is enabled');
-        }
-    });
-
-    // Fallback for browsers that override user-select
-    document.addEventListener('selectionchange', () => {
-        const selection = window.getSelection();
-        if (selection && selection.toString().length > 0) {
-            selection.removeAllRanges();
-        }
-    });
-
-    // Link protection
-    document.querySelectorAll('a').forEach(link => {
-        const realUrl = link.href;
-        if (realUrl && !realUrl.startsWith('javascript:')) {
-            link.dataset.url = realUrl;
-            link.href = 'javascript:void(0)';
-            
-            link.addEventListener('click', function(e) {
-                if (!e.currentTarget.dataset.lastTouch) {
-                    e.currentTarget.dataset.lastTouch = 0;
-                }
-                
-                if (e.timeStamp - e.currentTarget.dataset.lastTouch < 500) {
-                    window.location.href = realUrl;
-                }
-                e.currentTarget.dataset.lastTouch = e.timeStamp;
-            });
-            
-            // Prevent long press
-            link.addEventListener('touchstart', function(e) {
-                e.currentTarget.dataset.lastTouch = e.timeStamp;
-                setTimeout(() => {
-                    if (e.currentTarget.dataset.longPress) {
-                        e.preventDefault();
-                    }
-                }, 300);
-            });
-            
-            link.addEventListener('touchend', function(e) {
-                e.currentTarget.dataset.longPress = 
-                    (e.timeStamp - e.currentTarget.dataset.lastTouch > 300);
-            });
-        }
-    });
-}
-
-// Footer Animation
-function initFooterAnimation() {
-    const footer = document.getElementById('pageFooter');
-    if (!footer) return;
-
-    // Add mouse position tracking for dynamic refraction effect
-    document.addEventListener('mousemove', function(e) {
-        const highlight = footer.querySelector('.refraction-highlight');
-        
-        // Get mouse position relative to footer
-        const footerRect = footer.getBoundingClientRect();
-        const mouseX = e.clientX - footerRect.left;
-        const mouseY = e.clientY - footerRect.top;
-        
-        // Update CSS variables
-        footer.style.setProperty('--mouse-x', mouseX + 'px');
-        footer.style.setProperty('--mouse-y', mouseY + 'px');
-        
-        // Adjust highlight position if it exists
-        if (highlight) {
-            highlight.style.transform = `translate(${mouseX - 50}px, ${mouseY - 50}px)`;
-        }
-    });
-    
-    // Show footer with animation
-    window.addEventListener('load', function() {
-        setTimeout(() => {
-            footer.style.transform = 'translateY(0)';
-            footer.style.opacity = '1';
-        }, 500);
-    });
-}
-
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize components
-    initBottomSheets();
-    initMemberCards();
-    initImageGallery();
-    initContentProtection();
-    initFooterAnimation();
-
-    // Load animations
-    setTimeout(() => {
-        const profilePicture = document.getElementById('profile-picture');
-        if (profilePicture) profilePicture.classList.add('loaded');
-        
-        document.querySelectorAll('.link-item').forEach((item, index) => {
-            setTimeout(() => {
-                item.style.opacity = 0;
-                item.style.transform = 'translateY(20px)';
-                if (typeof gsap !== 'undefined') {
-                    gsap.to(item, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.6,
-                        delay: index * 0.05,
-                        ease: "back.out(1.2)"
-                    });
-                }
-            }, 100);
-        });
-    }, 300);
-});// Bottom Sheets Functionality
-function initBottomSheets() {
-    const profilePicture = document.getElementById('profile-picture');
-    const squadLink = document.getElementById('squad-link');
-    const profileSheet = document.getElementById('profile-sheet');
-    const squadSheet = document.getElementById('squad-sheet');
-    const overlay = document.getElementById('overlay');
-    const closeButtons = document.querySelectorAll('.close-sheet');
-
-    // Open profile sheet with morph animation
-    if (profilePicture && profileSheet) {
-        profilePicture.addEventListener('click', function(e) {
-            const rect = profilePicture.getBoundingClientRect();
-            const startX = rect.left + rect.width / 2;
-            const startY = rect.top + rect.height / 2;
-
-            // Create morph element
-            const morphElement = document.createElement('div');
-            morphElement.className = 'morph-element';
-            morphElement.style.position = 'fixed';
-            morphElement.style.width = rect.width + 'px';
-            morphElement.style.height = rect.height + 'px';
-            morphElement.style.left = rect.left + 'px';
-            morphElement.style.top = rect.top + 'px';
-            morphElement.style.borderRadius = '50%';
-            morphElement.style.backgroundColor = getComputedStyle(profilePicture).backgroundColor;
-            morphElement.style.zIndex = '1001';
-            document.body.appendChild(morphElement);
-
-            // Animate to sheet position
-            gsap.to(morphElement, {
-                width: '100%',
-                height: '90vh',
-                left: 0,
-                top: window.innerHeight * 0.1,
-                borderRadius: '28px 28px 0 0',
-                duration: 0.8,
-                ease: "expo.inOut",
-                onComplete: () => {
-                    profileSheet.classList.add('active');
-                    overlay.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                    morphElement.remove();
-                }
-            });
-        });
-    }
-
-    // Open squad sheet
-    if (squadLink && squadSheet) {
-        squadLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            const rect = squadLink.getBoundingClientRect();
-            const startX = rect.left + rect.width / 2;
-            const startY = rect.top + rect.height / 2;
-
-            // Create particle burst
-            createParticleBurst(startX, startY, () => {
-                squadSheet.classList.add('active');
-                overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            });
-        });
-    }
-
-    // Close sheets
-    if (closeButtons) {
-        closeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                if (profileSheet) profileSheet.classList.remove('active');
-                if (squadSheet) squadSheet.classList.remove('active');
-                if (overlay) overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            });
-        });
-    }
-
-    // Close with overlay click
-    if (overlay) {
-        overlay.addEventListener('click', function() {
-            if (profileSheet) profileSheet.classList.remove('active');
-            if (squadSheet) squadSheet.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        });
-    }
-
-    // Prevent closing when clicking inside sheet
-    if (profileSheet) {
-        profileSheet.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    }
-
-    if (squadSheet) {
-        squadSheet.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    }
-}
-
-// Create particle burst animation
-function createParticleBurst(x, y, callback) {
-    const burst = document.createElement('div');
-    burst.className = 'particle-burst';
-    burst.style.left = x + 'px';
-    burst.style.top = y + 'px';
-    document.body.appendChild(burst);
-
-    const particleCount = 20;
-    const colors = ['#0071e3', '#34aadc', '#5ac8fa', '#ffffff'];
-
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        burst.appendChild(particle);
-
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 50 + Math.random() * 50;
-        const duration = 0.5 + Math.random() * 0.5;
-
-        gsap.fromTo(particle, {
-            x: 0,
-            y: 0,
-            opacity: 1,
-            scale: 1
-        }, {
-            x: Math.cos(angle) * distance,
-            y: Math.sin(angle) * distance,
-            opacity: 0,
-            scale: 0,
-            duration: duration,
-            ease: "power2.out",
-            onComplete: () => {
-                if (i === particleCount - 1) {
-                    burst.remove();
-                    if (callback) callback();
-                }
-            }
-        });
-    }
-}
-
-// Member Cards Functionality
-function initMemberCards() {
-    const memberCards = document.querySelectorAll('.member-card');
-    const scrollContainer = document.querySelector('.members-scroll-container');
-
-    if (memberCards.length > 0 && scrollContainer) {
-        memberCards.forEach((card, index) => {
-            card.setAttribute('tabindex', '0');
-            card.setAttribute('role', 'button');
-            const nameElement = card.querySelector('p');
-            if (nameElement) {
-                card.setAttribute('aria-label', `View ${nameElement.textContent}'s profile`);
-            }
-
-            // Click handler
-            card.addEventListener('click', function(e) {
-                if (e.key && e.key !== 'Enter' && e.key !== ' ') return;
-                showMemberDetails(this);
-            });
-
-            // Keyboard support
-            card.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    showMemberDetails(this);
-                }
-            });
-        });
-
-        // Make scroll container keyboard navigable
-        scrollContainer.setAttribute('tabindex', '0');
-        scrollContainer.setAttribute('role', 'region');
-        scrollContainer.setAttribute('aria-label', 'Squad members list');
-
-        // Keyboard scroll
-        scrollContainer.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft') {
-                this.scrollBy({
-                    left: -100,
-                    behavior: 'smooth'
-                });
-            } else if (e.key === 'ArrowRight') {
-                this.scrollBy({
-                    left: 100,
-                    behavior: 'smooth'
-                });
-            }
-        });
-
-        // Improved drag scrolling with better accessibility
-        let isDragging = false;
-        let startX, scrollLeft;
-
-        // Mouse events
-        scrollContainer.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.pageX - scrollContainer.offsetLeft;
-            scrollLeft = scrollContainer.scrollLeft;
-            scrollContainer.style.cursor = 'grabbing';
-            scrollContainer.style.userSelect = 'none';
-        });
-
-        scrollContainer.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
-            const x = e.pageX - scrollContainer.offsetLeft;
-            const walk = (x - startX) * 2;
-            scrollContainer.scrollLeft = scrollLeft - walk;
-        });
-
-        const endDrag = () => {
-            isDragging = false;
-            scrollContainer.style.cursor = 'grab';
-            scrollContainer.style.removeProperty('user-select');
-        };
-
-        scrollContainer.addEventListener('mouseleave', endDrag);
-        scrollContainer.addEventListener('mouseup', endDrag);
-
-        // Touch events
-        scrollContainer.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            startX = e.touches[0].pageX - scrollContainer.offsetLeft;
-            scrollLeft = scrollContainer.scrollLeft;
-        });
-
-        scrollContainer.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const x = e.touches[0].pageX - scrollContainer.offsetLeft;
-            const walk = (x - startX) * 2;
-            scrollContainer.scrollLeft = scrollLeft - walk;
-        });
-
-        scrollContainer.addEventListener('touchend', endDrag);
-    }
-}
-
-// Function to handle member selection
-function showMemberDetails(card) {
-    const memberName = card.querySelector('p');
-    if (memberName) {
-        console.log('Viewing details for:', memberName.textContent);
-        // Implement your member detail view logic here
-        // Could open a modal or update another part of the UI
-    }
-}
-
-// Image Gallery Functionality
-function initImageGallery() {
-    const gallery = document.querySelector('.image-scroll-gallery');
-    const scrollContainer = document.querySelector('.scroll-container');
-    const leftBtn = document.querySelector('.scroll-btn.left');
-    const rightBtn = document.querySelector('.scroll-btn.right');
-
-    if (!gallery || !scrollContainer || !leftBtn || !rightBtn) return;
-
-    // Scroll buttons functionality
-    leftBtn.addEventListener('click', () => {
-        gallery.scrollBy({
-            left: -300,
-            behavior: 'smooth'
-        });
-    });
-
-    rightBtn.addEventListener('click', () => {
-        gallery.scrollBy({
-            left: 300,
-            behavior: 'smooth'
-        });
-    });
-
-    // Hide/show scroll buttons based on scroll position
-    function updateScrollButtons() {
-        const scrollLeft = gallery.scrollLeft;
-        const maxScroll = gallery.scrollWidth - gallery.clientWidth;
-
-        leftBtn.style.visibility = scrollLeft > 0 ? 'visible' : 'hidden';
-        rightBtn.style.visibility = scrollLeft < maxScroll - 5 ? 'visible' : 'hidden';
-    }
-
-    gallery.addEventListener('scroll', updateScrollButtons);
-    window.addEventListener('resize', updateScrollButtons);
-
-    // Initialize button visibility
-    updateScrollButtons();
-
-    // Add keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (!gallery) return;
-        
-        if (e.key === 'ArrowLeft') {
-            gallery.scrollBy({
-                left: -300,
-                behavior: 'smooth'
-            });
-        } else if (e.key === 'ArrowRight') {
-            gallery.scrollBy({
-                left: 300,
-                behavior: 'smooth'
-            });
-        }
-    });
-}
-
-// Content Protection
-function initContentProtection() {
-    const antiCopyCSS = `
-        body {
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-        
-        img {
-            pointer-events: none;
-        }
-    `;
-
-    const antiCopyStyle = document.createElement('style');
-    antiCopyStyle.textContent = antiCopyCSS;
-    document.head.appendChild(antiCopyStyle);
-
-    // Disable right-click context menu
-    document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-    });
-
-    // Disable keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'a' || e.key === 'A')) || 
-            e.key === 'F12' || 
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j'))) {
-            e.preventDefault();
-            alert('Content protection is enabled');
-        }
-    });
-
-    // Fallback for browsers that override user-select
-    document.addEventListener('selectionchange', () => {
-        const selection = window.getSelection();
-        if (selection && selection.toString().length > 0) {
-            selection.removeAllRanges();
-        }
-    });
-
-    // Link protection
-    document.querySelectorAll('a').forEach(link => {
-        const realUrl = link.href;
-        if (realUrl && !realUrl.startsWith('javascript:')) {
-            link.dataset.url = realUrl;
-            link.href = 'javascript:void(0)';
-            
-            link.addEventListener('click', function(e) {
-                if (!e.currentTarget.dataset.lastTouch) {
-                    e.currentTarget.dataset.lastTouch = 0;
-                }
-                
-                if (e.timeStamp - e.currentTarget.dataset.lastTouch < 500) {
-                    window.location.href = realUrl;
-                }
-                e.currentTarget.dataset.lastTouch = e.timeStamp;
-            });
-            
-            // Prevent long press
-            link.addEventListener('touchstart', function(e) {
-                e.currentTarget.dataset.lastTouch = e.timeStamp;
-                setTimeout(() => {
-                    if (e.currentTarget.dataset.longPress) {
-                        e.preventDefault();
-                    }
-                }, 300);
-            });
-            
-            link.addEventListener('touchend', function(e) {
-                e.currentTarget.dataset.longPress = 
-                    (e.timeStamp - e.currentTarget.dataset.lastTouch > 300);
-            });
-        }
-    });
-}
-
-// Footer Animation
-function initFooterAnimation() {
-    const footer = document.getElementById('pageFooter');
-    if (!footer) return;
-
-    // Add mouse position tracking for dynamic refraction effect
-    document.addEventListener('mousemove', function(e) {
-        const highlight = footer.querySelector('.refraction-highlight');
-        
-        // Get mouse position relative to footer
-        const footerRect = footer.getBoundingClientRect();
-        const mouseX = e.clientX - footerRect.left;
-        const mouseY = e.clientY - footerRect.top;
-        
-        // Update CSS variables
-        footer.style.setProperty('--mouse-x', mouseX + 'px');
-        footer.style.setProperty('--mouse-y', mouseY + 'px');
-        
-        // Adjust highlight position if it exists
-        if (highlight) {
-            highlight.style.transform = `translate(${mouseX - 50}px, ${mouseY - 50}px)`;
-        }
-    });
-    
-    // Show footer with animation
-    window.addEventListener('load', function() {
-        setTimeout(() => {
-            footer.style.transform = 'translateY(0)';
-            footer.style.opacity = '1';
-        }, 500);
-    });
-}
-
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize components
-    initBottomSheets();
-    initMemberCards();
-    initImageGallery();
-    initContentProtection();
-    initFooterAnimation();
-
-    // Load animations
-    setTimeout(() => {
-        const profilePicture = document.getElementById('profile-picture');
-        if (profilePicture) profilePicture.classList.add('loaded');
-        
-        document.querySelectorAll('.link-item').forEach((item, index) => {
-            setTimeout(() => {
-                item.style.opacity = 0;
-                item.style.transform = 'translateY(20px)';
-                if (typeof gsap !== 'undefined') {
-                    gsap.to(item, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.6,
-                        delay: index * 0.05,
-                        ease: "back.out(1.2)"
-                    });
-                }
-            }, 100);
-        });
-    }, 300);
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const galleryItems = document.querySelectorAll('.gallery-item');
-    
-    galleryItems.forEach(item => {
-        const overlay = document.createElement('div');
-        overlay.className = 'image-unavailable';
-        overlay.innerHTML = `
-            <i class="fas fa-lock"></i>
-            <span>The image is temporarily unavailable. Please check back later.</span>
-        `;
-        item.appendChild(overlay);
-        
-        item.addEventListener('mousemove', (e) => {
-            const rect = item.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            overlay.style.setProperty('--mouse-x', `${x}px`);
-            overlay.style.setProperty('--mouse-y', `${y}px`);
-        });
-        
-        const img = item.querySelector('img');
-        img.setAttribute('draggable', 'false');
-        img.style.userSelect = 'none';
-        img.style.webkitUserDrag = 'none';
-    });
-    
-    document.addEventListener('contextmenu', function(e) {
-        if (e.target.closest('.gallery-item img')) {
-            e.preventDefault();
-            return false;
-        }
-    }, false);
-});
-*/
-
-
-
-
-
-
-/*=========================================*/
-
 // Enhanced Physics-Based Animations & Interactive Functions
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components with enhanced performance
@@ -949,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initContentProtection();
     initFooterAnimation();
     initParticleSystem();
+    initSmoothScrolling();
     
     // Load smooth entrance animations
     setTimeout(() => {
@@ -978,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 300);
 });
 
-// Enhanced Bottom Sheets with Physics Animations
+// Enhanced Bottom Sheets with Liquid Animations
 function initEnhancedBottomSheets() {
     const profilePicture = document.getElementById('profile-picture');
     const squadLink = document.getElementById('squad-link');
@@ -994,7 +53,7 @@ function initEnhancedBottomSheets() {
     if (profilePicture && profileSheet) {
         profilePicture.addEventListener('click', function(e) {
             if (isAnimating) return;
-            openSheetWithMorph(profilePicture, profileSheet);
+            openSheetWithLiquidMorph(profilePicture, profileSheet);
         });
     }
 
@@ -1003,7 +62,7 @@ function initEnhancedBottomSheets() {
         squadLink.addEventListener('click', function(e) {
             e.preventDefault();
             if (isAnimating) return;
-            openSheetWithParticles(squadLink, squadSheet);
+            openSheetWithLiquidParticles(squadLink, squadSheet);
         });
     }
 
@@ -1016,8 +75,8 @@ function initEnhancedBottomSheets() {
         if (typeof gsap !== 'undefined') {
             gsap.to(activeSheet, {
                 y: '100%',
-                duration: 0.5,
-                ease: "power2.in",
+                duration: 0.6,
+                ease: "power3.inOut",
                 onComplete: () => {
                     activeSheet.classList.remove('active');
                     overlay.classList.remove('active');
@@ -1052,7 +111,7 @@ function initEnhancedBottomSheets() {
         });
     }
 
-    // Close with overlay click (preserved as requested)
+    // Close with overlay click
     if (overlay) {
         overlay.addEventListener('click', function() {
             closeActiveSheet();
@@ -1068,51 +127,47 @@ function initEnhancedBottomSheets() {
         }
     });
 
-    // Enhanced morph animation function
-    function openSheetWithMorph(triggerElement, sheetElement) {
+    // Liquid morph animation function
+    function openSheetWithLiquidMorph(triggerElement, sheetElement) {
         isAnimating = true;
         const rect = triggerElement.getBoundingClientRect();
         
-        // Create morph element
-        const morphElement = document.createElement('div');
-        morphElement.className = 'morph-element';
-        morphElement.style.cssText = `
+        // Create liquid morph element
+        const liquidElement = document.createElement('div');
+        liquidElement.className = 'liquid-morph-element';
+        liquidElement.style.cssText = `
             position: fixed;
             width: ${rect.width}px;
             height: ${rect.height}px;
             left: ${rect.left}px;
             top: ${rect.top}px;
             border-radius: 50%;
-            background: ${getComputedStyle(triggerElement).backgroundColor};
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            backdrop-filter: blur(20px);
             z-index: 1001;
             pointer-events: none;
+            transform-origin: center;
         `;
-        document.body.appendChild(morphElement);
+        document.body.appendChild(liquidElement);
 
-        // Physics-based morph animation
+        // Liquid physics animation
         if (typeof gsap !== 'undefined') {
-            gsap.to(morphElement, {
-                width: '100%',
-                height: '90vh',
-                left: 0,
-                top: '10%',
-                borderRadius: '28px 28px 0 0',
-                duration: 0.8,
-                ease: "expo.inOut",
+            const timeline = gsap.timeline({
                 onComplete: () => {
                     sheetElement.classList.add('active');
                     overlay.classList.add('active');
                     document.body.style.overflow = 'hidden';
                     activeSheet = sheetElement;
-                    morphElement.remove();
                     
-                    // Animate sheet entrance
+                    // Liquid sheet entrance
                     gsap.fromTo(sheetElement, {
-                        y: '100%'
+                        y: '100%',
+                        scaleY: 0.8
                     }, {
                         y: '0%',
-                        duration: 0.6,
-                        ease: "back.out(1.2)",
+                        scaleY: 1,
+                        duration: 0.8,
+                        ease: "elastic.out(1, 0.5)",
                         onComplete: () => {
                             isAnimating = false;
                         }
@@ -1122,48 +177,80 @@ function initEnhancedBottomSheets() {
                         opacity: 0
                     }, {
                         opacity: 1,
-                        duration: 0.4,
+                        duration: 0.5,
                         ease: "power2.out"
                     });
+                    
+                    liquidElement.remove();
                 }
             });
+
+            timeline.to(liquidElement, {
+                width: '100%',
+                height: '90vh',
+                left: 0,
+                top: '10%',
+                borderRadius: '28px 28px 0 0',
+                duration: 0.9,
+                ease: "expo.inOut"
+            }, 0);
+
+            timeline.to(liquidElement, {
+                scale: 1.02,
+                duration: 0.2,
+                ease: "power2.inOut",
+                yoyo: true,
+                repeat: 1
+            }, 0.4);
         }
     }
 
-    // Optimized particle animation function
-    function openSheetWithParticles(triggerElement, sheetElement) {
+    // Liquid particle animation function
+    function openSheetWithLiquidParticles(triggerElement, sheetElement) {
         isAnimating = true;
         const rect = triggerElement.getBoundingClientRect();
         const startX = rect.left + rect.width / 2;
         const startY = rect.top + rect.height / 2;
 
-        // Create optimized particle burst (small white dots only)
-        createOptimizedParticleBurst(startX, startY, () => {
+        // Create liquid particle burst
+        createLiquidParticleBurst(startX, startY, () => {
             sheetElement.classList.add('active');
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
             activeSheet = sheetElement;
             
-            // Enhanced sheet entrance animation
+            // Liquid sheet entrance with wave effect
             if (typeof gsap !== 'undefined') {
                 gsap.fromTo(sheetElement, {
                     y: '100%',
-                    scale: 0.95
+                    scaleY: 0.7
                 }, {
                     y: '0%',
-                    scale: 1,
-                    duration: 0.7,
-                    ease: "back.out(1.3)",
+                    scaleY: 1,
+                    duration: 0.9,
+                    ease: "elastic.out(1.2, 0.6)",
                     onComplete: () => {
                         isAnimating = false;
                     }
+                });
+                
+                // Wave effect on content
+                gsap.fromTo(sheetElement.querySelectorAll('.squad-card, .detail-item'), {
+                    y: 30,
+                    opacity: 0
+                }, {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.6,
+                    stagger: 0.1,
+                    ease: "back.out(1.2)"
                 });
                 
                 gsap.fromTo(overlay, {
                     opacity: 0
                 }, {
                     opacity: 1,
-                    duration: 0.4,
+                    duration: 0.5,
                     ease: "power2.out"
                 });
             } else {
@@ -1173,10 +260,10 @@ function initEnhancedBottomSheets() {
     }
 }
 
-// Optimized Particle System (Small White Dots Only)
-function createOptimizedParticleBurst(x, y, callback) {
+// Liquid Particle System
+function createLiquidParticleBurst(x, y, callback) {
     const burst = document.createElement('div');
-    burst.className = 'optimized-particle-burst';
+    burst.className = 'liquid-particle-burst';
     burst.style.cssText = `
         position: fixed;
         left: ${x}px;
@@ -1186,43 +273,30 @@ function createOptimizedParticleBurst(x, y, callback) {
     `;
     document.body.appendChild(burst);
 
-    const particleCount = 12; // Reduced for performance
+    const particleCount = 16;
     let completedParticles = 0;
 
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
-        particle.className = 'optimized-particle';
+        particle.className = 'liquid-particle';
         particle.style.cssText = `
             position: absolute;
-            width: 3px;
-            height: 3px;
-            background-color: #ffffff;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 70%);
             border-radius: 50%;
             pointer-events: none;
             opacity: 0;
+            filter: blur(0.5px);
         `;
         burst.appendChild(particle);
 
         const angle = Math.random() * Math.PI * 2;
-        const distance = 30 + Math.random() * 40; // Reduced distance
-        const duration = 0.4 + Math.random() * 0.3; // Shorter duration
+        const distance = 40 + Math.random() * 50;
+        const duration = 0.5 + Math.random() * 0.4;
 
         if (typeof gsap !== 'undefined') {
-            gsap.to(particle, {
-                x: Math.cos(angle) * distance,
-                y: Math.sin(angle) * distance,
-                opacity: 1,
-                scale: 1,
-                duration: duration * 0.3,
-                ease: "power2.out"
-            });
-            
-            gsap.to(particle, {
-                opacity: 0,
-                scale: 0,
-                duration: duration * 0.7,
-                delay: duration * 0.3,
-                ease: "power2.in",
+            const timeline = gsap.timeline({
                 onComplete: () => {
                     completedParticles++;
                     if (completedParticles === particleCount) {
@@ -1231,25 +305,43 @@ function createOptimizedParticleBurst(x, y, callback) {
                     }
                 }
             });
+
+            timeline.to(particle, {
+                x: Math.cos(angle) * distance,
+                y: Math.sin(angle) * distance,
+                opacity: 1,
+                scale: 1.5,
+                duration: duration * 0.4,
+                ease: "power2.out"
+            });
+
+            timeline.to(particle, {
+                opacity: 0,
+                scale: 0,
+                duration: duration * 0.6,
+                ease: "power2.in"
+            }, `-=${duration * 0.3}`);
         } else {
-            // Fallback
             setTimeout(() => {
                 burst.remove();
                 if (callback) callback();
-            }, 500);
+            }, 600);
         }
     }
 }
 
 // Initialize optimized particle system
 function initParticleSystem() {
-    // Add CSS for optimized particles
+    // Add CSS for liquid particles
     const particleStyles = `
-        .optimized-particle {
+        .liquid-particle {
             will-change: transform, opacity;
         }
-        .optimized-particle-burst {
+        .liquid-particle-burst {
             will-change: transform;
+        }
+        .liquid-morph-element {
+            will-change: transform, width, height, border-radius;
         }
     `;
     const styleSheet = document.createElement('style');
@@ -1257,7 +349,7 @@ function initParticleSystem() {
     document.head.appendChild(styleSheet);
 }
 
-// Enhanced Member Cards with Physics
+// Enhanced Member Cards with Liquid Physics
 function initMemberCards() {
     const memberCards = document.querySelectorAll('.member-card');
     const scrollContainer = document.querySelector('.members-scroll-container');
@@ -1273,34 +365,35 @@ function initMemberCards() {
                 card.setAttribute('aria-label', `View ${nameElement.textContent}'s profile`);
             }
 
-            // Physics-based click animation
+            // Liquid physics click animation
             card.addEventListener('click', function(e) {
                 if (e.key && e.key !== 'Enter' && e.key !== ' ') return;
                 
-                // Add ripple effect
-                createRippleEffect(e, this);
+                // Liquid ripple effect
+                createLiquidRippleEffect(e, this);
                 
-                // Scale animation
+                // Scale animation with liquid feel
                 if (typeof gsap !== 'undefined') {
                     gsap.to(this, {
-                        scale: 0.95,
-                        duration: 0.1,
+                        scale: 0.92,
+                        duration: 0.15,
+                        ease: "power2.inOut",
                         yoyo: true,
-                        repeat: 1,
-                        ease: "power2.inOut"
+                        repeat: 1
                     });
                 }
                 
                 showMemberDetails(this);
             });
 
-            // Hover effects
+            // Liquid hover effects
             card.addEventListener('mouseenter', function() {
                 if (typeof gsap !== 'undefined') {
                     gsap.to(this, {
-                        scale: 1.05,
-                        duration: 0.2,
-                        ease: "back.out(1.2)"
+                        scale: 1.08,
+                        y: -5,
+                        duration: 0.3,
+                        ease: "elastic.out(1, 0.5)"
                     });
                 }
             });
@@ -1309,7 +402,8 @@ function initMemberCards() {
                 if (typeof gsap !== 'undefined') {
                     gsap.to(this, {
                         scale: 1,
-                        duration: 0.2,
+                        y: 0,
+                        duration: 0.3,
                         ease: "power2.out"
                     });
                 }
@@ -1324,22 +418,24 @@ function initMemberCards() {
             });
         });
 
-        // Enhanced scroll container with momentum
-        initMomentumScroll(scrollContainer);
+        // Enhanced scroll container with liquid momentum
+        initLiquidMomentumScroll(scrollContainer);
     }
 }
 
-// Momentum-based scrolling
-function initMomentumScroll(container) {
+// Liquid Momentum-based scrolling
+function initLiquidMomentumScroll(container) {
     let isDragging = false;
     let startX, scrollLeft, velocity = 0;
     let rafId;
+    let lastTime = 0;
 
     const handleMouseDown = (e) => {
         isDragging = true;
         startX = e.pageX - container.offsetLeft;
         scrollLeft = container.scrollLeft;
         velocity = 0;
+        lastTime = performance.now();
         container.style.cursor = 'grabbing';
         container.style.userSelect = 'none';
         
@@ -1350,12 +446,16 @@ function initMomentumScroll(container) {
         if (!isDragging) return;
         e.preventDefault();
         
+        const currentTime = performance.now();
+        const deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
+        
         const x = e.pageX - container.offsetLeft;
-        const walk = (x - startX) * 2;
+        const walk = (x - startX) * 2.5; // Increased sensitivity
         const prevScrollLeft = container.scrollLeft;
         
         container.scrollLeft = scrollLeft - walk;
-        velocity = container.scrollLeft - prevScrollLeft;
+        velocity = (container.scrollLeft - prevScrollLeft) / deltaTime;
     };
 
     const handleMouseUp = () => {
@@ -1363,16 +463,31 @@ function initMomentumScroll(container) {
         container.style.cursor = 'grab';
         container.style.removeProperty('user-select');
         
-        // Apply momentum
-        applyMomentum();
+        // Apply liquid momentum
+        applyLiquidMomentum();
     };
 
-    const applyMomentum = () => {
-        velocity *= 0.95; // friction
-        
-        if (Math.abs(velocity) > 0.5) {
-            container.scrollLeft += velocity;
-            rafId = requestAnimationFrame(applyMomentum);
+    const applyLiquidMomentum = (currentTime = performance.now()) => {
+        if (!isDragging) {
+            velocity *= 0.92; // Liquid friction
+            
+            if (Math.abs(velocity) > 0.1) {
+                container.scrollLeft += velocity * 16;
+                rafId = requestAnimationFrame(applyLiquidMomentum);
+            } else {
+                // Snap to nearest card
+                const cardWidth = 95; // Approximate card width + margin
+                const currentScroll = container.scrollLeft;
+                const targetScroll = Math.round(currentScroll / cardWidth) * cardWidth;
+                
+                if (Math.abs(targetScroll - currentScroll) > 1) {
+                    gsap.to(container, {
+                        scrollLeft: targetScroll,
+                        duration: 0.4,
+                        ease: "power2.out"
+                    });
+                }
+            }
         }
     };
 
@@ -1382,26 +497,27 @@ function initMomentumScroll(container) {
     container.addEventListener('mouseleave', handleMouseUp);
     container.addEventListener('mouseup', handleMouseUp);
 
-    // Touch events
+    // Touch events with improved sensitivity
     container.addEventListener('touchstart', (e) => {
         isDragging = true;
         startX = e.touches[0].pageX - container.offsetLeft;
         scrollLeft = container.scrollLeft;
         velocity = 0;
+        lastTime = performance.now();
     });
 
     container.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
         const x = e.touches[0].pageX - container.offsetLeft;
-        const walk = (x - startX) * 2;
+        const walk = (x - startX) * 2.5;
         container.scrollLeft = scrollLeft - walk;
     });
 
     container.addEventListener('touchend', handleMouseUp);
 }
 
-// Ripple effect for interactions
-function createRippleEffect(event, element) {
+// Liquid Ripple effect for interactions
+function createLiquidRippleEffect(event, element) {
     const ripple = document.createElement('div');
     const rect = element.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
@@ -1414,10 +530,11 @@ function createRippleEffect(event, element) {
         height: ${size}px;
         left: ${x}px;
         top: ${y}px;
-        background: rgba(255, 255, 255, 0.5);
+        background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 70%);
         border-radius: 50%;
         transform: scale(0);
         pointer-events: none;
+        filter: blur(1px);
     `;
     
     element.style.position = 'relative';
@@ -1426,18 +543,18 @@ function createRippleEffect(event, element) {
     
     if (typeof gsap !== 'undefined') {
         gsap.to(ripple, {
-            scale: 1,
+            scale: 2,
             opacity: 0,
-            duration: 0.6,
+            duration: 0.8,
             ease: "power2.out",
             onComplete: () => ripple.remove()
         });
     } else {
-        setTimeout(() => ripple.remove(), 600);
+        setTimeout(() => ripple.remove(), 800);
     }
 }
 
-// Enhanced Image Gallery
+// Enhanced Image Gallery with Liquid Scrolling
 function initImageGallery() {
     const gallery = document.querySelector('.image-scroll-gallery');
     const scrollContainer = document.querySelector('.scroll-container');
@@ -1446,24 +563,38 @@ function initImageGallery() {
 
     if (!gallery || !scrollContainer || !leftBtn || !rightBtn) return;
 
-    // Enhanced scroll with physics
+    // Liquid scroll with physics
     leftBtn.addEventListener('click', () => {
-        smoothScrollGallery(gallery, -300);
+        smoothLiquidScroll(gallery, -400);
     });
 
     rightBtn.addEventListener('click', () => {
-        smoothScrollGallery(gallery, 300);
+        smoothLiquidScroll(gallery, 400);
     });
 
-    function smoothScrollGallery(element, amount) {
+    function smoothLiquidScroll(element, amount) {
         const start = element.scrollLeft;
         const target = start + amount;
         
         if (typeof gsap !== 'undefined') {
             gsap.to(element, {
                 scrollLeft: target,
-                duration: 0.6,
-                ease: "power2.inOut"
+                duration: 0.8,
+                ease: "power2.inOut",
+                onUpdate: function() {
+                    // Add parallax effect to gallery items
+                    const progress = this.progress();
+                    const items = element.querySelectorAll('.gallery-item');
+                    items.forEach((item, index) => {
+                        const itemProgress = (index / items.length) * 2 - 1;
+                        const parallax = Math.sin(progress * Math.PI) * itemProgress * 10;
+                        gsap.to(item, {
+                            x: parallax,
+                            duration: 0.1,
+                            ease: "power1.out"
+                        });
+                    });
+                }
             });
         } else {
             element.scrollBy({
@@ -1473,7 +604,7 @@ function initImageGallery() {
         }
     }
 
-    // Enhanced scroll button visibility
+    // Enhanced scroll button visibility with liquid transitions
     function updateScrollButtons() {
         const scrollLeft = gallery.scrollLeft;
         const maxScroll = gallery.scrollWidth - gallery.clientWidth;
@@ -1481,11 +612,15 @@ function initImageGallery() {
         if (typeof gsap !== 'undefined') {
             gsap.to(leftBtn, {
                 opacity: scrollLeft > 0 ? 1 : 0.3,
-                duration: 0.3
+                scale: scrollLeft > 0 ? 1.1 : 1,
+                duration: 0.3,
+                ease: "power2.out"
             });
             gsap.to(rightBtn, {
                 opacity: scrollLeft < maxScroll - 5 ? 1 : 0.3,
-                duration: 0.3
+                scale: scrollLeft < maxScroll - 5 ? 1.1 : 1,
+                duration: 0.3,
+                ease: "power2.out"
             });
         } else {
             leftBtn.style.opacity = scrollLeft > 0 ? '1' : '0.3';
@@ -1496,6 +631,32 @@ function initImageGallery() {
     gallery.addEventListener('scroll', updateScrollButtons);
     window.addEventListener('resize', updateScrollButtons);
     updateScrollButtons();
+
+    // Add hover effects to gallery items
+    const galleryItems = scrollContainer.querySelectorAll('.gallery-item');
+    galleryItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            if (typeof gsap !== 'undefined') {
+                gsap.to(this, {
+                    scale: 1.05,
+                    y: -5,
+                    duration: 0.3,
+                    ease: "back.out(1.2)"
+                });
+            }
+        });
+
+        item.addEventListener('mouseleave', function() {
+            if (typeof gsap !== 'undefined') {
+                gsap.to(this, {
+                    scale: 1,
+                    y: 0,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+    });
 }
 
 // Enhanced Content Protection
@@ -1512,6 +673,7 @@ function initContentProtection() {
         img {
             pointer-events: none;
             -webkit-touch-callout: none;
+            -webkit-user-drag: none;
         }
         
         .gallery-item {
@@ -1548,6 +710,7 @@ function initContentProtection() {
     // Enhanced event listeners
     document.addEventListener('contextmenu', (e) => {
         e.preventDefault();
+        showProtectionMessage('Right-click is disabled');
         return false;
     });
 
@@ -1556,48 +719,68 @@ function initContentProtection() {
             e.key === 'F12' || 
             (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j'))) {
             e.preventDefault();
-            showProtectionMessage();
+            showProtectionMessage('This action is restricted');
         }
     });
 
-    function showProtectionMessage() {
-        // Subtle protection message
+    function showProtectionMessage(text) {
         const message = document.createElement('div');
-        message.textContent = 'Content protected';
+        message.textContent = text;
         message.style.cssText = `
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            z-index: 10000;
-            font-size: 14px;
+top: 20px;
+right: 20px;
+color: white;
+padding: 12px 10px;
+border-radius: 30px;
+z-index: 10000;
+font-size: 12px;
+
+/* Glassy red tint */
+background: rgba(255, 0, 0, 0.25); /* red tint with transparency */
+backdrop-filter: blur(6px) saturate(160%);
+-webkit-backdrop-filter: blur(6px) saturate(160%);
+
+/* Subtle 3D edges */
+box-shadow:
+    inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+    inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+    0 1px 1.5px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.06);
+
+transform: translateX(100px);
+opacity: 0;
         `;
         document.body.appendChild(message);
         
-        setTimeout(() => {
-            if (typeof gsap !== 'undefined') {
+        if (typeof gsap !== 'undefined') {
+            gsap.to(message, {
+                x: 0,
+                opacity: 1,
+                duration: 0.4,
+                ease: "back.out(1.2)"
+            });
+            
+            setTimeout(() => {
                 gsap.to(message, {
+                    x: 100,
                     opacity: 0,
-                    y: -20,
                     duration: 0.5,
                     onComplete: () => message.remove()
                 });
-            } else {
-                message.remove();
-            }
-        }, 2000);
+            }, 2000);
+        } else {
+            setTimeout(() => message.remove(), 2000);
+        }
     }
 }
 
-// Enhanced Footer Animation
+// Enhanced Footer Animation (Preserved as requested)
 function initFooterAnimation() {
     const footer = document.getElementById('pageFooter');
     if (!footer) return;
 
-    // Enhanced mouse tracking with physics
+    // Enhanced mouse tracking with liquid physics
     let mouseX = 0, mouseY = 0;
     let targetX = 0, targetY = 0;
 
@@ -1608,8 +791,8 @@ function initFooterAnimation() {
 
     // Smooth interpolation for mouse movement
     function updateMousePosition() {
-        mouseX += (targetX - mouseX) * 0.1;
-        mouseY += (targetY - mouseY) * 0.1;
+        mouseX += (targetX - mouseX) * 0.08; // Slower for liquid feel
+        mouseY += (targetY - mouseY) * 0.08;
         
         const footerRect = footer.getBoundingClientRect();
         const relativeX = mouseX - footerRect.left;
@@ -1623,15 +806,15 @@ function initFooterAnimation() {
     
     updateMousePosition();
 
-    // Enhanced footer entrance
+    // Enhanced footer entrance with liquid animation
     window.addEventListener('load', function() {
         setTimeout(() => {
             if (typeof gsap !== 'undefined') {
                 gsap.to(footer, {
                     y: 0,
                     opacity: 1,
-                    duration: 0.8,
-                    ease: "back.out(1.2)"
+                    duration: 1,
+                    ease: "elastic.out(1.2, 0.5)"
                 });
             } else {
                 footer.style.transform = 'translateY(0)';
@@ -1641,12 +824,72 @@ function initFooterAnimation() {
     });
 }
 
+// Smooth Scrolling for Entire Page
+function initSmoothScrolling() {
+    let currentScroll = 0;
+    let targetScroll = 0;
+    let rafId = null;
+    const ease = 0.08;
+
+    function smoothScroll() {
+        currentScroll += (targetScroll - currentScroll) * ease;
+        window.scrollTo(0, currentScroll);
+        
+        if (Math.abs(targetScroll - currentScroll) > 0.5) {
+            rafId = requestAnimationFrame(smoothScroll);
+        }
+    }
+
+    window.addEventListener('scroll', () => {
+        targetScroll = window.scrollY;
+        if (!rafId) {
+            rafId = requestAnimationFrame(smoothScroll);
+        }
+    }, { passive: true });
+
+    // Enhanced link hover effects
+    document.querySelectorAll('.link-item').forEach(link => {
+        link.addEventListener('mouseenter', function() {
+            if (typeof gsap !== 'undefined') {
+                gsap.to(this, {
+                    y: -3,
+                    scale: 1.02,
+                    duration: 0.3,
+                    ease: "back.out(1.2)"
+                });
+            }
+        });
+
+        link.addEventListener('mouseleave', function() {
+            if (typeof gsap !== 'undefined') {
+                gsap.to(this, {
+                    y: 0,
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+    });
+}
+
 // Enhanced member details function
 function showMemberDetails(card) {
     const memberName = card.querySelector('p');
     if (memberName) {
         console.log('Viewing details for:', memberName.textContent);
         // Enhanced member detail logic can be added here
+        
+        // Add liquid feedback
+        if (typeof gsap !== 'undefined') {
+            gsap.to(card, {
+                scale: 0.95,
+                duration: 0.1,
+                yoyo: true,
+                repeat: 1,
+                ease: "power2.inOut"
+            });
+        }
     }
 }
 
@@ -1663,7 +906,7 @@ window.addEventListener('load', function() {
 // Handle page visibility changes for performance
 document.addEventListener('visibilitychange', function() {
     if (document.hidden) {
-
+        // Page is hidden, reduce animations for performance
         if (typeof gsap !== 'undefined') {
             gsap.ticker.lagSmoothing(0);
         }
@@ -1675,38 +918,27 @@ document.addEventListener('visibilitychange', function() {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-  const docsSheet = document.getElementById('docs-sheet');
-  const disagreeBtn = document.getElementById('disagree-btn');
-  const agreeBtn = document.getElementById('agree-btn');
-  
-  function showDocsSheet() {
-    docsSheet.classList.add('active', 'bounce-in');
-  }
-  
-  function hideDocsSheet() {
-    docsSheet.classList.add('bounce-out');
-    setTimeout(() => {
-      docsSheet.classList.remove('active', 'bounce-in', 'bounce-out');
-    }, 500);
-  }
-  
-  disagreeBtn.addEventListener('click', function() {
-    window.location.href = 'https://www.google.com';
-  });
-  
-  agreeBtn.addEventListener('click', function() {
-    localStorage.setItem('termsAgreed', 'true');
-    hideDocsSheet();
-  });
-  
-  if (!localStorage.getItem('termsAgreed')) {
-    setTimeout(showDocsSheet, 500);
-  }
-  
-  docsSheet.addEventListener('click', function(e) {
-    if (e.target.classList.contains('docs-sheet-overlay')) {
-      hideDocsSheet();
-    }
-  });
-});
+// Enhanced touch device support
+function initTouchOptimizations() {
+    // Add touch-specific styles
+    const touchStyles = `
+        @media (hover: none) and (pointer: coarse) {
+            .link-item, .member-card {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .haptic-link:active {
+                transform: scale(0.95);
+                transition: transform 0.1s ease;
+            }
+        }
+    `;
+    
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = touchStyles;
+    document.head.appendChild(styleSheet);
+}
+
+// Initialize touch optimizations
+initTouchOptimizations();
