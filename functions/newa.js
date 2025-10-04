@@ -1,11 +1,9 @@
-    // Posts data - hardcoded as requested
-    const postsData = [
+const postsData = [
         {
             id: 1,
             title: "When nothing moves, everything begins",
             image: "When nothing moves, everything begins_20250928_195843_0000.png",
-            description: "There are times when we feel it is easier to rest and just wait for things to happen. What we do not realize is that the dreams we hold may already be done or achieved by others because they acted before they even dreamed of it. If we stop moving and only watch what comes next, the dreams we hope for will always be reached first by the people around us. There is nothing wrong with making mistakes, but what is wrong is when a person cannot correct those mistakes.
-",
+            description: "There are times when we feel it is easier to rest and just wait for things to happen. What we do not realize is that the dreams we hold may already be done or achieved by others because they acted before they even dreamed of it. If we stop moving and only watch what comes next, the dreams we hope for will always be reached first by the people around us. There is nothing wrong with making mistakes, but what is wrong is when a person cannot correct those mistakes.",
             fullDescription: "There are times when we feel it is easier to rest and just wait for things to happen. What we do not realize is that the dreams we hold may already be done or achieved by others because they acted before they even dreamed of it. If we stop moving and only watch what comes next, the dreams we hope for will always be reached first by the people around us. There is nothing wrong with making mistakes, but what is wrong is when a person cannot correct those mistakes.",
             date: "September 29, 2025"
         },
@@ -19,7 +17,7 @@
         },
         {
             id: 3,
-            title: "Creative Exploration",
+            title: "Socratic Squad Poem",
             image: "https://eldrex.landecs.org/img_1_1759565398614.jpg",
             description: `"The Sleepy, Crazy, Meme Squad"`,
             fullDescription: `"The Sleepy, Crazy, Meme Squad"
@@ -48,7 +46,7 @@ So bring on the chaos, bring on the fun,
 We'll solve zero problems but have tons of fun!
 Sleepy, lazy, but never done,
 Socratic Squad—let's meme 'til we run!`,
-            date: "Feb 02, 2025",
+            date: "May 18, 2023",
             isPoem: true
         }
     ];
