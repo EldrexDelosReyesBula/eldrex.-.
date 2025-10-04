@@ -710,7 +710,7 @@ function initContentProtection() {
     // Enhanced event listeners
     document.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-        showProtectionMessage('Right-click is disabled');
+        showProtectionMessage('Restricted Action');
         return false;
     });
 
