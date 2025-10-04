@@ -4,8 +4,9 @@
             id: 1,
             title: "When nothing moves, everything begins",
             image: "When nothing moves, everything begins_20250928_195843_0000.png",
-            description: "Every great journey starts with a single step. This is the beginning of something new, something exciting. The path ahead is unknown, but that's what makes it worth exploring.",
-            fullDescription: "Every great journey starts with a single step. This is the beginning of something new, something exciting. The path ahead is unknown, but that's what makes it worth exploring. There will be challenges and obstacles, but also moments of pure joy and discovery. Remember to appreciate the small victories along the way, as they often lead to the biggest accomplishments.",
+            description: "There are times when we feel it is easier to rest and just wait for things to happen. What we do not realize is that the dreams we hold may already be done or achieved by others because they acted before they even dreamed of it. If we stop moving and only watch what comes next, the dreams we hope for will always be reached first by the people around us. There is nothing wrong with making mistakes, but what is wrong is when a person cannot correct those mistakes.
+",
+            fullDescription: "There are times when we feel it is easier to rest and just wait for things to happen. What we do not realize is that the dreams we hold may already be done or achieved by others because they acted before they even dreamed of it. If we stop moving and only watch what comes next, the dreams we hope for will always be reached first by the people around us. There is nothing wrong with making mistakes, but what is wrong is when a person cannot correct those mistakes.",
             date: "September 29, 2025"
         },
         {
@@ -19,7 +20,7 @@
         {
             id: 3,
             title: "Creative Exploration",
-            image: "https://images.unsplash.com/photo-1550684376-efcbd6e3f031",
+            image: "https://eldrex.landecs.org/img_1_1759565398614.jpg",
             description: `"The Sleepy, Crazy, Meme Squad"`,
             fullDescription: `"The Sleepy, Crazy, Meme Squad"
 
@@ -47,24 +48,8 @@ So bring on the chaos, bring on the fun,
 We'll solve zero problems but have tons of fun!
 Sleepy, lazy, but never done,
 Socratic Squad—let's meme 'til we run!`,
-            date: "May 18, 2023",
+            date: "Feb 02, 2025",
             isPoem: true
-        },
-        {
-            id: 4,
-            title: "Connections That Matter",
-            image: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0",
-            description: "Meaningful connections enrich our lives in ways we can't always measure. They provide support, inspiration, and a sense of belonging.",
-            fullDescription: "Meaningful connections enrich our lives in ways we can't always measure. They provide support, inspiration, and a sense of belonging. In a world that often emphasizes individual achievement, it's important to remember that our relationships with others shape who we are and how we experience life. These connections—whether with family, friends, or community—create the fabric of our existence.",
-            date: "June 7, 2023"
-        },
-        {
-            id: 5,
-            title: "Finding Balance",
-            image: "https://images.unsplash.com/photo-1505144808419-1957a94ca61e",
-            description: "Balance isn't about perfection—it's about harmony. Finding equilibrium between different aspects of life creates space for growth and contentment.",
-            fullDescription: "Balance isn't about perfection—it's about harmony. Finding equilibrium between different aspects of life creates space for growth and contentment. It's not about dividing our time equally between work, relationships, and personal pursuits, but rather finding the right rhythm that allows each area to flourish. True balance is dynamic, shifting as our needs and circumstances change.",
-            date: "July 22, 2023"
         }
     ];
 
