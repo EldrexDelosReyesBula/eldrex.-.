@@ -76,7 +76,7 @@ body {
     background-size: cover;
     overflow-x: hidden;
 }
-
+*/
 
      #bg-video {
          position: fixed;
@@ -89,7 +89,7 @@ body {
          will-change: transform;
          backface-visibility: hidden;
          transform: translateZ(0);
-     }*/
+     }
 
 
      body {
