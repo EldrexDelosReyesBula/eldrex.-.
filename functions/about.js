@@ -131,7 +131,39 @@
                 {
                     text: "Mistakes don't make you weak; refusing to correct them does.",
                     author: "Eldrex Delos Reyes Bula"
+                },
+                {
+                    text: "Identity isn’t what you do; it’s what you stand for.",
+                    author: "Eldrex Delos Reyes Bula"
+                },
+                {
+                    text: "Money may buy what you want, but hard work teaches you who you are.",
+                    author: "Eldrex Delos Reyes Bula"
+                },
+                {
+                    text: "If you have time to sit, you have time to work.",
+                    author: "Eldrex Delos Reyes Bula"
+                },
+                {
+                    text: "Failure is not the end; it is the beginning of learning.",
+                    author: "Eldrex Delos Reyes Bula"
                 }
+              /*  {
+                    text: "",
+                    author: "Eldrex Delos Reyes Bula"
+                },
+                {
+                    text: "",
+                    author: "Eldrex Delos Reyes Bula"
+                },
+                {
+                    text: "",
+                    author: "Eldrex Delos Reyes Bula"
+                },
+                {
+                    text: "",
+                    author: "Eldrex Delos Reyes Bula"
+                }*/
             ]
         };
 
