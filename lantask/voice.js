@@ -1,6 +1,7 @@
 /**
  * Voice Assistant Module for LanTask Pro
  * Self-contained module that can be easily managed and updated
+ * Enhanced with permission handling and improved UX
  */
 
 class VoiceAssistant {
@@ -15,6 +16,10 @@ class VoiceAssistant {
         this.speechSynthesis = window.speechSynthesis;
         this.voiceSheetMinimized = false;
         
+        // Permission state
+        this.permissionState = 'prompt'; // 'prompt', 'granted', 'denied'
+        this.hasRequestedPermission = false;
+        
         // Command history
         this.commandHistory = [];
         this.maxHistorySize = 10;
@@ -25,7 +30,7 @@ class VoiceAssistant {
     init() {
         this.setupDOM();
         this.setupEventListeners();
-        this.setupVoiceRecognition();
+        this.checkPermissionState();
         
         console.log('Voice Assistant initialized');
     }
@@ -69,6 +74,51 @@ class VoiceAssistant {
                         </div>
                     </div>
                 </div>
+
+                <!-- Permission Modal -->
+                <div class="modal-overlay" id="voice-permission-overlay" style="display: none;">
+                    <div class="modal" id="voice-permission-modal">
+                        <div class="modal-header">
+                            <h3 class="title-medium">Microphone Access Required</h3>
+                        </div>
+                        <div class="modal-content">
+                            <div class="permission-icon">
+                                <span class="material-symbols-outlined">mic</span>
+                            </div>
+                            <p>LanTask Voice Assistant needs microphone access to understand your voice commands.</p>
+                            <p>Your voice data is processed locally and not stored on our servers.</p>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="button secondary" id="permission-deny-btn">Not Now</button>
+                            <button class="button primary" id="permission-allow-btn">Allow Microphone</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permission Denied Modal -->
+                <div class="modal-overlay" id="voice-denied-overlay" style="display: none;">
+                    <div class="modal" id="voice-denied-modal">
+                        <div class="modal-header">
+                            <h3 class="title-medium">Microphone Access Denied</h3>
+                        </div>
+                        <div class="modal-content">
+                            <div class="permission-icon denied">
+                                <span class="material-symbols-outlined">mic_off</span>
+                            </div>
+                            <p>Voice assistant cannot function without microphone access.</p>
+                            <p>To enable voice commands:</p>
+                            <ol>
+                                <li>Click the lock icon in your browser's address bar</li>
+                                <li>Find "Microphone" in the permissions list</li>
+                                <li>Change the setting to "Allow"</li>
+                                <li>Refresh the page and try again</li>
+                            </ol>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="button primary" id="denied-ok-btn">OK</button>
+                        </div>
+                    </div>
+                </div>
             `;
             document.body.insertAdjacentHTML('beforeend', voiceHTML);
         }
@@ -76,38 +126,80 @@ class VoiceAssistant {
 
     setupEventListeners() {
         // Voice button in header
-        document.getElementById('voice-assistant-button').addEventListener('click', () => {
-            this.startVoiceAssistant();
-        });
+        const voiceButton = document.getElementById('voice-assistant-button');
+        if (voiceButton) {
+            voiceButton.addEventListener('click', () => {
+                this.startVoiceAssistant();
+            });
+        }
 
         // Microphone button
-        document.getElementById('voice-mic-button').addEventListener('click', () => {
-            this.toggleListening();
-        });
+        const micButton = document.getElementById('voice-mic-button');
+        if (micButton) {
+            micButton.addEventListener('click', () => {
+                this.toggleListening();
+            });
+        }
 
         // Minimize button
-        document.getElementById('minimize-voice-button').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.minimizeVoiceSheet();
-        });
+        const minimizeButton = document.getElementById('minimize-voice-button');
+        if (minimizeButton) {
+            minimizeButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.minimizeVoiceSheet();
+            });
+        }
 
         // Close button
-        document.getElementById('close-voice-button').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.stopVoiceAssistant();
-        });
+        const closeButton = document.getElementById('close-voice-button');
+        if (closeButton) {
+            closeButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.stopVoiceAssistant();
+            });
+        }
 
         // Header click to maximize
-        document.getElementById('voice-sheet-header').addEventListener('click', () => {
-            if (this.voiceSheetMinimized) {
-                this.minimizeVoiceSheet();
-            }
-        });
+        const sheetHeader = document.getElementById('voice-sheet-header');
+        if (sheetHeader) {
+            sheetHeader.addEventListener('click', () => {
+                if (this.voiceSheetMinimized) {
+                    this.minimizeVoiceSheet();
+                }
+            });
+        }
 
         // Overlay click to close
-        document.getElementById('voice-sheet-overlay').addEventListener('click', () => {
-            this.stopVoiceAssistant();
-        });
+        const overlay = document.getElementById('voice-sheet-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                this.stopVoiceAssistant();
+            });
+        }
+
+        // Permission modal buttons
+        const allowBtn = document.getElementById('permission-allow-btn');
+        const denyBtn = document.getElementById('permission-deny-btn');
+        const deniedOkBtn = document.getElementById('denied-ok-btn');
+
+        if (allowBtn) {
+            allowBtn.addEventListener('click', () => {
+                this.requestMicrophonePermission();
+            });
+        }
+
+        if (denyBtn) {
+            denyBtn.addEventListener('click', () => {
+                this.hidePermissionModal();
+                this.updateVoiceUI('Microphone access is required for voice commands', false);
+            });
+        }
+
+        if (deniedOkBtn) {
+            deniedOkBtn.addEventListener('click', () => {
+                this.hideDeniedModal();
+            });
+        }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -124,6 +216,139 @@ class VoiceAssistant {
                 this.stopVoiceAssistant();
             }
         });
+    }
+
+    checkPermissionState() {
+        // Check if the browser supports permissions API
+        if (navigator.permissions && navigator.permissions.query) {
+            navigator.permissions.query({ name: 'microphone' })
+                .then(permissionStatus => {
+                    this.permissionState = permissionStatus.state;
+                    this.updatePermissionUI();
+                    
+                    permissionStatus.onchange = () => {
+                        this.permissionState = permissionStatus.state;
+                        this.updatePermissionUI();
+                        console.log('Microphone permission changed to:', this.permissionState);
+                    };
+                })
+                .catch(error => {
+                    console.warn('Permission API not fully supported:', error);
+                    this.permissionState = 'prompt';
+                });
+        } else {
+            // Fallback for browsers that don't support permissions API
+            this.permissionState = 'prompt';
+        }
+    }
+
+    updatePermissionUI() {
+        const micButton = document.getElementById('voice-mic-button');
+        const statusElement = document.getElementById('voice-status');
+        
+        if (!micButton || !statusElement) return;
+
+        switch (this.permissionState) {
+            case 'granted':
+                micButton.style.opacity = '1';
+                micButton.style.cursor = 'pointer';
+                micButton.disabled = false;
+                break;
+            case 'denied':
+                micButton.style.opacity = '0.5';
+                micButton.style.cursor = 'not-allowed';
+                micButton.disabled = true;
+                statusElement.textContent = 'Microphone access denied. Check browser settings.';
+                break;
+            case 'prompt':
+                micButton.style.opacity = '1';
+                micButton.style.cursor = 'pointer';
+                micButton.disabled = false;
+                break;
+        }
+    }
+
+    showPermissionModal() {
+        const modal = document.getElementById('voice-permission-overlay');
+        if (modal) {
+            modal.style.display = 'flex';
+            // Add animation class
+            setTimeout(() => {
+                const modalContent = document.getElementById('voice-permission-modal');
+                if (modalContent) {
+                    modalContent.classList.add('modal-active');
+                }
+            }, 10);
+        }
+    }
+
+    hidePermissionModal() {
+        const modal = document.getElementById('voice-permission-overlay');
+        const modalContent = document.getElementById('voice-permission-modal');
+        
+        if (modalContent) {
+            modalContent.classList.remove('modal-active');
+        }
+        
+        setTimeout(() => {
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }, 300);
+    }
+
+    showDeniedModal() {
+        const modal = document.getElementById('voice-denied-overlay');
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                const modalContent = document.getElementById('voice-denied-modal');
+                if (modalContent) {
+                    modalContent.classList.add('modal-active');
+                }
+            }, 10);
+        }
+    }
+
+    hideDeniedModal() {
+        const modal = document.getElementById('voice-denied-overlay');
+        const modalContent = document.getElementById('voice-denied-modal');
+        
+        if (modalContent) {
+            modalContent.classList.remove('modal-active');
+        }
+        
+        setTimeout(() => {
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }, 300);
+    }
+
+    async requestMicrophonePermission() {
+        this.hidePermissionModal();
+        
+        try {
+            // Test microphone access by trying to get user media
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            // Immediately stop using the stream since we just needed permission
+            stream.getTracks().forEach(track => track.stop());
+            
+            this.permissionState = 'granted';
+            this.updatePermissionUI();
+            this.setupVoiceRecognition();
+            this.startVoiceRecognition();
+            
+            console.log('Microphone permission granted');
+        } catch (error) {
+            console.error('Error getting microphone permission:', error);
+            this.permissionState = 'denied';
+            this.updatePermissionUI();
+            this.showDeniedModal();
+        }
+        
+        this.hasRequestedPermission = true;
     }
 
     setupVoiceRecognition() {
@@ -167,6 +392,12 @@ class VoiceAssistant {
                 // Show user-friendly error message
                 if (event.error !== 'no-speech') {
                     this.taskManager.showNotification(`Voice error: ${this.getErrorMessage(event.error)}`, 'error');
+                }
+
+                // Handle permission denied error
+                if (event.error === 'not-allowed') {
+                    this.permissionState = 'denied';
+                    this.updatePermissionUI();
                 }
             };
 
@@ -220,17 +451,31 @@ class VoiceAssistant {
         if (micButton) {
             micButton.style.opacity = '0.5';
             micButton.style.cursor = 'not-allowed';
+            micButton.disabled = true;
         }
     }
 
     // Public Methods
     startVoiceAssistant() {
-        if (!this.recognition) {
+        if (!this.isSupported()) {
             this.showNotSupportedMessage();
+            this.openVoiceSheet();
             return;
         }
         
         this.openVoiceSheet();
+        
+        // Check permission state before starting
+        if (this.permissionState === 'denied') {
+            this.showDeniedModal();
+            return;
+        }
+        
+        if (this.permissionState === 'prompt' && !this.hasRequestedPermission) {
+            this.showPermissionModal();
+            return;
+        }
+        
         this.startVoiceRecognition();
         this.taskManager.showNotification('Voice assistant activated', 'info');
     }
@@ -242,8 +487,19 @@ class VoiceAssistant {
     }
 
     toggleListening() {
-        if (!this.recognition) {
+        if (!this.isSupported()) {
             this.showNotSupportedMessage();
+            return;
+        }
+        
+        // Check permissions
+        if (this.permissionState === 'denied') {
+            this.showDeniedModal();
+            return;
+        }
+        
+        if (this.permissionState === 'prompt' && !this.hasRequestedPermission) {
+            this.showPermissionModal();
             return;
         }
         
@@ -256,7 +512,11 @@ class VoiceAssistant {
 
     // Core Voice Recognition Methods
     startVoiceRecognition() {
-        if (this.recognition && !this.isListening) {
+        if (!this.recognition && this.permissionState === 'granted') {
+            this.setupVoiceRecognition();
+        }
+        
+        if (this.recognition && !this.isListening && this.permissionState === 'granted') {
             try {
                 this.recognition.start();
                 this.isVoiceActive = true;
@@ -280,7 +540,7 @@ class VoiceAssistant {
         }
     }
 
-    // Command Processing
+    // Command Processing (unchanged from original)
     processVoiceCommand(command) {
         console.log('Processing voice command:', command);
         this.addToHistory(command);
@@ -381,28 +641,38 @@ class VoiceAssistant {
         }
     }
 
-    // UI Management
+    // UI Management (unchanged from original)
     openVoiceSheet() {
-        document.getElementById('voice-bottom-sheet').classList.add('active');
-        document.getElementById('voice-sheet-overlay').classList.add('active');
-        document.getElementById('voice-assistant-button').classList.add('listening');
+        const sheet = document.getElementById('voice-bottom-sheet');
+        const overlay = document.getElementById('voice-sheet-overlay');
+        const voiceButton = document.getElementById('voice-assistant-button');
+        
+        if (sheet) sheet.classList.add('active');
+        if (overlay) overlay.classList.add('active');
+        if (voiceButton) voiceButton.classList.add('listening');
     }
 
     closeVoiceSheet() {
-        document.getElementById('voice-bottom-sheet').classList.remove('active');
-        document.getElementById('voice-sheet-overlay').classList.remove('active');
-        document.getElementById('voice-assistant-button').classList.remove('listening');
+        const sheet = document.getElementById('voice-bottom-sheet');
+        const overlay = document.getElementById('voice-sheet-overlay');
+        const voiceButton = document.getElementById('voice-assistant-button');
+        
+        if (sheet) sheet.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        if (voiceButton) voiceButton.classList.remove('listening');
         this.voiceSheetMinimized = false;
     }
 
     minimizeVoiceSheet() {
         const sheet = document.getElementById('voice-bottom-sheet');
-        if (this.voiceSheetMinimized) {
-            sheet.classList.remove('minimized');
-            this.voiceSheetMinimized = false;
-        } else {
-            sheet.classList.add('minimized');
-            this.voiceSheetMinimized = true;
+        if (sheet) {
+            if (this.voiceSheetMinimized) {
+                sheet.classList.remove('minimized');
+                this.voiceSheetMinimized = false;
+            } else {
+                sheet.classList.add('minimized');
+                this.voiceSheetMinimized = true;
+            }
         }
     }
 
@@ -438,7 +708,7 @@ class VoiceAssistant {
         }
     }
 
-    // Voice Response
+    // Voice Response (unchanged from original)
     speakResponse(text) {
         if (this.speechSynthesis.speaking) {
             this.speechSynthesis.cancel();
@@ -462,7 +732,7 @@ class VoiceAssistant {
         this.speechSynthesis.speak(utterance);
     }
 
-    // Command History
+    // Command History (unchanged from original)
     addToHistory(command) {
         this.commandHistory.unshift({
             command: command,
@@ -484,7 +754,8 @@ class VoiceAssistant {
 
     // Utility Methods
     isSupported() {
-        return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+        return ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) &&
+               'mediaDevices' in navigator;
     }
 
     getStatus() {
@@ -492,6 +763,8 @@ class VoiceAssistant {
             isVoiceActive: this.isVoiceActive,
             isListening: this.isListening,
             isSupported: this.isSupported(),
+            permissionState: this.permissionState,
+            hasRequestedPermission: this.hasRequestedPermission,
             historySize: this.commandHistory.length
         };
     }
@@ -500,17 +773,149 @@ class VoiceAssistant {
     destroy() {
         this.stopVoiceRecognition();
         this.closeVoiceSheet();
+        this.hidePermissionModal();
+        this.hideDeniedModal();
         
         // Remove event listeners
-        document.getElementById('voice-assistant-button').removeEventListener('click', this.startVoiceAssistant);
-        document.getElementById('voice-mic-button').removeEventListener('click', this.toggleListening);
-        document.getElementById('minimize-voice-button').removeEventListener('click', this.minimizeVoiceSheet);
-        document.getElementById('close-voice-button').removeEventListener('click', this.stopVoiceAssistant);
-        document.getElementById('voice-sheet-header').removeEventListener('click', this.minimizeVoiceSheet);
-        document.getElementById('voice-sheet-overlay').removeEventListener('click', this.stopVoiceAssistant);
+        const elements = [
+            'voice-assistant-button',
+            'voice-mic-button',
+            'minimize-voice-button',
+            'close-voice-button',
+            'voice-sheet-header',
+            'voice-sheet-overlay',
+            'permission-allow-btn',
+            'permission-deny-btn',
+            'denied-ok-btn'
+        ];
+        
+        elements.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                const newElement = element.cloneNode(true);
+                element.parentNode.replaceChild(newElement, element);
+            }
+        });
         
         console.log('Voice Assistant destroyed');
     }
+}
+
+// Add CSS for the permission modals
+const voiceAssistantStyles = `
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay[style*="display: flex"] {
+    opacity: 1;
+}
+
+.modal {
+    background: var(--dynamic-surface);
+    border-radius: var(--border-radius-lg);
+    padding: 0;
+    max-width: 400px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--dynamic-outline-variant);
+}
+
+.modal-active {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.modal-header {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--dynamic-outline-variant);
+}
+
+.modal-content {
+    padding: var(--space-lg);
+    text-align: center;
+}
+
+.modal-content ol {
+    text-align: left;
+    margin-top: var(--space-md);
+    padding-left: var(--space-lg);
+}
+
+.modal-content li {
+    margin-bottom: var(--space-sm);
+}
+
+.modal-actions {
+    padding: var(--space-lg);
+    display: flex;
+    gap: var(--space-md);
+    justify-content: flex-end;
+    border-top: 1px solid var(--dynamic-outline-variant);
+}
+
+.permission-icon {
+    font-size: 48px;
+    color: var(--dynamic-primary);
+    margin-bottom: var(--space-lg);
+}
+
+.permission-icon.denied {
+    color: var(--dynamic-error);
+}
+
+.button {
+    padding: var(--space-md) var(--space-lg);
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.button.primary {
+    background: var(--dynamic-primary);
+    color: var(--dynamic-on-primary);
+}
+
+.button.secondary {
+    background: var(--dynamic-surface-variant);
+    color: var(--dynamic-on-surface-variant);
+    border: 1px solid var(--dynamic-outline);
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.button:active {
+    transform: translateY(0);
+}
+`;
+
+// Inject styles
+if (!document.getElementById('voice-assistant-styles')) {
+    const styleSheet = document.createElement('style');
+    styleSheet.id = 'voice-assistant-styles';
+    styleSheet.textContent = voiceAssistantStyles;
+    document.head.appendChild(styleSheet);
 }
 
 // Export for use in other modules
