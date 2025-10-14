@@ -6,155 +6,108 @@
     <title>NoteSnap - Snap your thoughts. Stick them anywhere.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="manifest" href="manifest.json">
     <style>
         :root {
             /* Classic Sky Theme (Default) */
             --primary: #2979FF;
-            --primary-light: #90CAF9;
+            --secondary: #90CAF9;
             --accent: #40C4FF;
             --background: #F9FAFB;
             --text: #0D1B2A;
             --surface: #FFFFFF;
             --shadow: rgba(0, 0, 0, 0.1);
-            --note-bg: #FFFFFF;
-            --note-text: #0D1B2A;
-            --note-border: #E0E0E0;
-            --radius: 20px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --note-shadow: rgba(41, 121, 255, 0.2);
+            --note-radius: 20px;
+            --transition-speed: 0.3s;
+            --font-family: 'Poppins', sans-serif;
+            --ui-density: 1;
         }
 
+        /* Midnight Mist Theme (Dark) */
         [data-theme="midnight-mist"] {
             --primary: #0A192F;
-            --primary-light: #112240;
+            --secondary: #112240;
             --accent: #64FFDA;
             --background: #0A192F;
             --text: #CCD6F6;
             --surface: #112240;
             --shadow: rgba(0, 0, 0, 0.3);
-            --note-bg: #112240;
-            --note-text: #CCD6F6;
-            --note-border: #233554;
+            --note-shadow: rgba(100, 255, 218, 0.2);
         }
 
+        /* Soft Peach Theme */
         [data-theme="soft-peach"] {
             --primary: #FFB6A9;
-            --primary-light: #FFDAD1;
+            --secondary: #FFDAD1;
             --accent: #FF9671;
             --background: #FFFFEF;
             --text: #3E2723;
             --surface: #FFFFFF;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --note-bg: #FFFFFF;
-            --note-text: #3E2723;
-            --note-border: #FFDAD1;
+            --shadow: rgba(255, 182, 169, 0.2);
+            --note-shadow: rgba(255, 182, 169, 0.3);
         }
 
+        /* Ocean Depth Theme */
         [data-theme="ocean-depth"] {
             --primary: #00BCD4;
-            --primary-light: #80DEEA;
+            --secondary: #80DEEA;
             --accent: #26C6DA;
             --background: #E0F7FA;
             --text: #004D40;
             --surface: #FFFFFF;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --note-bg: #FFFFFF;
-            --note-text: #004D40;
-            --note-border: #80DEEA;
+            --shadow: rgba(0, 188, 212, 0.2);
+            --note-shadow: rgba(0, 188, 212, 0.3);
+        }
+
+        /* Premium Blend Theme */
+        [data-theme="premium-blend"] {
+            --primary: #0066FF;
+            --secondary: #89CFF0;
+            --accent: #0066FF;
+            --background: #F4F7FB;
+            --text: #1C1C1C;
+            --surface: #FFFFFF;
+            --shadow: rgba(0, 102, 255, 0.2);
+            --note-shadow: rgba(0, 102, 255, 0.3);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: var(--font-family);
             background-color: var(--background);
             color: var(--text);
-            transition: var(--transition);
             overflow: hidden;
             height: 100vh;
             width: 100vw;
+            position: relative;
         }
 
         .app-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            width: 100vw;
-            position: relative;
-        }
-
-        /* Header Styles */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            background-color: var(--surface);
-            box-shadow: 0 2px 10px var(--shadow);
-            z-index: 100;
-            position: relative;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-icon {
-            font-size: 24px;
-            color: var(--primary);
-        }
-
-        .logo-text {
-            font-weight: 600;
-            font-size: 18px;
-            color: var(--text);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .icon-button {
-            background: none;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text);
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .icon-button:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .icon-button:active {
-            transform: scale(0.95);
         }
 
         /* Camera View */
         .camera-container {
-            flex: 1;
             position: relative;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
             background-color: #000;
         }
 
-        #camera-view {
+        #camera-feed {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -170,7 +123,8 @@
             z-index: 10;
         }
 
-        .note-container {
+        /* Notes Container */
+        .notes-container {
             position: absolute;
             top: 0;
             left: 0;
@@ -182,314 +136,128 @@
 
         .note {
             position: absolute;
-            width: 200px;
+            width: 180px;
             min-height: 150px;
-            background-color: var(--note-bg);
-            border-radius: var(--radius);
-            box-shadow: 0 4px 12px var(--shadow);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
+            background-color: var(--surface);
+            border-radius: var(--note-radius);
+            box-shadow: 0 4px 12px var(--note-shadow);
+            padding: 12px;
             pointer-events: auto;
             cursor: move;
-            transition: var(--transition);
-            border: 1px solid var(--note-border);
-            animation: note-appear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 30;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: note-appear 0.3s ease-out;
         }
 
-        .note:hover {
+        .note:hover, .note:active {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px var(--shadow);
+            box-shadow: 0 6px 16px var(--note-shadow);
         }
 
-        .note.dragging {
-            z-index: 100;
-            transform: scale(1.02);
-            box-shadow: 0 8px 24px var(--shadow);
-        }
-
-        .note-content {
-            flex: 1;
-            font-size: 14px;
-            line-height: 1.4;
-            color: var(--note-text);
-            overflow-wrap: break-word;
-            overflow-y: auto;
-            max-height: 120px;
-        }
-
-        .note-timestamp {
-            font-size: 10px;
-            color: var(--accent);
-            margin-top: 8px;
-            text-align: right;
+        .note-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
         }
 
         .note-actions {
             display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 8px;
-            opacity: 0;
-            transition: opacity 0.2s;
+            gap: 4px;
         }
 
-        .note:hover .note-actions {
-            opacity: 1;
-        }
-
-        .note-action {
+        .note-action-btn {
             background: none;
             border: none;
+            color: var(--text);
+            cursor: pointer;
             width: 24px;
             height: 24px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            color: var(--text);
             font-size: 14px;
-            transition: var(--transition);
+            opacity: 0.7;
+            transition: opacity 0.2s, background-color 0.2s;
         }
 
-        .note-action:hover {
-            background-color: rgba(0, 0, 0, 0.08);
+        .note-action-btn:hover {
+            opacity: 1;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .note-content {
+            flex-grow: 1;
+            overflow: auto;
+            font-size: 14px;
+            line-height: 1.4;
+            outline: none;
+            padding: 4px;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+
+        .note-content:focus {
+            background-color: rgba(0, 0, 0, 0.03);
         }
 
         /* Controls */
         .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            background-color: var(--surface);
-            box-shadow: 0 -2px 10px var(--shadow);
-            z-index: 100;
-            position: relative;
-        }
-
-        .add-note-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(41, 121, 255, 0.3);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .add-note-btn::after {
-            content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s;
-        }
-
-        .add-note-btn:active::after {
-            width: 100px;
-            height: 100px;
-        }
-
-        .add-note-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(41, 121, 255, 0.4);
-        }
-
-        /* Modals */
-        .modal {
-            position: fixed;
-            top: 0;
+            bottom: 20px;
             left: 0;
             width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
             display: flex;
-            align-items: center;
             justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        .modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .modal-content {
-            background-color: var(--surface);
-            border-radius: var(--radius);
-            box-shadow: 0 10px 30px var(--shadow);
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-            transform: scale(0.9);
-            transition: transform 0.3s;
-        }
-
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
-
-        .modal-header {
-            padding: 20px 24px 0;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 16px;
+            z-index: 30;
+            pointer-events: auto;
         }
 
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            width: 36px;
-            height: 36px;
+        .control-btn {
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text);
-            transition: var(--transition);
-        }
-
-        .modal-close:hover {
-            background-color: rgba(0, 0, 0, 0.08);
-        }
-
-        .modal-body {
-            padding: 20px 24px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--note-border);
-            background-color: var(--note-bg);
-            color: var(--note-text);
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-            transition: var(--transition);
-        }
-
-        .form-textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(41, 121, 255, 0.2);
-        }
-
-        .color-options {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .color-option {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: var(--transition);
-        }
-
-        .color-option.active {
-            border-color: var(--text);
-            transform: scale(1.1);
-        }
-
-        .modal-footer {
-            padding: 0 24px 20px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: none;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-primary {
             background-color: var(--primary);
             color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 24px;
         }
 
-        .btn-primary:hover {
-            background-color: var(--primary-light);
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
         }
 
-        .btn-outline {
-            background-color: transparent;
-            color: var(--text);
-            border: 1px solid var(--note-border);
-        }
-
-        .btn-outline:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+        .control-btn:active {
+            transform: scale(0.95);
         }
 
         /* Settings Panel */
         .settings-panel {
-            position: fixed;
+            position: absolute;
             top: 0;
-            right: -400px;
-            width: 350px;
+            right: -320px;
+            width: 320px;
             height: 100%;
             background-color: var(--surface);
-            box-shadow: -5px 0 15px var(--shadow);
-            z-index: 500;
-            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-y: auto;
+            box-shadow: -4px 0 16px var(--shadow);
             padding: 20px;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 40;
         }
 
-        .settings-panel.active {
+        .settings-panel.open {
             right: 0;
         }
 
@@ -498,23 +266,32 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .settings-title {
             font-size: 20px;
             font-weight: 600;
-            color: var(--text);
         }
 
-        .settings-group {
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .settings-section {
             margin-bottom: 24px;
         }
 
-        .settings-label {
-            display: block;
+        .settings-section-title {
+            font-size: 16px;
+            font-weight: 600;
             margin-bottom: 12px;
-            font-weight: 500;
-            color: var(--text);
+            color: var(--primary);
         }
 
         .theme-options {
@@ -524,48 +301,241 @@
         }
 
         .theme-option {
-            padding: 12px;
+            height: 60px;
             border-radius: 12px;
-            background-color: var(--background);
-            border: 1px solid var(--note-border);
             cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .theme-option:hover {
+            transform: scale(1.03);
         }
 
         .theme-option.active {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(41, 121, 255, 0.2);
+            border-color: var(--accent);
         }
 
-        .theme-preview {
-            width: 100%;
-            height: 40px;
+        .theme-classic-sky {
+            background: linear-gradient(135deg, #2979FF, #90CAF9);
+            color: white;
+        }
+
+        .theme-midnight-mist {
+            background: linear-gradient(135deg, #0A192F, #112240);
+            color: #64FFDA;
+        }
+
+        .theme-soft-peach {
+            background: linear-gradient(135deg, #FFB6A9, #FFDAD1);
+            color: #3E2723;
+        }
+
+        .theme-ocean-depth {
+            background: linear-gradient(135deg, #00BCD4, #80DEEA);
+            color: #004D40;
+        }
+
+        .theme-premium-blend {
+            background: linear-gradient(135deg, #0066FF, #89CFF0);
+            color: white;
+        }
+
+        .font-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .font-option {
+            padding: 8px 12px;
             border-radius: 8px;
-            margin-bottom: 8px;
+            background-color: var(--background);
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
 
-        .theme-name {
-            font-size: 12px;
-            font-weight: 500;
+        .font-option.active {
+            background-color: var(--primary);
+            color: white;
         }
 
-        .select-input {
-            width: 100%;
-            padding: 12px 16px;
+        .note-style-options {
+            display: flex;
+            gap: 12px;
+        }
+
+        .note-style-option {
+            width: 60px;
+            height: 60px;
             border-radius: 12px;
-            border: 1px solid var(--note-border);
-            background-color: var(--note-bg);
-            color: var(--note-text);
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-            transition: var(--transition);
+            background-color: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s;
         }
 
-        .select-input:focus {
+        .note-style-option.active {
+            border-color: var(--accent);
+        }
+
+        .note-style-option:hover {
+            transform: scale(1.05);
+        }
+
+        .style-rounded {
+            border-radius: 20px;
+        }
+
+        .style-square {
+            border-radius: 4px;
+        }
+
+        .style-bubble {
+            border-radius: 50% 50% 50% 0;
+        }
+
+        .settings-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .settings-btn {
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .settings-btn.secondary {
+            background-color: var(--secondary);
+            color: var(--text);
+        }
+
+        .settings-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Permission Screen */
+        .permission-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .permission-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .permission-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .permission-description {
+            font-size: 16px;
+            margin-bottom: 24px;
+            max-width: 500px;
+            line-height: 1.5;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        .permission-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .permission-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Edit Note Modal */
+        .edit-note-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--surface);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .edit-note-modal.active {
+            display: flex;
+        }
+
+        .edit-note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .edit-note-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .back-to-camera {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .edit-note-content {
+            flex-grow: 1;
+            padding: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.5;
+            resize: none;
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(41, 121, 255, 0.2);
+            font-family: var(--font-family);
+            background-color: var(--background);
+            color: var(--text);
         }
 
         /* Animations */
@@ -591,33 +561,11 @@
             }
         }
 
-        .note.deleting {
-            animation: note-disappear 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        .note.removing {
+            animation: note-disappear 0.3s ease-out forwards;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .settings-panel {
-                width: 100%;
-                right: -100%;
-            }
-            
-            .note {
-                width: 160px;
-                min-height: 120px;
-            }
-            
-            .note-content {
-                font-size: 12px;
-                max-height: 80px;
-            }
-        }
-
-        /* Utility Classes */
-        .hidden {
-            display: none !important;
-        }
-
+        /* Ripple effect */
         .ripple {
             position: absolute;
             border-radius: 50%;
@@ -633,101 +581,64 @@
                 opacity: 0;
             }
         }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .settings-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .note {
+                width: 160px;
+                min-height: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .controls {
+                bottom: 10px;
+            }
+            
+            .control-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+            
+            .note {
+                width: 140px;
+                min-height: 120px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <span class="material-symbols-outlined logo-icon">note_stack</span>
-                <span class="logo-text">NoteSnap</span>
-            </div>
-            <div class="header-actions">
-                <button class="icon-button" id="settings-btn" title="Settings">
-                    <span class="material-symbols-outlined">settings</span>
-                </button>
-                <button class="icon-button" id="theme-btn" title="Toggle Theme">
-                    <span class="material-symbols-outlined">dark_mode</span>
-                </button>
-            </div>
-        </header>
+        <!-- Permission Screen -->
+        <div class="permission-screen" id="permission-screen">
+            <span class="material-symbols-outlined permission-icon">photo_camera</span>
+            <h1 class="permission-title">Welcome to NoteSnap</h1>
+            <p class="permission-description">NoteSnap needs camera access to place virtual notes in your environment. Your privacy is important - all data stays on your device and no images are stored or transmitted.</p>
+            <button class="permission-btn" id="enable-camera">Enable Camera</button>
+        </div>
 
         <!-- Camera View -->
-        <div class="camera-container">
-            <video id="camera-view" autoplay playsinline></video>
+        <div class="camera-container" id="camera-container" style="display: none;">
+            <video id="camera-feed" autoplay playsinline></video>
             <div class="camera-overlay"></div>
-            <div class="note-container" id="note-container"></div>
-        </div>
-
-        <!-- Controls -->
-        <div class="controls">
-            <button class="add-note-btn" id="add-note-btn">
-                <span class="material-symbols-outlined">add</span>
-            </button>
-        </div>
-
-        <!-- Add Note Modal -->
-        <div class="modal" id="add-note-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">Add New Note</h2>
-                    <button class="modal-close" id="close-add-modal">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label" for="note-content">Note Content</label>
-                        <textarea class="form-textarea" id="note-content" placeholder="Type your note here..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Note Color</label>
-                        <div class="color-options">
-                            <div class="color-option active" style="background-color: #FFFFFF;" data-color="#FFFFFF"></div>
-                            <div class="color-option" style="background-color: #FFEB3B;" data-color="#FFEB3B"></div>
-                            <div class="color-option" style="background-color: #4CAF50;" data-color="#4CAF50"></div>
-                            <div class="color-option" style="background-color: #2196F3;" data-color="#2196F3"></div>
-                            <div class="color-option" style="background-color: #9C27B0;" data-color="#9C27B0"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-outline" id="cancel-add">Cancel</button>
-                    <button class="btn btn-primary" id="save-note">Save Note</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit Note Modal -->
-        <div class="modal" id="edit-note-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">Edit Note</h2>
-                    <button class="modal-close" id="close-edit-modal">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label" for="edit-note-content">Note Content</label>
-                        <textarea class="form-textarea" id="edit-note-content" placeholder="Type your note here..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Note Color</label>
-                        <div class="color-options" id="edit-color-options">
-                            <div class="color-option" style="background-color: #FFFFFF;" data-color="#FFFFFF"></div>
-                            <div class="color-option" style="background-color: #FFEB3B;" data-color="#FFEB3B"></div>
-                            <div class="color-option" style="background-color: #4CAF50;" data-color="#4CAF50"></div>
-                            <div class="color-option" style="background-color: #2196F3;" data-color="#2196F3"></div>
-                            <div class="color-option" style="background-color: #9C27B0;" data-color="#9C27B0"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-outline" id="delete-note">Delete</button>
-                    <button class="btn btn-primary" id="update-note">Update</button>
-                </div>
+            
+            <!-- Notes Container -->
+            <div class="notes-container" id="notes-container"></div>
+            
+            <!-- Controls -->
+            <div class="controls">
+                <button class="control-btn" id="add-note-btn">
+                    <span class="material-symbols-outlined">note_add</span>
+                </button>
+                <button class="control-btn" id="settings-btn">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
             </div>
         </div>
 
@@ -735,59 +646,65 @@
         <div class="settings-panel" id="settings-panel">
             <div class="settings-header">
                 <h2 class="settings-title">Settings</h2>
-                <button class="modal-close" id="close-settings">
+                <button class="close-settings" id="close-settings">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
             
-            <div class="settings-group">
-                <label class="settings-label">Theme</label>
+            <div class="settings-section">
+                <h3 class="settings-section-title">Theme</h3>
                 <div class="theme-options">
-                    <div class="theme-option active" data-theme="classic-sky">
-                        <div class="theme-preview" style="background: linear-gradient(to right, #2979FF, #90CAF9, #40C4FF);"></div>
-                        <div class="theme-name">Classic Sky</div>
+                    <div class="theme-option theme-classic-sky active" data-theme="classic-sky">Classic Sky</div>
+                    <div class="theme-option theme-midnight-mist" data-theme="midnight-mist">Midnight Mist</div>
+                    <div class="theme-option theme-soft-peach" data-theme="soft-peach">Soft Peach</div>
+                    <div class="theme-option theme-ocean-depth" data-theme="ocean-depth">Ocean Depth</div>
+                    <div class="theme-option theme-premium-blend" data-theme="premium-blend">Premium Blend</div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3 class="settings-section-title">Font</h3>
+                <div class="font-options">
+                    <div class="font-option active" data-font="Poppins">Poppins</div>
+                    <div class="font-option" data-font="Inter">Inter</div>
+                    <div class="font-option" data-font="Nunito">Nunito</div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3 class="settings-section-title">Note Style</h3>
+                <div class="note-style-options">
+                    <div class="note-style-option style-rounded active" data-style="rounded">
+                        <span class="material-symbols-outlined">square</span>
                     </div>
-                    <div class="theme-option" data-theme="midnight-mist">
-                        <div class="theme-preview" style="background: linear-gradient(to right, #0A192F, #112240, #64FFDA);"></div>
-                        <div class="theme-name">Midnight Mist</div>
+                    <div class="note-style-option style-square" data-style="square">
+                        <span class="material-symbols-outlined">crop_square</span>
                     </div>
-                    <div class="theme-option" data-theme="soft-peach">
-                        <div class="theme-preview" style="background: linear-gradient(to right, #FFB6A9, #FFDAD1, #FF9671);"></div>
-                        <div class="theme-name">Soft Peach</div>
-                    </div>
-                    <div class="theme-option" data-theme="ocean-depth">
-                        <div class="theme-preview" style="background: linear-gradient(to right, #00BCD4, #80DEEA, #26C6DA);"></div>
-                        <div class="theme-name">Ocean Depth</div>
+                    <div class="note-style-option style-bubble" data-style="bubble">
+                        <span class="material-symbols-outlined">chat_bubble</span>
                     </div>
                 </div>
             </div>
             
-            <div class="settings-group">
-                <label class="settings-label" for="font-select">Font</label>
-                <select class="select-input" id="font-select">
-                    <option value="Poppins">Poppins</option>
-                    <option value="Inter">Inter</option>
-                    <option value="Roboto Flex">Roboto Flex</option>
-                    <option value="Google Sans">Google Sans</option>
-                    <option value="Nunito">Nunito</option>
-                </select>
+            <div class="settings-section">
+                <h3 class="settings-section-title">Data Management</h3>
+                <div class="settings-actions">
+                    <button class="settings-btn" id="export-notes">Export Notes</button>
+                    <button class="settings-btn secondary" id="import-notes">Import Notes</button>
+                    <button class="settings-btn secondary" id="clear-notes">Clear All Notes</button>
+                </div>
             </div>
-            
-            <div class="settings-group">
-                <label class="settings-label" for="ui-density">UI Density</label>
-                <select class="select-input" id="ui-density">
-                    <option value="compact">Compact</option>
-                    <option value="comfortable" selected>Comfortable</option>
-                    <option value="spacious">Spacious</option>
-                </select>
+        </div>
+
+        <!-- Edit Note Modal -->
+        <div class="edit-note-modal" id="edit-note-modal">
+            <div class="edit-note-header">
+                <h2 class="edit-note-title">Edit Note</h2>
+                <button class="back-to-camera" id="back-to-camera">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
             </div>
-            
-            <div class="settings-group">
-                <label class="settings-label">Data Management</label>
-                <button class="btn btn-outline" id="export-notes" style="width: 100%; margin-bottom: 10px;">Export Notes</button>
-                <button class="btn btn-outline" id="import-notes" style="width: 100%; margin-bottom: 10px;">Import Notes</button>
-                <button class="btn btn-outline" id="clear-notes" style="width: 100%;">Clear All Notes</button>
-            </div>
+            <textarea class="edit-note-content" id="edit-note-content" placeholder="Type your note here..."></textarea>
         </div>
     </div>
 
@@ -796,392 +713,383 @@
         const state = {
             notes: [],
             currentNoteId: null,
-            selectedColor: '#FFFFFF',
-            isDarkMode: false,
-            currentTheme: 'classic-sky'
+            isDragging: false,
+            dragNote: null,
+            dragOffset: { x: 0, y: 0 },
+            noteStyle: 'rounded',
+            currentTheme: 'classic-sky',
+            currentFont: 'Poppins'
         };
 
         // DOM Elements
-        const cameraView = document.getElementById('camera-view');
-        const noteContainer = document.getElementById('note-container');
+        const permissionScreen = document.getElementById('permission-screen');
+        const cameraContainer = document.getElementById('camera-container');
+        const cameraFeed = document.getElementById('camera-feed');
+        const notesContainer = document.getElementById('notes-container');
         const addNoteBtn = document.getElementById('add-note-btn');
-        const addNoteModal = document.getElementById('add-note-modal');
-        const editNoteModal = document.getElementById('edit-note-modal');
-        const settingsPanel = document.getElementById('settings-panel');
         const settingsBtn = document.getElementById('settings-btn');
-        const themeBtn = document.getElementById('theme-btn');
-        const closeSettingsBtn = document.getElementById('close-settings');
-        const noteContentInput = document.getElementById('note-content');
-        const editNoteContentInput = document.getElementById('edit-note-content');
-        const saveNoteBtn = document.getElementById('save-note');
-        const cancelAddBtn = document.getElementById('cancel-add');
-        const closeAddModalBtn = document.getElementById('close-add-modal');
-        const updateNoteBtn = document.getElementById('update-note');
-        const deleteNoteBtn = document.getElementById('delete-note');
-        const closeEditModalBtn = document.getElementById('close-edit-modal');
-        const colorOptions = document.querySelectorAll('.color-option');
-        const editColorOptions = document.querySelectorAll('#edit-color-options .color-option');
+        const settingsPanel = document.getElementById('settings-panel');
+        const closeSettings = document.getElementById('close-settings');
         const themeOptions = document.querySelectorAll('.theme-option');
-        const fontSelect = document.getElementById('font-select');
-        const uiDensitySelect = document.getElementById('ui-density');
+        const fontOptions = document.querySelectorAll('.font-option');
+        const noteStyleOptions = document.querySelectorAll('.note-style-option');
         const exportNotesBtn = document.getElementById('export-notes');
         const importNotesBtn = document.getElementById('import-notes');
         const clearNotesBtn = document.getElementById('clear-notes');
+        const editNoteModal = document.getElementById('edit-note-modal');
+        const editNoteContent = document.getElementById('edit-note-content');
+        const backToCamera = document.getElementById('back-to-camera');
+        const enableCameraBtn = document.getElementById('enable-camera');
 
         // Initialize the app
-        function init() {
+        function initApp() {
+            loadSettings();
             loadNotes();
             setupEventListeners();
-            startCamera();
-            applySavedSettings();
+            
+            // Check if we already have camera permission
+            if (localStorage.getItem('cameraPermission') === 'granted') {
+                startCamera();
+            }
         }
 
         // Set up event listeners
         function setupEventListeners() {
-            // Button clicks
-            addNoteBtn.addEventListener('click', openAddNoteModal);
+            enableCameraBtn.addEventListener('click', requestCameraPermission);
+            addNoteBtn.addEventListener('click', addNoteAtCenter);
             settingsBtn.addEventListener('click', openSettings);
-            closeSettingsBtn.addEventListener('click', closeSettings);
-            themeBtn.addEventListener('click', toggleDarkMode);
-            saveNoteBtn.addEventListener('click', saveNote);
-            cancelAddBtn.addEventListener('click', closeAddNoteModal);
-            closeAddModalBtn.addEventListener('click', closeAddNoteModal);
-            updateNoteBtn.addEventListener('click', updateNote);
-            deleteNoteBtn.addEventListener('click', deleteNote);
-            closeEditModalBtn.addEventListener('click', closeEditNoteModal);
-            exportNotesBtn.addEventListener('click', exportNotes);
-            importNotesBtn.addEventListener('click', importNotes);
-            clearNotesBtn.addEventListener('click', clearAllNotes);
-
-            // Color selection
-            colorOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    colorOptions.forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                    state.selectedColor = option.getAttribute('data-color');
-                });
-            });
-
-            editColorOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    editColorOptions.forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                    state.selectedColor = option.getAttribute('data-color');
-                });
-            });
-
+            closeSettings.addEventListener('click', closeSettingsPanel);
+            backToCamera.addEventListener('click', closeEditModal);
+            
             // Theme selection
             themeOptions.forEach(option => {
                 option.addEventListener('click', () => {
+                    const theme = option.getAttribute('data-theme');
+                    setTheme(theme);
+                    
+                    // Update active state
                     themeOptions.forEach(opt => opt.classList.remove('active'));
                     option.classList.add('active');
-                    const theme = option.getAttribute('data-theme');
-                    changeTheme(theme);
                 });
             });
-
-            // Settings changes
-            fontSelect.addEventListener('change', updateFont);
-            uiDensitySelect.addEventListener('change', updateUIDensity);
-
-            // Modal backdrop clicks
-            addNoteModal.addEventListener('click', (e) => {
-                if (e.target === addNoteModal) closeAddNoteModal();
+            
+            // Font selection
+            fontOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const font = option.getAttribute('data-font');
+                    setFont(font);
+                    
+                    // Update active state
+                    fontOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                });
             });
-
-            editNoteModal.addEventListener('click', (e) => {
-                if (e.target === editNoteModal) closeEditNoteModal();
+            
+            // Note style selection
+            noteStyleOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const style = option.getAttribute('data-style');
+                    setNoteStyle(style);
+                    
+                    // Update active state
+                    noteStyleOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                });
             });
-
-            // Add ripple effect to buttons
-            document.querySelectorAll('.icon-button, .btn, .add-note-btn').forEach(button => {
+            
+            // Data management
+            exportNotesBtn.addEventListener('click', exportNotes);
+            importNotesBtn.addEventListener('click', importNotes);
+            clearNotesBtn.addEventListener('click', clearAllNotes);
+            
+            // Camera container click for adding notes
+            cameraContainer.addEventListener('click', (e) => {
+                if (e.target === cameraContainer || e.target === cameraFeed) {
+                    addNoteAtPosition(e.clientX, e.clientY);
+                }
+            });
+            
+            // Ripple effect for buttons
+            document.querySelectorAll('.control-btn, .settings-btn, .permission-btn').forEach(button => {
                 button.addEventListener('click', createRipple);
             });
         }
 
-        // Camera functionality
-        async function startCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                cameraView.srcObject = stream;
-            } catch (err) {
-                console.error('Error accessing camera:', err);
-                // Fallback to a static background if camera is not available
-                cameraView.style.display = 'none';
-                document.querySelector('.camera-container').style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-            }
-        }
-
-        // Note management
-        function openAddNoteModal() {
-            noteContentInput.value = '';
-            state.selectedColor = '#FFFFFF';
-            colorOptions.forEach(opt => {
-                opt.classList.toggle('active', opt.getAttribute('data-color') === '#FFFFFF');
-            });
-            addNoteModal.classList.add('active');
-            noteContentInput.focus();
-        }
-
-        function closeAddNoteModal() {
-            addNoteModal.classList.remove('active');
-        }
-
-        function openEditNoteModal(noteId) {
-            const note = state.notes.find(n => n.id === noteId);
-            if (!note) return;
-
-            state.currentNoteId = noteId;
-            editNoteContentInput.value = note.content;
-            state.selectedColor = note.color;
-            
-            editColorOptions.forEach(opt => {
-                opt.classList.toggle('active', opt.getAttribute('data-color') === note.color);
-            });
-            
-            editNoteModal.classList.add('active');
-            editNoteContentInput.focus();
-        }
-
-        function closeEditNoteModal() {
-            editNoteModal.classList.remove('active');
-            state.currentNoteId = null;
-        }
-
-        function saveNote() {
-            const content = noteContentInput.value.trim();
-            if (!content) return;
-
-            const note = {
-                id: Date.now().toString(),
-                content: content,
-                color: state.selectedColor,
-                x: Math.random() * (window.innerWidth - 200),
-                y: Math.random() * (window.innerHeight - 200),
-                timestamp: new Date().toLocaleString()
-            };
-
-            state.notes.push(note);
-            saveNotes();
-            renderNote(note);
-            closeAddNoteModal();
-        }
-
-        function updateNote() {
-            if (!state.currentNoteId) return;
-
-            const content = editNoteContentInput.value.trim();
-            if (!content) return;
-
-            const noteIndex = state.notes.findIndex(n => n.id === state.currentNoteId);
-            if (noteIndex === -1) return;
-
-            state.notes[noteIndex].content = content;
-            state.notes[noteIndex].color = state.selectedColor;
-            state.notes[noteIndex].timestamp = new Date().toLocaleString();
-
-            saveNotes();
-            renderNotes();
-            closeEditNoteModal();
-        }
-
-        function deleteNote() {
-            if (!state.currentNoteId) return;
-
-            const noteIndex = state.notes.findIndex(n => n.id === state.currentNoteId);
-            if (noteIndex === -1) return;
-
-            // Animate deletion
-            const noteElement = document.querySelector(`[data-note-id="${state.currentNoteId}"]`);
-            if (noteElement) {
-                noteElement.classList.add('deleting');
-                setTimeout(() => {
-                    state.notes.splice(noteIndex, 1);
-                    saveNotes();
-                    renderNotes();
-                }, 300);
+        // Camera functions
+        function requestCameraPermission() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        cameraFeed.srcObject = stream;
+                        permissionScreen.style.display = 'none';
+                        cameraContainer.style.display = 'block';
+                        localStorage.setItem('cameraPermission', 'granted');
+                    })
+                    .catch(error => {
+                        console.error('Camera error:', error);
+                        alert('Unable to access camera. Please check permissions and try again.');
+                    });
             } else {
-                state.notes.splice(noteIndex, 1);
-                saveNotes();
-                renderNotes();
+                alert('Your browser does not support camera access.');
             }
-
-            closeEditNoteModal();
         }
 
-        function renderNotes() {
-            noteContainer.innerHTML = '';
-            state.notes.forEach(note => renderNote(note));
+        function startCamera() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        cameraFeed.srcObject = stream;
+                        permissionScreen.style.display = 'none';
+                        cameraContainer.style.display = 'block';
+                    })
+                    .catch(error => {
+                        console.error('Camera error:', error);
+                        permissionScreen.style.display = 'flex';
+                    });
+            }
+        }
+
+        // Note functions
+        function addNoteAtCenter() {
+            const rect = cameraContainer.getBoundingClientRect();
+            const x = rect.width / 2 - 90;
+            const y = rect.height / 2 - 75;
+            addNote(x, y);
+        }
+
+        function addNoteAtPosition(clientX, clientY) {
+            const rect = cameraContainer.getBoundingClientRect();
+            const x = clientX - rect.left - 90;
+            const y = clientY - rect.top - 75;
+            addNote(x, y);
+        }
+
+        function addNote(x, y) {
+            const noteId = 'note-' + Date.now();
+            const note = {
+                id: noteId,
+                x: x,
+                y: y,
+                content: 'Double click to edit',
+                style: state.noteStyle
+            };
+            
+            state.notes.push(note);
+            renderNote(note);
+            saveNotes();
         }
 
         function renderNote(note) {
             const noteElement = document.createElement('div');
-            noteElement.className = 'note';
-            noteElement.setAttribute('data-note-id', note.id);
-            noteElement.style.left = `${note.x}px`;
-            noteElement.style.top = `${note.y}px`;
-            noteElement.style.backgroundColor = note.color;
-            noteElement.style.color = getContrastColor(note.color);
-
+            noteElement.className = `note ${note.style}`;
+            noteElement.id = note.id;
+            noteElement.style.left = note.x + 'px';
+            noteElement.style.top = note.y + 'px';
+            
             noteElement.innerHTML = `
-                <div class="note-content">${note.content}</div>
-                <div class="note-timestamp">${note.timestamp}</div>
-                <div class="note-actions">
-                    <button class="note-action edit-note" title="Edit">
-                        <span class="material-symbols-outlined">edit</span>
-                    </button>
-                    <button class="note-action delete-note" title="Delete">
-                        <span class="material-symbols-outlined">delete</span>
-                    </button>
+                <div class="note-header">
+                    <div class="note-actions">
+                        <button class="note-action-btn edit-note" title="Edit">
+                            <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <button class="note-action-btn delete-note" title="Delete">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    </div>
                 </div>
+                <div class="note-content" contenteditable="false">${note.content}</div>
             `;
-
-            // Add event listeners for note actions
-            noteElement.querySelector('.edit-note').addEventListener('click', (e) => {
-                e.stopPropagation();
-                openEditNoteModal(note.id);
-            });
-
-            noteElement.querySelector('.delete-note').addEventListener('click', (e) => {
-                e.stopPropagation();
-                state.currentNoteId = note.id;
-                deleteNote();
-            });
-
+            
+            notesContainer.appendChild(noteElement);
+            
+            // Set up event listeners for the note
+            const editBtn = noteElement.querySelector('.edit-note');
+            const deleteBtn = noteElement.querySelector('.delete-note');
+            const noteContent = noteElement.querySelector('.note-content');
+            
+            editBtn.addEventListener('click', () => openEditModal(note.id));
+            deleteBtn.addEventListener('click', () => deleteNote(note.id));
+            
+            // Double click to edit
+            noteElement.addEventListener('dblclick', () => openEditModal(note.id));
+            
             // Make note draggable
-            makeDraggable(noteElement, note.id);
-
-            noteContainer.appendChild(noteElement);
+            makeNoteDraggable(noteElement, note);
         }
 
-        function makeDraggable(element, noteId) {
-            let isDragging = false;
-            let offsetX, offsetY;
-
-            element.addEventListener('mousedown', startDrag);
-            element.addEventListener('touchstart', startDrag);
-
+        function makeNoteDraggable(noteElement, note) {
+            noteElement.addEventListener('mousedown', startDrag);
+            noteElement.addEventListener('touchstart', startDrag);
+            
             function startDrag(e) {
-                isDragging = true;
-                element.classList.add('dragging');
+                e.preventDefault();
+                state.isDragging = true;
+                state.dragNote = note;
                 
-                const rect = element.getBoundingClientRect();
+                const rect = noteElement.getBoundingClientRect();
                 if (e.type === 'mousedown') {
-                    offsetX = e.clientX - rect.left;
-                    offsetY = e.clientY - rect.top;
-                } else {
-                    offsetX = e.touches[0].clientX - rect.left;
-                    offsetY = e.touches[0].clientY - rect.top;
+                    state.dragOffset.x = e.clientX - rect.left;
+                    state.dragOffset.y = e.clientY - rect.top;
+                } else if (e.type === 'touchstart') {
+                    state.dragOffset.x = e.touches[0].clientX - rect.left;
+                    state.dragOffset.y = e.touches[0].clientY - rect.top;
                 }
-
+                
                 document.addEventListener('mousemove', drag);
                 document.addEventListener('touchmove', drag);
                 document.addEventListener('mouseup', stopDrag);
                 document.addEventListener('touchend', stopDrag);
             }
-
+            
             function drag(e) {
-                if (!isDragging) return;
+                if (!state.isDragging) return;
                 
                 let clientX, clientY;
                 if (e.type === 'mousemove') {
                     clientX = e.clientX;
                     clientY = e.clientY;
-                } else {
+                } else if (e.type === 'touchmove') {
                     clientX = e.touches[0].clientX;
                     clientY = e.touches[0].clientY;
                 }
-
-                const x = clientX - offsetX;
-                const y = clientY - offsetY;
-
-                // Constrain to viewport
-                const maxX = window.innerWidth - element.offsetWidth;
-                const maxY = window.innerHeight - element.offsetHeight;
-
-                element.style.left = `${Math.max(0, Math.min(x, maxX))}px`;
-                element.style.top = `${Math.max(0, Math.min(y, maxY))}px`;
-            }
-
-            function stopDrag() {
-                if (!isDragging) return;
                 
-                isDragging = false;
-                element.classList.remove('dragging');
+                const newX = clientX - state.dragOffset.x;
+                const newY = clientY - state.dragOffset.y;
+                
+                noteElement.style.left = newX + 'px';
+                noteElement.style.top = newY + 'px';
+                
+                // Update note position in state
+                state.dragNote.x = newX;
+                state.dragNote.y = newY;
+            }
+            
+            function stopDrag() {
+                state.isDragging = false;
+                state.dragNote = null;
                 
                 document.removeEventListener('mousemove', drag);
                 document.removeEventListener('touchmove', drag);
                 document.removeEventListener('mouseup', stopDrag);
                 document.removeEventListener('touchend', stopDrag);
+                
+                // Save updated position
+                saveNotes();
+            }
+        }
 
-                // Save new position
-                const noteIndex = state.notes.findIndex(n => n.id === noteId);
-                if (noteIndex !== -1) {
-                    state.notes[noteIndex].x = parseInt(element.style.left);
-                    state.notes[noteIndex].y = parseInt(element.style.top);
+        function openEditModal(noteId) {
+            state.currentNoteId = noteId;
+            const note = state.notes.find(n => n.id === noteId);
+            if (note) {
+                editNoteContent.value = note.content;
+                editNoteModal.classList.add('active');
+                cameraContainer.style.display = 'none';
+            }
+        }
+
+        function closeEditModal() {
+            if (state.currentNoteId) {
+                const note = state.notes.find(n => n.id === state.currentNoteId);
+                if (note) {
+                    note.content = editNoteContent.value;
+                    
+                    // Update the note content in the DOM
+                    const noteElement = document.getElementById(state.currentNoteId);
+                    if (noteElement) {
+                        const contentElement = noteElement.querySelector('.note-content');
+                        contentElement.textContent = note.content;
+                    }
+                    
                     saveNotes();
                 }
             }
-        }
-
-        // Settings functionality
-        function openSettings() {
-            settingsPanel.classList.add('active');
-        }
-
-        function closeSettings() {
-            settingsPanel.classList.remove('active');
-        }
-
-        function toggleDarkMode() {
-            state.isDarkMode = !state.isDarkMode;
-            document.body.classList.toggle('dark-mode', state.isDarkMode);
-            localStorage.setItem('isDarkMode', state.isDarkMode);
             
-            // Update theme button icon
-            const icon = themeBtn.querySelector('span');
-            icon.textContent = state.isDarkMode ? 'light_mode' : 'dark_mode';
+            editNoteModal.classList.remove('active');
+            cameraContainer.style.display = 'block';
+            state.currentNoteId = null;
         }
 
-        function changeTheme(theme) {
-            state.currentTheme = theme;
-            document.body.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-        }
-
-        function updateFont() {
-            const font = fontSelect.value;
-            document.body.style.fontFamily = font;
-            localStorage.setItem('font', font);
-        }
-
-        function updateUIDensity() {
-            const density = uiDensitySelect.value;
-            document.body.setAttribute('data-density', density);
-            localStorage.setItem('uiDensity', density);
-        }
-
-        // Data management
-        function saveNotes() {
-            localStorage.setItem('notes', JSON.stringify(state.notes));
-        }
-
-        function loadNotes() {
-            const savedNotes = localStorage.getItem('notes');
-            if (savedNotes) {
-                state.notes = JSON.parse(savedNotes);
-                renderNotes();
+        function deleteNote(noteId) {
+            const noteElement = document.getElementById(noteId);
+            if (noteElement) {
+                noteElement.classList.add('removing');
+                setTimeout(() => {
+                    noteElement.remove();
+                    state.notes = state.notes.filter(n => n.id !== noteId);
+                    saveNotes();
+                }, 300);
             }
         }
 
-        function exportNotes() {
-            const dataStr = JSON.stringify(state.notes, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        // Settings functions
+        function openSettings() {
+            settingsPanel.classList.add('open');
+        }
+
+        function closeSettingsPanel() {
+            settingsPanel.classList.remove('open');
+        }
+
+        function setTheme(theme) {
+            state.currentTheme = theme;
+            document.documentElement.setAttribute('data-theme', theme);
+            saveSettings();
             
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = 'notesnap-notes.json';
-            link.click();
+            // Update all notes with new theme
+            state.notes.forEach(note => {
+                const noteElement = document.getElementById(note.id);
+                if (noteElement) {
+                    // Note styling is handled by CSS variables
+                }
+            });
+        }
+
+        function setFont(font) {
+            state.currentFont = font;
+            document.documentElement.style.setProperty('--font-family', font);
+            saveSettings();
+            
+            // Update all notes with new font
+            state.notes.forEach(note => {
+                const noteElement = document.getElementById(note.id);
+                if (noteElement) {
+                    noteElement.style.fontFamily = `'${font}', sans-serif`;
+                }
+            });
+        }
+
+        function setNoteStyle(style) {
+            state.noteStyle = style;
+            saveSettings();
+            
+            // Update all notes with new style
+            state.notes.forEach(note => {
+                const noteElement = document.getElementById(note.id);
+                if (noteElement) {
+                    // Remove all style classes
+                    noteElement.classList.remove('rounded', 'square', 'bubble');
+                    // Add new style class
+                    noteElement.classList.add(style);
+                    // Update note in state
+                    note.style = style;
+                }
+            });
+            
+            saveNotes();
+        }
+
+        // Data management functions
+        function exportNotes() {
+            const dataStr = JSON.stringify(state.notes);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'notesnap-notes.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
         }
 
         function importNotes() {
@@ -1196,16 +1104,27 @@
                 reader.onload = event => {
                     try {
                         const importedNotes = JSON.parse(event.target.result);
+                        
                         if (Array.isArray(importedNotes)) {
+                            // Clear existing notes
+                            state.notes.forEach(note => {
+                                const noteElement = document.getElementById(note.id);
+                                if (noteElement) noteElement.remove();
+                            });
+                            
+                            // Add imported notes
                             state.notes = importedNotes;
+                            state.notes.forEach(note => {
+                                renderNote(note);
+                            });
+                            
                             saveNotes();
-                            renderNotes();
                             alert('Notes imported successfully!');
                         } else {
                             alert('Invalid notes file format.');
                         }
-                    } catch (err) {
-                        alert('Error importing notes: ' + err.message);
+                    } catch (error) {
+                        alert('Error importing notes: ' + error.message);
                     }
                 };
                 
@@ -1217,79 +1136,111 @@
 
         function clearAllNotes() {
             if (confirm('Are you sure you want to delete all notes? This action cannot be undone.')) {
+                state.notes.forEach(note => {
+                    const noteElement = document.getElementById(note.id);
+                    if (noteElement) noteElement.remove();
+                });
+                
                 state.notes = [];
                 saveNotes();
-                renderNotes();
             }
         }
 
-        function applySavedSettings() {
-            // Apply saved theme
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                state.currentTheme = savedTheme;
-                document.body.setAttribute('data-theme', savedTheme);
-                themeOptions.forEach(opt => {
-                    opt.classList.toggle('active', opt.getAttribute('data-theme') === savedTheme);
-                });
-            }
+        // Storage functions
+        function saveNotes() {
+            localStorage.setItem('notesnap-notes', JSON.stringify(state.notes));
+        }
 
-            // Apply saved font
-            const savedFont = localStorage.getItem('font');
-            if (savedFont) {
-                fontSelect.value = savedFont;
-                document.body.style.fontFamily = savedFont;
-            }
-
-            // Apply saved UI density
-            const savedDensity = localStorage.getItem('uiDensity');
-            if (savedDensity) {
-                uiDensitySelect.value = savedDensity;
-                document.body.setAttribute('data-density', savedDensity);
-            }
-
-            // Apply saved dark mode
-            const savedDarkMode = localStorage.getItem('isDarkMode') === 'true';
-            if (savedDarkMode) {
-                state.isDarkMode = savedDarkMode;
-                document.body.classList.toggle('dark-mode', savedDarkMode);
-                const icon = themeBtn.querySelector('span');
-                icon.textContent = savedDarkMode ? 'light_mode' : 'dark_mode';
+        function loadNotes() {
+            const savedNotes = localStorage.getItem('notesnap-notes');
+            if (savedNotes) {
+                try {
+                    state.notes = JSON.parse(savedNotes);
+                    state.notes.forEach(note => {
+                        renderNote(note);
+                    });
+                } catch (error) {
+                    console.error('Error loading notes:', error);
+                }
             }
         }
 
-        // Utility functions
-        function getContrastColor(hexcolor) {
-            // If the color is light, return dark text, otherwise light text
-            const r = parseInt(hexcolor.substr(1, 2), 16);
-            const g = parseInt(hexcolor.substr(3, 2), 16);
-            const b = parseInt(hexcolor.substr(5, 2), 16);
-            const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-            return brightness > 128 ? '#000000' : '#FFFFFF';
+        function saveSettings() {
+            const settings = {
+                theme: state.currentTheme,
+                font: state.currentFont,
+                noteStyle: state.noteStyle
+            };
+            localStorage.setItem('notesnap-settings', JSON.stringify(settings));
         }
 
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('notesnap-settings');
+            if (savedSettings) {
+                try {
+                    const settings = JSON.parse(savedSettings);
+                    state.currentTheme = settings.theme || 'classic-sky';
+                    state.currentFont = settings.font || 'Poppins';
+                    state.noteStyle = settings.noteStyle || 'rounded';
+                    
+                    // Apply settings
+                    setTheme(state.currentTheme);
+                    setFont(state.currentFont);
+                    setNoteStyle(state.noteStyle);
+                    
+                    // Update UI to reflect current settings
+                    themeOptions.forEach(option => {
+                        if (option.getAttribute('data-theme') === state.currentTheme) {
+                            option.classList.add('active');
+                        } else {
+                            option.classList.remove('active');
+                        }
+                    });
+                    
+                    fontOptions.forEach(option => {
+                        if (option.getAttribute('data-font') === state.currentFont) {
+                            option.classList.add('active');
+                        } else {
+                            option.classList.remove('active');
+                        }
+                    });
+                    
+                    noteStyleOptions.forEach(option => {
+                        if (option.getAttribute('data-style') === state.noteStyle) {
+                            option.classList.add('active');
+                        } else {
+                            option.classList.remove('active');
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading settings:', error);
+                }
+            }
+        }
+
+        // Ripple effect
         function createRipple(e) {
             const button = e.currentTarget;
             const circle = document.createElement('span');
             const diameter = Math.max(button.clientWidth, button.clientHeight);
             const radius = diameter / 2;
-
+            
             const rect = button.getBoundingClientRect();
-            circle.style.width = circle.style.height = `${diameter}px`;
-            circle.style.left = `${e.clientX - rect.left - radius}px`;
-            circle.style.top = `${e.clientY - rect.top - radius}px`;
+            circle.style.width = circle.style.height = diameter + 'px';
+            circle.style.left = (e.clientX - rect.left - radius) + 'px';
+            circle.style.top = (e.clientY - rect.top - radius) + 'px';
             circle.classList.add('ripple');
-
+            
             const ripple = button.getElementsByClassName('ripple')[0];
             if (ripple) {
                 ripple.remove();
             }
-
+            
             button.appendChild(circle);
         }
 
         // Initialize the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
