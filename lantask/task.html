@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LanTask Pro - Premium Task Management</title>
+    <title>LanTask - LanDecs</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
     <link rel="stylesheet" href="task.css">
-<script src="voice.js"></script>
 </head>
 
 <body>
@@ -19,7 +18,9 @@
         <!-- Enhanced Sidebar Navigation -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="headline-small">LanTask Pro</div>
+                <div class="logo-container">
+                    <div class="headline-small logo-text">LanTask</div>
+                </div>
                 <button class="button-outlined button" id="sidebar-toggle">
                     <span class="material-symbols-outlined">chevron_left</span>
                 </button>
@@ -78,7 +79,7 @@
         <div class="main-content" id="main-content">
             <!-- Enhanced Top App Bar -->
             <div class="top-app-bar">
-                <button class="button-outlined button" id="menu-button">
+                <button style="margin: 15px;"class="button-outlined button" id="menu-button">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
 
@@ -88,9 +89,6 @@
                     <button class="button-outlined button" id="search-button">
                         <span class="material-symbols-outlined">search</span>
                     </button>
-        <button class="button-outlined button voice-assistant-button" id="voice-assistant-button">
-            <span class="material-symbols-outlined">mic</span>
-        </button>
                 </div>
             </div>
 
@@ -102,7 +100,7 @@
                         <div class="card-header">
                             <div class="title-large greeting-editable" id="greeting-text">Welcome to LanTask Pro!</div>
                         </div>
-                        <p class="body-medium" id="dashboard-summary">You have <strong>3 tasks</strong> to complete today. Your productivity score is <strong>85%</strong>.</p>
+                        <p class="body-medium" id="dashboard-summary">Loading your tasks...</p>
 
                         <div class="quick-action-buttons">
                             <button class="quick-action-button" id="quick-timer">
@@ -129,22 +127,22 @@
                     <div class="stats-grid">
                         <div class="stat-card spring-slide-up" style="animation-delay: 0.1s;">
                             <div class="material-symbols-outlined" style="font-size: 2rem; color: var(--dynamic-primary);">task_alt</div>
-                            <div class="stat-value" id="total-tasks-count">12</div>
+                            <div class="stat-value" id="total-tasks-count">0</div>
                             <div class="stat-label">Total Tasks</div>
                         </div>
                         <div class="stat-card spring-slide-up" style="animation-delay: 0.2s;">
                             <div class="material-symbols-outlined" style="font-size: 2rem; color: var(--md-success);">check_circle</div>
-                            <div class="stat-value" id="completed-tasks-count">8</div>
+                            <div class="stat-value" id="completed-tasks-count">0</div>
                             <div class="stat-label">Completed</div>
                         </div>
                         <div class="stat-card spring-slide-up" style="animation-delay: 0.3s;">
                             <div class="material-symbols-outlined" style="font-size: 2rem; color: var(--md-warning);">schedule</div>
-                            <div class="stat-value" id="pending-tasks-count">3</div>
+                            <div class="stat-value" id="pending-tasks-count">0</div>
                             <div class="stat-label">Pending</div>
                         </div>
                         <div class="stat-card spring-slide-up" style="animation-delay: 0.4s;">
                             <div class="material-symbols-outlined" style="font-size: 2rem; color: var(--md-error);">priority_high</div>
-                            <div class="stat-value" id="overdue-tasks-count">1</div>
+                            <div class="stat-value" id="overdue-tasks-count">0</div>
                             <div class="stat-label">Overdue</div>
                         </div>
                     </div>
@@ -204,7 +202,7 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="title-large">Today's Tasks</div>
-                            <div class="chip" id="today-tasks-count">3 tasks</div>
+                            <div class="chip" id="today-tasks-count">0 tasks</div>
                         </div>
                         <div id="today-tasks-list">
                             <!-- Today's tasks will be dynamically added here -->
@@ -235,7 +233,7 @@
                                 </button>
                             </div>
 
-                            <div class="settings-option">
+                           <div class="settings-option">
                                 <div class="settings-option-label">
                                     <div class="settings-option-title">Dark Mode</div>
                                     <div class="settings-option-description">Switch between light and dark themes</div>
@@ -470,27 +468,30 @@
                         <div class="w-100" style="height: 300px;">
                             <canvas id="analytics-chart"></canvas>
                         </div>
+                        <div class="analytics-insights" id="analytics-insights">
+                            <!-- Analytics insights will be dynamically added here -->
+                        </div>
                     </div>
 
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="material-symbols-outlined" style="font-size: 2rem; color: var(--dynamic-primary);">trending_up</div>
-                            <div class="stat-value" id="completion-rate">85%</div>
+                            <div class="stat-value" id="completion-rate">0%</div>
                             <div class="stat-label">Completion Rate</div>
                         </div>
                         <div class="stat-card">
                             <div class="material-symbols-outlined" style="font-size: 2rem; color: var(--md-success);">speed</div>
-                            <div class="stat-value" id="tasks-per-week">12.3</div>
+                            <div class="stat-value" id="tasks-per-week">0</div>
                             <div class="stat-label">Tasks/Week</div>
                         </div>
                         <div class="stat-card">
                             <div class="material-symbols-outlined" style="font-size: 2rem; color: var(--md-info);">avg_time</div>
-                            <div class="stat-value" id="avg-time-per-task">2.1h</div>
+                            <div class="stat-value" id="avg-time-per-task">0h</div>
                             <div class="stat-label">Avg. Time/Task</div>
                         </div>
                         <div class="stat-card">
                             <div class="material-symbols-outlined" style="font-size: 2rem; color: var(--md-warning);">calendar_clock</div>
-                            <div class="stat-value" id="on-time-rate">92%</div>
+                            <div class="stat-value" id="on-time-rate">0%</div>
                             <div class="stat-label">On Time Rate</div>
                         </div>
                     </div>
@@ -775,6 +776,98 @@
         </div>
     </div>
 
+    <!-- Break Mode -->
+    <div class="break-mode" id="break-mode">
+        <div class="break-header">
+            <button class="button-outlined button" id="back-from-break">
+                <span class="material-symbols-outlined" style="color: white;">arrow_back</span>
+            </button>
+            <div class="headline-small" >Take a Break</div>
+            <button style="color: white;"class="button-outlined button" id="breath-button">
+                <span class="material-symbols-outlined" style="color: white;">air</span>
+                Breathe
+            </button>
+        </div>
+
+        <div class="break-content">
+<div class="breathing-animation" id="breathing-animation">
+  <img src="break.svg"
+       alt="Short break illustration"
+       class="break-image"
+       draggable="false"
+       oncontextmenu="return false;"
+       onmousedown="return false;"
+       onselectstart="return false;">
+</div>
+<style>
+.breathing-animation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    animation: fadeIn 1.2s ease-in-out;
+    user-select: none;
+    pointer-events: none; /* Prevent drag/drop */
+}
+
+.break-image {
+    display: block;
+    max-width: 600px;
+    width: 90%;
+    height: auto;
+    border-radius: 24px;
+    animation: breathe 4s ease-in-out infinite;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    user-drag: none;
+    user-select: none;
+    pointer-events: none; /* Prevent right-click & drag */
+}
+
+/* Breathing animation */
+@keyframes breathe {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .break-image {
+        max-width: 480px;
+        border-radius: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .break-image {
+        max-width: 360px;
+        border-radius: 16px;
+    }
+}
+</style>
+            <div class="break-timer" id="break-timer">05:00</div>
+            <div class="break-quote" id="break-quote">
+                "Sometimes the most productive thing you can do is relax."
+            </div>
+        </div>
+    </div>
+
     <!-- Confirmation Modal -->
     <div class="confirmation-modal" id="confirmation-modal">
         <div class="confirmation-content">
@@ -832,7 +925,8 @@
 
             <div class="form-group">
                 <label class="form-label" for="task-due-date">Due Date (Optional)</label>
-                <input type="date" class="text-field" id="task-due-date">
+                <input type="text" class="text-field" id="task-due-date" placeholder="e.g., tomorrow, next Monday, 2024-12-31">
+                <div class="form-hint">You can type natural language dates</div>
             </div>
 
             <div class="form-group">
@@ -902,2010 +996,7 @@
         </div>
     </div>
 
-    <script>
-        // Enhanced LanTask Pro Application
-        class LanTaskPro {
-            constructor() {
-                this.tasks = this.loadTasks();
-                this.currentPage = 'dashboard';
-                this.currentTheme = 'default';
-                this.isSidebarCollapsed = false;
-                this.isTimerRunning = false;
-                this.timerSeconds = 25 * 60; // 25 minutes
-                this.timerInterval = null;
-                this.focusTimerSeconds = 45 * 60; // 45 minutes
-                this.focusTimerInterval = null;
-                this.isFocusTimerRunning = false;
-                this.isFullscreenTimerActive = false;
-                this.isMusicPlaying = false;
-                this.currentTrack = 0;
-                this.confirmationAction = null;
-                this.confirmationTimer = null;
-                this.voiceAssistant = null;
-                this.confirmationSeconds = 5;
-                this.sensitiveWords = ['password', 'secret', 'confidential', 'private'];
-                this.motivationalQuotes = [
-                    "The secret of getting ahead is getting started. - Mark Twain",
-                    "It's not whether you get knocked down, it's whether you get up. - Vince Lombardi",
-                    "Your time is limited, don't waste it living someone else's life. - Steve Jobs",
-                    "The way to get started is to quit talking and begin doing. - Walt Disney",
-                    "Don't let yesterday take up too much of today. - Will Rogers",
-                    "You learn more from failure than from success. Don't let it stop you. - Unknown",
-                    "The harder you work for something, the greater you'll feel when you achieve it. - Unknown",
-                    "Dream bigger. Do bigger. - Unknown",
-                    "Don't stop when you're tired. Stop when you're done. - Unknown",
-                    "Wake up with determination. Go to bed with satisfaction. - Unknown"
-                ];
-                this.focusMusic = [{
-                        name: "Ambient Study",
-                        src: "https://example.com/ambient-study.mp3"
-                    },
-                    {
-                        name: "Concentration Flow",
-                        src: "https://example.com/concentration-flow.mp3"
-                    },
-                    {
-                        name: "Deep Focus",
-                        src: "https://example.com/deep-focus.mp3"
-                    },
-                    {
-                        name: "Productive Mind",
-                        src: "https://example.com/productive-mind.mp3"
-                    }
-                ];
-                this.audio = new Audio();
-                this.analyticsChart = null;
-
-                this.init();
-            }
-
-            init() {
-                this.setupEventListeners();
-                this.renderTasks();
-                this.setupChart();
-                this.applyTheme(this.currentTheme);
-                this.loadSettings();
-                this.checkActiveTimer();
-                this.updateStats();
-
-                // Load saved theme
-                const savedTheme = localStorage.getItem('lantask-pro-theme');
-                if (savedTheme) {
-                    this.applyTheme(savedTheme);
-
-                    // Update theme selector
-                    document.querySelectorAll('.theme-option').forEach(option => {
-                        option.classList.remove('active');
-                        if (option.getAttribute('data-theme') === savedTheme) {
-                            option.classList.add('active');
-                        }
-                    });
-
-                }
-        // Initialize Voice Assistant after task manager is ready
-        setTimeout(() => {
-            this.voiceAssistant = new VoiceAssistant(this);
-        }, 1000);
-
-                // Load custom greeting
-                const savedGreeting = localStorage.getItem('lantask-pro-greeting');
-                if (savedGreeting) {
-                    document.getElementById('greeting-text').textContent = savedGreeting;
-                }
-            }
-
-    // Add this method to expose voice assistant to other components
-    getVoiceAssistant() {
-        return this.voiceAssistant;
-    }
-            // Enhanced Task Management
-            loadTasks() {
-                const storedTasks = localStorage.getItem('lantask-pro-tasks');
-                if (storedTasks) {
-                    return JSON.parse(storedTasks);
-                }
-
-                // Return sample tasks if none exist
-                return [{
-                        id: 1,
-                        title: "Complete project proposal",
-                        description: "Finish the client proposal document with all requirements",
-                        completed: false,
-                        priority: "high",
-                        category: "work",
-                        dueDate: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                        pinned: true,
-                        tags: ["client", "deadline"],
-                        timeEstimate: "2h",
-                        subtasks: []
-                    },
-                    {
-                        id: 2,
-                        title: "Buy groceries",
-                        description: "Milk, eggs, bread, fruits",
-                        completed: false,
-                        priority: "medium",
-                        category: "personal",
-                        dueDate: new Date().toISOString().split('T')[0], // Today
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                        pinned: false,
-                        tags: ["shopping"],
-                        timeEstimate: "30m",
-                        subtasks: []
-                    },
-                    {
-                        id: 3,
-                        title: "Morning workout",
-                        description: "30 minutes of cardio and strength training",
-                        completed: true,
-                        priority: "medium",
-                        category: "health",
-                        dueDate: new Date().toISOString().split('T')[0], // Today
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                        pinned: false,
-                        tags: ["fitness"],
-                        timeEstimate: "30m",
-                        subtasks: []
-                    }
-                ];
-            }
-
-            saveTasks() {
-                localStorage.setItem('lantask-pro-tasks', JSON.stringify(this.tasks));
-                this.updateStats();
-            }
-
-            addTask(taskData) {
-                const newTask = {
-                    id: Date.now(),
-                    title: taskData.title,
-                    description: taskData.description || '',
-                    completed: false,
-                    priority: taskData.priority || 'medium',
-                    category: taskData.category || 'personal',
-                    dueDate: taskData.dueDate || null,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    pinned: false,
-                    tags: [],
-                    timeEstimate: taskData.timeEstimate || 0,
-                    subtasks: []
-                };
-
-                // AI-powered auto-categorization
-                if (!taskData.category && this.getSetting('autoCategorization', true)) {
-                    newTask.category = this.autoCategorizeTask(taskData.title);
-                }
-
-                // AI-powered priority suggestion
-                if (!taskData.priority && this.getSetting('priorityPrediction', false)) {
-                    newTask.priority = this.predictPriority(taskData.title);
-                }
-
-                // Extract time estimate if provided
-                if (taskData.timeEstimate) {
-                    newTask.timeEstimate = taskData.timeEstimate;
-                }
-
-                this.tasks.unshift(newTask);
-                this.saveTasks();
-                this.renderTasks();
-
-                // Animate the new task
-                this.animateNewTask(newTask.id);
-
-                return newTask;
-            }
-
-            updateTask(taskId, updates) {
-                const taskIndex = this.tasks.findIndex(task => task.id === taskId);
-                if (taskIndex !== -1) {
-                    this.tasks[taskIndex] = {
-                        ...this.tasks[taskIndex],
-                        ...updates,
-                        updatedAt: new Date().toISOString()
-                    };
-                    this.saveTasks();
-                    this.renderTasks();
-                    return true;
-                }
-                return false;
-            }
-
-            deleteTask(taskId) {
-                this.showConfirmation(
-                    "Delete Task",
-                    "Are you sure you want to delete this task?",
-                    () => {
-                        this.tasks = this.tasks.filter(task => task.id !== taskId);
-                        this.saveTasks();
-                        this.renderTasks();
-                        this.showNotification('Task deleted successfully', 'success');
-                    }
-                );
-            }
-
-            toggleTaskCompletion(taskId) {
-                const task = this.tasks.find(t => t.id === taskId);
-                if (task) {
-                    task.completed = !task.completed;
-                    task.updatedAt = new Date().toISOString();
-                    this.saveTasks();
-                    this.renderTasks();
-
-                    // Haptic feedback simulation
-                    this.triggerHapticFeedback();
-
-                    return true;
-                }
-                return false;
-            }
-
-            toggleTaskPin(taskId) {
-                const task = this.tasks.find(t => t.id === taskId);
-                if (task) {
-                    task.pinned = !task.pinned;
-                    task.updatedAt = new Date().toISOString();
-                    this.saveTasks();
-                    this.renderTasks();
-
-                    // Haptic feedback simulation
-                    this.triggerHapticFeedback();
-
-                    return true;
-                }
-                return false;
-            }
-
-            // AI-Powered Features
-            autoCategorizeTask(title) {
-                // Simple ML-based categorization using keyword matching
-                const categories = {
-                    'work': ['meeting', 'project', 'deadline', 'report', 'presentation', 'client', 'proposal', 'email'],
-                    'personal': ['buy', 'purchase', 'groceries', 'shopping', 'clean', 'home', 'family', 'friend'],
-                    'health': ['exercise', 'workout', 'gym', 'run', 'yoga', 'meditate', 'doctor', 'appointment', 'diet'],
-                    'learning': ['read', 'study', 'learn', 'course', 'book', 'research', 'tutorial', 'practice']
-                };
-
-                const lowerTitle = title.toLowerCase();
-
-                for (const [category, keywords] of Object.entries(categories)) {
-                    if (keywords.some(keyword => lowerTitle.includes(keyword))) {
-                        return category;
-                    }
-                }
-
-                return 'other';
-            }
-
-            predictPriority(title) {
-                // Simple ML-based priority prediction
-                const highPriorityKeywords = ['urgent', 'asap', 'important', 'critical', 'deadline', 'emergency'];
-                const lowPriorityKeywords = ['someday', 'maybe', 'optional', 'if time', 'when possible'];
-
-                const lowerTitle = title.toLowerCase();
-
-                if (highPriorityKeywords.some(keyword => lowerTitle.includes(keyword))) {
-                    return 'high';
-                }
-
-                if (lowPriorityKeywords.some(keyword => lowerTitle.includes(keyword))) {
-                    return 'low';
-                }
-
-                return 'medium';
-            }
-
-            generateSmartSuggestions(text) {
-                const suggestions = [];
-
-                // Time-based suggestions
-                const timeMatch = text.match(/(\d+)\s*(m|min|minute|minutes|h|hour|hours)/i);
-                if (timeMatch) {
-                    const timeValue = timeMatch[1];
-                    const timeUnit = timeMatch[2].toLowerCase();
-
-                    let displayTime = timeValue;
-                    if (timeUnit === 'h' || timeUnit === 'hour' || timeUnit === 'hours') {
-                        displayTime = `${timeValue}h`;
-                    } else {
-                        displayTime = `${timeValue}m`;
-                    }
-
-                    suggestions.push({
-                        text: `Start ${displayTime} timer`,
-                        action: () => this.startTimerFromSuggestion(timeValue, timeUnit)
-                    });
-                }
-
-                // Category-based suggestions
-                const detectedCategory = this.autoCategorizeTask(text);
-                if (detectedCategory !== 'other') {
-                    const categoryNames = {
-                        'work': 'Work',
-                        'personal': 'Personal',
-                        'health': 'Health',
-                        'learning': 'Learning'
-                    };
-
-                    suggestions.push({
-                        text: `Auto-sort to: ${categoryNames[detectedCategory]}`,
-                        action: () => {
-                            document.getElementById('task-category').value = detectedCategory;
-                        }
-                    });
-                }
-
-                // Priority-based suggestions
-                const predictedPriority = this.predictPriority(text);
-                if (predictedPriority !== 'medium') {
-                    const priorityNames = {
-                        'high': 'High',
-                        'low': 'Low'
-                    };
-
-                    suggestions.push({
-                        text: `Set priority to ${priorityNames[predictedPriority]}`,
-                        action: () => {
-                            document.getElementById('task-priority').value = predictedPriority;
-                        }
-                    });
-                }
-
-                return suggestions;
-            }
-
-            // Enhanced UI Rendering
-            renderTasks() {
-                this.renderTaskList('recent-tasks-list', this.tasks.slice(0, 3));
-                this.renderTaskList('all-tasks-list', this.tasks);
-                this.renderTaskList('today-tasks-list', this.getTodaysTasks());
-
-                // Update today's tasks count
-                const todayTasks = this.getTodaysTasks();
-                document.getElementById('today-tasks-count').textContent = `${todayTasks.length} tasks`;
-            }
-
-            renderTaskList(containerId, tasks) {
-                const container = document.getElementById(containerId);
-                if (!container) return;
-
-                container.innerHTML = '';
-
-                if (tasks.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state" style="padding: var(--space-xl);">
-                            <div class="material-symbols-outlined" style="font-size: 3rem; opacity: 0.5; margin-bottom: var(--space-md);">task_alt</div>
-                            <div class="body-medium">No tasks found</div>
-                        </div>
-                    `;
-                    return;
-                }
-
-                tasks.forEach(task => {
-                    const taskElement = this.createTaskElement(task);
-                    container.appendChild(taskElement);
-                });
-            }
-
-            createTaskElement(task) {
-                const taskElement = document.createElement('div');
-                taskElement.className = `task-item ${task.completed ? 'completed' : ''} ${task.pinned ? 'pinned' : ''}`;
-                taskElement.setAttribute('data-task-id', task.id);
-
-                const dueDate = task.dueDate ? new Date(task.dueDate) : null;
-                const isToday = dueDate && dueDate.toDateString() === new Date().toDateString();
-                const isOverdue = dueDate && dueDate < new Date() && !task.completed;
-
-                let dueDateText = '';
-                if (dueDate) {
-                    if (isToday) {
-                        dueDateText = 'Today';
-                    } else if (isOverdue) {
-                        dueDateText = 'Overdue';
-                    } else {
-                        dueDateText = dueDate.toLocaleDateString();
-                    }
-                }
-
-                // Apply content filtering if enabled
-                let title = task.title;
-                let description = task.description;
-
-                if (this.getSetting('contentFiltering', true)) {
-                    title = this.filterSensitiveContent(title);
-                    description = this.filterSensitiveContent(description);
-                }
-
-                taskElement.innerHTML = `
-                    <div class="task-checkbox"></div>
-                    <div class="task-content">
-                        <div class="task-title">${title}</div>
-                        ${description ? `<div class="task-description">${description}</div>` : ''}
-                        <div class="task-meta">
-                            <div class="task-priority priority-${task.priority}">${task.priority.toUpperCase()}</div>
-                            <div class="task-category">${this.formatCategory(task.category)}</div>
-                            ${dueDateText ? `
-                                <div class="task-time ${isOverdue ? 'priority-high' : ''}">
-                                    <span class="material-symbols-outlined">schedule</span>
-                                    ${dueDateText}
-                                </div>
-                            ` : ''}
-                            ${task.timeEstimate ? `
-                                <div class="task-time-estimate">
-                                    <span class="material-symbols-outlined">timer</span>
-                                    ${task.timeEstimate}
-                                </div>
-                            ` : ''}
-                            ${task.pinned ? `<div class="chip" style="background-color: var(--dynamic-primary-light); color: var(--dynamic-primary);">Pinned</div>` : ''}
-                        </div>
-                    </div>
-                    <div class="task-actions">
-                        ${task.timeEstimate ? `
-                            <div class="task-action" data-action="timer">
-                                <span class="material-symbols-outlined">timer</span>
-                            </div>
-                        ` : ''}
-                        <div class="task-action" data-action="pin">
-                            <span class="material-symbols-outlined">${task.pinned ? 'push_pin' : 'push_pin'}</span>
-                        </div>
-                        <div class="task-action" data-action="edit">
-                            <span class="material-symbols-outlined">edit</span>
-                        </div>
-                        <div class="task-action" data-action="delete">
-                            <span class="material-symbols-outlined">delete</span>
-                        </div>
-                    </div>
-                `;
-
-                // Add event listeners
-                taskElement.addEventListener('click', (e) => {
-                    if (!e.target.closest('.task-actions')) {
-                        this.toggleTaskCompletion(task.id);
-                    }
-                });
-
-                const timerButton = taskElement.querySelector('[data-action="timer"]');
-                if (timerButton) {
-                    timerButton.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.startTimerFromTask(task);
-                    });
-                }
-
-                const pinButton = taskElement.querySelector('[data-action="pin"]');
-                pinButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.toggleTaskPin(task.id);
-                });
-
-                const editButton = taskElement.querySelector('[data-action="edit"]');
-                editButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.openEditTaskModal(task.id);
-                });
-
-                const deleteButton = taskElement.querySelector('[data-action="delete"]');
-                deleteButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.deleteTask(task.id);
-                });
-
-                // Add click handlers for blurred text
-                const blurredElements = taskElement.querySelectorAll('.blurred-text');
-                blurredElements.forEach(el => {
-                    el.addEventListener('click', () => {
-                        el.classList.toggle('revealed');
-                    });
-                });
-
-                return taskElement;
-            }
-
-            filterSensitiveContent(text) {
-                if (!text) return text;
-
-                let filteredText = text;
-                this.sensitiveWords.forEach(word => {
-                    const regex = new RegExp(word, 'gi');
-                    filteredText = filteredText.replace(regex, match => {
-                        return `<span class="blurred-text">${match}</span>`;
-                    });
-                });
-
-                return filteredText;
-            }
-
-            formatCategory(category) {
-                const categoryNames = {
-                    'work': 'Work',
-                    'personal': 'Personal',
-                    'health': 'Health',
-                    'learning': 'Learning',
-                    'other': 'Other'
-                };
-
-                return categoryNames[category] || category;
-            }
-
-            getTodaysTasks() {
-                const today = new Date().toDateString();
-                return this.tasks.filter(task => {
-                    if (task.completed) return false;
-
-                    if (task.dueDate) {
-                        const dueDate = new Date(task.dueDate).toDateString();
-                        return dueDate === today;
-                    }
-
-                    return false;
-                });
-            }
-
-            // Search functionality with enhanced commands
-            searchTasks(query) {
-                if (!query) return [];
-
-                const lowerQuery = query.toLowerCase();
-
-                // Check for timer commands
-                if (lowerQuery.includes('start') || lowerQuery.includes('timer')) {
-                    const timeMatch = query.match(/(\d+)\s*(m|min|minute|minutes|h|hour|hours)/i);
-                    if (timeMatch) {
-                        const timeValue = timeMatch[1];
-                        const timeUnit = timeMatch[2].toLowerCase();
-
-                        // Check if it's a reserve/set command or start command
-                        if (lowerQuery.includes('reserve') || lowerQuery.includes('set')) {
-                            this.setTimerFromSuggestion(timeValue, timeUnit);
-                        } else {
-                            this.startTimerFromSuggestion(timeValue, timeUnit);
-                        }
-
-                        // Close search after action
-                        setTimeout(() => {
-                            this.closeSearchPage();
-                        }, 500);
-
-                        return [];
-                    }
-                }
-
-                // Check for timer control commands
-                if (lowerQuery.includes('stop') || lowerQuery.includes('pause')) {
-                    if (lowerQuery.includes('timer')) {
-                        if (this.isFocusTimerRunning) {
-                            this.pauseFocusTimer();
-                            this.showNotification('Timer paused', 'info');
-                        }
-                        setTimeout(() => {
-                            this.closeSearchPage();
-                        }, 500);
-                        return [];
-                    }
-                }
-
-                // Regular task search
-                return this.tasks.filter(task =>
-                    task.title.toLowerCase().includes(lowerQuery) ||
-                    (task.description && task.description.toLowerCase().includes(lowerQuery))
-                );
-            }
-
-            renderSearchResults(query) {
-                const resultsContainer = document.getElementById('search-results-list');
-                const carouselContainer = document.getElementById('suggestion-carousel');
-
-                resultsContainer.innerHTML = '';
-                carouselContainer.innerHTML = '';
-
-                const results = this.searchTasks(query);
-
-                if (results.length === 0 && query.trim() !== '') {
-                    resultsContainer.innerHTML = `
-                        <div class="empty-state" style="padding: var(--space-lg);">
-                            <div class="material-symbols-outlined" style="font-size: 2rem; opacity: 0.5; margin-bottom: var(--space-md);">search_off</div>
-                            <div class="body-medium">No tasks found for "${query}"</div>
-                        </div>
-                    `;
-                } else if (results.length > 0) {
-                    results.forEach(task => {
-                        const taskElement = this.createTaskElement(task);
-                        resultsContainer.appendChild(taskElement);
-                    });
-                }
-
-                // Generate smart suggestions
-                this.generateSearchSuggestions(query, carouselContainer);
-            }
-
-            generateSearchSuggestions(query, container) {
-                const suggestions = [];
-
-                // Time-based suggestions
-                const timeMatch = query.match(/(\d+)\s*(m|min|minute|minutes|h|hour|hours)/i);
-                if (timeMatch) {
-                    const timeValue = timeMatch[1];
-                    const timeUnit = timeMatch[2].toLowerCase();
-
-                    let displayTime = timeValue;
-                    if (timeUnit === 'h' || timeUnit === 'hour' || timeUnit === 'hours') {
-                        displayTime = `${timeValue}h`;
-                    } else {
-                        displayTime = `${timeValue}m`;
-                    }
-
-                    suggestions.push({
-                        title: `Start ${displayTime} Timer`,
-                        description: `Focus for ${displayTime}`,
-                        icon: 'timer',
-                        action: () => this.startTimerFromSuggestion(timeValue, timeUnit)
-                    });
-
-                    suggestions.push({
-                        title: `Reserve ${displayTime}`,
-                        description: `Set timer for ${displayTime}`,
-                        icon: 'schedule',
-                        action: () => this.setTimerFromSuggestion(timeValue, timeUnit)
-                    });
-                }
-
-                // Quick task creation
-                if (query.trim() !== '' && !timeMatch) {
-                    suggestions.push({
-                        title: `Create Task: ${query}`,
-                        description: 'Quickly add this as a task',
-                        icon: 'add_task',
-                        action: () => {
-                            document.getElementById('task-title').value = query;
-                            this.closeSearchPage();
-                            this.openTaskModal();
-                        }
-                    });
-                }
-
-                // Timer control suggestions
-                if (this.isFocusTimerRunning) {
-                    suggestions.push({
-                        title: 'Pause Timer',
-                        description: 'Pause the current timer',
-                        icon: 'pause',
-                        action: () => {
-                            this.pauseFocusTimer();
-                            this.closeSearchPage();
-                        }
-                    });
-
-                    suggestions.push({
-                        title: 'Stop Timer',
-                        description: 'Stop the current timer',
-                        icon: 'stop',
-                        action: () => {
-                            this.stopFocusTimer();
-                            this.closeSearchPage();
-                        }
-                    });
-                }
-
-                // Render suggestions as carousel items
-                suggestions.forEach(suggestion => {
-                    const suggestionElement = document.createElement('div');
-                    suggestionElement.className = 'suggestion-card';
-                    suggestionElement.innerHTML = `
-                        <div class="suggestion-icon">
-                            <span class="material-symbols-outlined">${suggestion.icon}</span>
-                        </div>
-                        <div class="suggestion-title">${suggestion.title}</div>
-                        <div class="suggestion-description">${suggestion.description}</div>
-                    `;
-                    suggestionElement.addEventListener('click', () => {
-                        suggestion.action();
-                        this.closeSearchPage();
-                    });
-                    container.appendChild(suggestionElement);
-                });
-            }
-
-            // Enhanced Theme System
-            applyTheme(theme) {
-                this.currentTheme = theme;
-
-                // Remove existing theme class
-                document.body.classList.remove('theme-graphite', 'theme-gold', 'theme-silver',
-                    'theme-space-black', 'theme-alpine-green', 'theme-deep-purple',
-                    'theme-product-red');
-
-                // Add new theme class
-                if (theme !== 'default') {
-                    document.body.classList.add(`theme-${theme}`);
-                }
-
-                // Update CSS variables based on theme
-                this.updateThemeVariables(theme);
-
-                // Save theme preference
-                this.saveSetting('theme', theme);
-
-                // Apply dark mode if needed
-                if (this.getSetting('darkMode', false)) {
-                    document.body.classList.add('dark-mode');
-                } else {
-                    document.body.classList.remove('dark-mode');
-                }
-            }
-
-            updateThemeVariables(theme) {
-                const root = document.documentElement;
-
-                switch (theme) {
-                    case 'graphite':
-                        root.style.setProperty('--dynamic-primary', '#8E8E93');
-                        root.style.setProperty('--dynamic-primary-dark', '#6D6D70');
-                        root.style.setProperty('--dynamic-primary-light', '#F2F2F7');
-                        root.style.setProperty('--dynamic-surface', '#FFFFFF');
-                        root.style.setProperty('--dynamic-on-surface', '#000000');
-                        root.style.setProperty('--dynamic-background', '#FFFFFF');
-                        root.style.setProperty('--dynamic-surface-variant', '#F2F2F7');
-                        root.style.setProperty('--dynamic-on-surface-variant', '#8E8E93');
-                        root.style.setProperty('--dynamic-outline', '#C6C6C8');
-                        root.style.setProperty('--dynamic-outline-variant', '#E5E5EA');
-                        break;
-                    case 'gold':
-                        root.style.setProperty('--dynamic-primary', '#FFD700');
-                        root.style.setProperty('--dynamic-primary-dark', '#D4AF37');
-                        root.style.setProperty('--dynamic-primary-light', '#FFF9E6');
-                        root.style.setProperty('--dynamic-surface', '#FFFFFF');
-                        root.style.setProperty('--dynamic-on-surface', '#000000');
-                        root.style.setProperty('--dynamic-background', '#FFFFFF');
-                        root.style.setProperty('--dynamic-surface-variant', '#FFF9E6');
-                        root.style.setProperty('--dynamic-on-surface-variant', '#8E8E93');
-                        root.style.setProperty('--dynamic-outline', '#C6C6C8');
-                        root.style.setProperty('--dynamic-outline-variant', '#E5E5EA');
-                        break;
-                    case 'silver':
-                        root.style.setProperty('--dynamic-primary', '#C0C0C0');
-                        root.style.setProperty('--dynamic-primary-dark', '#A8A8A8');
-                        root.style.setProperty('--dynamic-primary-light', '#F5F5F5');
-                        root.style.setProperty('--dynamic-surface', '#FFFFFF');
-                        root.style.setProperty('--dynamic-on-surface', '#000000');
-                        root.style.setProperty('--dynamic-background', '#FFFFFF');
-                        root.style.setProperty('--dynamic-surface-variant', '#F5F5F5');
-                        root.style.setProperty('--dynamic-on-surface-variant', '#8E8E93');
-                        root.style.setProperty('--dynamic-outline', '#C6C6C8');
-                        root.style.setProperty('--dynamic-outline-variant', '#E5E5EA');
-                        break;
-                    case 'space-black':
-                        root.style.setProperty('--dynamic-primary', '#1C1C1E');
-                        root.style.setProperty('--dynamic-primary-dark', '#2C2C2E');
-                        root.style.setProperty('--dynamic-primary-light', '#2C2C2E');
-                        root.style.setProperty('--dynamic-surface', '#000000');
-                        root.style.setProperty('--dynamic-on-surface', '#FFFFFF');
-                        root.style.setProperty('--dynamic-background', '#000000');
-                        root.style.setProperty('--dynamic-surface-variant', '#1C1C1E');
-                        root.style.setProperty('--dynamic-on-surface-variant', '#98989F');
-                        root.style.setProperty('--dynamic-outline', '#38383A');
-                        root.style.setProperty('--dynamic-outline-variant', '#2C2C2E');
-                        break;
-                    case 'alpine-green':
-                        root.style.setProperty('--dynamic-primary', '#597D5A');
-                        root.style.setProperty('--dynamic-primary-dark', '#4A6C4B');
-                        root.style.setProperty('--dynamic-primary-light', '#E8F5E9');
-                        root.style.setProperty('--dynamic-surface', '#FFFFFF');
-                        root.style.setProperty('--dynamic-on-surface', '#000000');
-                        root.style.setProperty('--dynamic-background', '#FFFFFF');
-                        root.style.setProperty('--dynamic-surface-variant', '#E8F5E9');
-                        root.style.setProperty('--dynamic-on-surface-variant', '#8E8E93');
-                        root.style.setProperty('--dynamic-outline', '#C6C6C8');
-                        root.style.setProperty('--dynamic-outline-variant', '#E5E5EA');
-                        break;
-                    case 'deep-purple':
-                        root.style.setProperty('--dynamic-primary', '#5856D6');
-                        root.style.setProperty('--dynamic-primary-dark', '#4745C4');
-                        root.style.setProperty('--dynamic-primary-light', '#F0F0FF');
-                        root.style.setProperty('--dynamic-surface', '#FFFFFF');
-                        root.style.setProperty('--dynamic-on-surface', '#000000');
-                        root.style.setProperty('--dynamic-background', '#FFFFFF');
-                        root.style.setProperty('--dynamic-surface-variant', '#F0F0FF');
-                        root.style.setProperty('--dynamic-on-surface-variant', '#8E8E93');
-                        root.style.setProperty('--dynamic-outline', '#C6C6C8');
-                        root.style.setProperty('--dynamic-outline-variant', '#E5E5EA');
-                        break;
-                    case 'product-red':
-                        root.style.setProperty('--dynamic-primary', '#FF3B30');
-                        root.style.setProperty('--dynamic-primary-dark', '#D70015');
-                        root.style.setProperty('--dynamic-primary-light', '#FFE6E5');
-                        root.style.setProperty('--dynamic-surface', '#FFFFFF');
-                        root.style.setProperty('--dynamic-on-surface', '#000000');
-                        root.style.setProperty('--dynamic-background', '#FFFFFF');
-                        root.style.setProperty('--dynamic-surface-variant', '#FFE6E5');
-                        root.style.setProperty('--dynamic-on-surface-variant', '#8E8E93');
-                        root.style.setProperty('--dynamic-outline', '#C6C6C8');
-                        root.style.setProperty('--dynamic-outline-variant', '#E5E5EA');
-                        break;
-                    default:
-                        // Reset to default values
-                        root.style.setProperty('--dynamic-primary', 'var(--md-primary)');
-                        root.style.setProperty('--dynamic-primary-dark', 'var(--md-primary-dark)');
-                        root.style.setProperty('--dynamic-primary-light', 'var(--md-primary-light)');
-                        root.style.setProperty('--dynamic-surface', 'var(--md-surface)');
-                        root.style.setProperty('--dynamic-on-surface', 'var(--md-on-surface)');
-                        root.style.setProperty('--dynamic-background', 'var(--md-background)');
-                        root.style.setProperty('--dynamic-surface-variant', 'var(--md-surface-variant)');
-                        root.style.setProperty('--dynamic-on-surface-variant', 'var(--md-on-surface-variant)');
-                        root.style.setProperty('--dynamic-outline', 'var(--md-outline)');
-                        root.style.setProperty('--dynamic-outline-variant', 'var(--md-outline-variant)');
-                        root.style.setProperty('--dynamic-on-primary', '#FFFFFF');
-                }
-            }
-
-            // Enhanced Timer System
-            startTimerFromSuggestion(value, unit) {
-                let seconds = parseInt(value);
-
-                if (unit === 'h' || unit === 'hour' || unit === 'hours') {
-                    seconds *= 3600; // Convert hours to seconds
-                } else {
-                    seconds *= 60; // Convert minutes to seconds
-                }
-
-                this.focusTimerSeconds = seconds;
-                this.updateFocusTimerDisplay();
-                this.closeTaskModal();
-                this.closeSearchPage();
-
-                // Navigate to focus mode
-                this.navigateToPage('focus');
-
-                // Start the timer automatically
-                if (!this.isFocusTimerRunning) {
-                    this.startFocusTimer();
-                }
-
-                this.showNotification(`Timer started for ${value}${unit === 'h' ? 'h' : 'm'}`, 'success');
-            }
-
-            setTimerFromSuggestion(value, unit) {
-                let seconds = parseInt(value);
-
-                if (unit === 'h' || unit === 'hour' || unit === 'hours') {
-                    seconds *= 3600;
-                } else {
-                    seconds *= 60;
-                }
-
-                this.focusTimerSeconds = seconds;
-                this.updateFocusTimerDisplay();
-                this.closeTaskModal();
-                this.closeSearchPage();
-
-                // Navigate to focus mode
-                this.navigateToPage('focus');
-
-                this.showNotification(`Timer set for ${value}${unit === 'h' ? 'h' : 'm'}`, 'info');
-            }
-
-            startTimerFromTask(task) {
-                if (task.timeEstimate) {
-                    const timeMatch = task.timeEstimate.match(/(\d+)\s*(m|min|minute|minutes|h|hour|hours)/i);
-                    if (timeMatch) {
-                        const timeValue = timeMatch[1];
-                        const timeUnit = timeMatch[2].toLowerCase();
-
-                        let seconds = parseInt(timeValue);
-
-                        if (timeUnit === 'h' || timeUnit === 'hour' || timeUnit === 'hours') {
-                            seconds *= 3600;
-                        } else {
-                            seconds *= 60;
-                        }
-
-                        this.focusTimerSeconds = seconds;
-                        this.updateFocusTimerDisplay();
-
-                        // Navigate to focus mode
-                        this.navigateToPage('focus');
-
-                        // Start the timer automatically
-                        if (!this.isFocusTimerRunning) {
-                            this.startFocusTimer();
-                        }
-                    }
-                }
-            }
-
-            startFocusTimer() {
-                this.isFocusTimerRunning = true;
-
-                const startButton = document.getElementById('start-focus-timer');
-                if (startButton) {
-                    startButton.innerHTML = '<span class="material-symbols-outlined" style="margin-right: var(--space-xs);">pause</span> Pause';
-                    startButton.setAttribute('data-action', 'pause');
-                }
-
-                const fullscreenButton = document.getElementById('pause-fullscreen-timer');
-                if (fullscreenButton) {
-                    fullscreenButton.innerHTML = '<span class="material-symbols-outlined" style="margin-right: var(--space-xs);">pause</span> Pause';
-                }
-
-                this.updateFocusTimerDisplay();
-
-                this.focusTimerInterval = setInterval(() => {
-                    this.focusTimerSeconds--;
-                    this.updateFocusTimerDisplay();
-
-                    if (this.focusTimerSeconds <= 0) {
-                        this.focusTimerComplete();
-                    }
-                }, 1000);
-
-                // Show active timer on dashboard
-                this.showActiveTimer();
-
-                // Haptic feedback
-                this.triggerHapticFeedback();
-            }
-
-            pauseFocusTimer() {
-                this.isFocusTimerRunning = false;
-
-                const startButton = document.getElementById('start-focus-timer');
-                if (startButton) {
-                    startButton.innerHTML = '<span class="material-symbols-outlined" style="margin-right: var(--space-xs);">play_arrow</span> Resume';
-                    startButton.setAttribute('data-action', 'start');
-                }
-
-                const fullscreenButton = document.getElementById('pause-fullscreen-timer');
-                if (fullscreenButton) {
-                    fullscreenButton.innerHTML = '<span class="material-symbols-outlined" style="margin-right: var(--space-xs);">play_arrow</span> Resume';
-                }
-
-                clearInterval(this.focusTimerInterval);
-
-                // Haptic feedback
-                this.triggerHapticFeedback();
-            }
-
-            stopFocusTimer() {
-                this.isFocusTimerRunning = false;
-                const duration = parseInt(document.getElementById('focus-duration').value);
-                this.focusTimerSeconds = duration * 60;
-                this.updateFocusTimerDisplay();
-
-                const startButton = document.getElementById('start-focus-timer');
-                if (startButton) {
-                    startButton.innerHTML = '<span class="material-symbols-outlined" style="margin-right: var(--space-xs);">play_arrow</span> Start Focus';
-                    startButton.setAttribute('data-action', 'start');
-                }
-
-                clearInterval(this.focusTimerInterval);
-
-                // Hide active timer on dashboard
-                this.hideActiveTimer();
-
-                // Exit fullscreen timer if active
-                if (this.isFullscreenTimerActive) {
-                    this.exitFullscreenTimer();
-                }
-
-                // Haptic feedback
-                this.triggerHapticFeedback();
-            }
-
-            updateFocusTimerDisplay() {
-                const minutes = Math.floor(this.focusTimerSeconds / 60);
-                const seconds = this.focusTimerSeconds % 60;
-
-                const timerDisplay = document.getElementById('focus-timer-display');
-                if (timerDisplay) {
-                    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                }
-
-                const fullscreenDisplay = document.getElementById('fullscreen-timer-display');
-                if (fullscreenDisplay) {
-                    fullscreenDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                }
-
-                const dashboardDisplay = document.getElementById('dashboard-timer-display');
-                if (dashboardDisplay) {
-                    dashboardDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                }
-
-                // Update progress bar
-                const duration = parseInt(document.getElementById('focus-duration').value);
-                const totalSeconds = duration * 60;
-                const progress = ((totalSeconds - this.focusTimerSeconds) / totalSeconds) * 100;
-                const timerProgress = document.getElementById('focus-timer-progress');
-                if (timerProgress) {
-                    timerProgress.style.width = `${progress}%`;
-                }
-
-                const dashboardProgress = document.getElementById('dashboard-timer-progress');
-                if (dashboardProgress) {
-                    dashboardProgress.style.width = `${progress}%`;
-                }
-            }
-
-            focusTimerComplete() {
-                this.focusTimerSeconds = 0;
-                this.updateFocusTimerDisplay();
-                this.isFocusTimerRunning = false;
-
-                clearInterval(this.focusTimerInterval);
-
-                // Show completion notification
-                this.showNotification('Focus session completed! Time for a break.', 'success');
-
-                // Haptic feedback
-                this.triggerHapticFeedback('success');
-
-                // Hide active timer on dashboard
-                this.hideActiveTimer();
-
-                // Exit fullscreen timer if active
-                if (this.isFullscreenTimerActive) {
-                    this.exitFullscreenTimer();
-                }
-
-                // Reset timer after a delay
-                setTimeout(() => {
-                    const duration = parseInt(document.getElementById('focus-duration').value);
-                    this.focusTimerSeconds = duration * 60;
-                    this.updateFocusTimerDisplay();
-
-                    const startButton = document.getElementById('start-focus-timer');
-                    if (startButton) {
-                        startButton.innerHTML = '<span class="material-symbols-outlined" style="margin-right: var(--space-xs);">play_arrow</span> Start Focus';
-                        startButton.setAttribute('data-action', 'start');
-                    }
-                }, 3000);
-            }
-
-            showActiveTimer() {
-                const activeTimerCard = document.getElementById('active-timer-card');
-                if (activeTimerCard) {
-                    activeTimerCard.style.display = 'block';
-                }
-            }
-
-            hideActiveTimer() {
-                const activeTimerCard = document.getElementById('active-timer-card');
-                if (activeTimerCard) {
-                    activeTimerCard.style.display = 'none';
-                }
-            }
-
-            checkActiveTimer() {
-                if (this.isFocusTimerRunning) {
-                    this.showActiveTimer();
-                } else {
-                    this.hideActiveTimer();
-                }
-            }
-
-            enterFullscreenTimer() {
-                this.isFullscreenTimerActive = true;
-                document.getElementById('fullscreen-timer').classList.add('active');
-
-                // Show music controls if enabled
-                if (this.getSetting('focusMusic', false)) {
-                    document.getElementById('focus-music-container').style.display = 'block';
-                }
-
-                // Show motivational quote if enabled
-                if (this.getSetting('motivationalQuotes', true)) {
-                    this.showRandomQuote();
-                }
-            }
-
-            exitFullscreenTimer() {
-                this.isFullscreenTimerActive = false;
-                document.getElementById('fullscreen-timer').classList.remove('active');
-
-                // Stop music if playing
-                if (this.isMusicPlaying) {
-                    this.stopMusic();
-                }
-            }
-
-            // Focus Music System
-            toggleMusic() {
-                if (this.isMusicPlaying) {
-                    this.stopMusic();
-                } else {
-                    this.playMusic();
-                }
-            }
-
-            playMusic() {
-                this.audio.src = this.focusMusic[this.currentTrack].src;
-                this.audio.play();
-                this.isMusicPlaying = true;
-
-                const playButton = document.getElementById('play-music');
-                if (playButton) {
-                    playButton.innerHTML = '<span class="material-symbols-outlined">pause</span>';
-                }
-            }
-
-            stopMusic() {
-                this.audio.pause();
-                this.isMusicPlaying = false;
-
-                const playButton = document.getElementById('play-music');
-                if (playButton) {
-                    playButton.innerHTML = '<span class="material-symbols-outlined">play_arrow</span>';
-                }
-            }
-
-            nextTrack() {
-                this.currentTrack = (this.currentTrack + 1) % this.focusMusic.length;
-                if (this.isMusicPlaying) {
-                    this.playMusic();
-                }
-            }
-
-            prevTrack() {
-                this.currentTrack = (this.currentTrack - 1 + this.focusMusic.length) % this.focusMusic.length;
-                if (this.isMusicPlaying) {
-                    this.playMusic();
-                }
-            }
-
-            showRandomQuote() {
-                const randomIndex = Math.floor(Math.random() * this.motivationalQuotes.length);
-                const quoteElement = document.getElementById('motivational-quote');
-                if (quoteElement) {
-                    quoteElement.textContent = this.motivationalQuotes[randomIndex];
-                }
-            }
-
-            // Confirmation System
-            showConfirmation(title, message, confirmAction) {
-                this.confirmationAction = confirmAction;
-                this.confirmationSeconds = 5;
-
-                document.getElementById('confirmation-title').textContent = title;
-                document.getElementById('confirmation-message').textContent = message;
-                document.getElementById('confirmation-timer').textContent = this.confirmationSeconds;
-
-                document.getElementById('confirmation-modal').classList.add('active');
-
-                this.confirmationTimer = setInterval(() => {
-                    this.confirmationSeconds--;
-                    document.getElementById('confirmation-timer').textContent = this.confirmationSeconds;
-
-                    if (this.confirmationSeconds <= 0) {
-                        clearInterval(this.confirmationTimer);
-                        this.hideConfirmation();
-                    }
-                }, 1000);
-            }
-
-            hideConfirmation() {
-                document.getElementById('confirmation-modal').classList.remove('active');
-                clearInterval(this.confirmationTimer);
-            }
-
-            confirmAction() {
-                if (this.confirmationAction) {
-                    this.confirmationAction();
-                }
-                this.hideConfirmation();
-            }
-
-            // Stats and Analytics
-            updateStats() {
-                const totalTasks = this.tasks.length;
-                const completedTasks = this.tasks.filter(task => task.completed).length;
-                const pendingTasks = this.tasks.filter(task => !task.completed).length;
-                const overdueTasks = this.tasks.filter(task => {
-                    if (task.completed || !task.dueDate) return false;
-                    return new Date(task.dueDate) < new Date();
-                }).length;
-
-                // Update dashboard stats
-                document.getElementById('total-tasks-count').textContent = totalTasks;
-                document.getElementById('completed-tasks-count').textContent = completedTasks;
-                document.getElementById('pending-tasks-count').textContent = pendingTasks;
-                document.getElementById('overdue-tasks-count').textContent = overdueTasks;
-
-                // Update modal stats
-                document.getElementById('modal-total-tasks').textContent = totalTasks;
-                document.getElementById('modal-completed-tasks').textContent = completedTasks;
-                document.getElementById('modal-pending-tasks').textContent = pendingTasks;
-                document.getElementById('modal-overdue-tasks').textContent = overdueTasks;
-
-                // Update dashboard summary
-                const todayTasks = this.getTodaysTasks();
-                const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-                document.getElementById('dashboard-summary').innerHTML =
-                    `You have <strong>${todayTasks.length} tasks</strong> to complete today. Your productivity score is <strong>${completionRate}%</strong>.`;
-
-                // Update analytics stats
-                document.getElementById('completion-rate').textContent = `${completionRate}%`;
-                document.getElementById('tasks-per-week').textContent = (totalTasks / 4).toFixed(1);
-                document.getElementById('avg-time-per-task').textContent = '2.1h'; // This would need more complex tracking
-                document.getElementById('on-time-rate').textContent = '92%'; // This would need due date tracking
-
-                // Update chart if it exists
-                if (this.analyticsChart) {
-                    this.updateChart();
-                }
-            }
-
-            // Settings Management
-            loadSettings() {
-                // Load all settings from localStorage
-                const settings = JSON.parse(localStorage.getItem('lantask-pro-settings') || '{}');
-
-                // Apply settings to UI
-                document.getElementById('dark-mode-toggle').checked = this.getSetting('darkMode', false);
-                document.getElementById('font-size-select').value = this.getSetting('fontSize', 'medium');
-                document.getElementById('task-reminders-toggle').checked = this.getSetting('taskReminders', true);
-                document.getElementById('daily-digest-toggle').checked = this.getSetting('dailyDigest', false);
-                document.getElementById('auto-categorization-toggle').checked = this.getSetting('autoCategorization', true);
-                document.getElementById('smart-suggestions-toggle').checked = this.getSetting('smartSuggestions', true);
-                document.getElementById('priority-prediction-toggle').checked = this.getSetting('priorityPrediction', false);
-                document.getElementById('content-filtering-toggle').checked = this.getSetting('contentFiltering', true);
-                document.getElementById('default-sort').value = this.getSetting('defaultSort', 'created');
-                document.getElementById('group-by-category-toggle').checked = this.getSetting('groupByCategory', true);
-                document.getElementById('block-distractions-toggle').checked = this.getSetting('blockDistractions', true);
-                document.getElementById('focus-music-toggle').checked = this.getSetting('focusMusic', false);
-                document.getElementById('motivational-quotes-toggle').checked = this.getSetting('motivationalQuotes', true);
-
-                // Apply dark mode if enabled
-                if (this.getSetting('darkMode', false)) {
-                    document.body.classList.add('dark-mode');
-                }
-            }
-
-            saveSetting(key, value) {
-                const settings = JSON.parse(localStorage.getItem('lantask-pro-settings') || '{}');
-                settings[key] = value;
-                localStorage.setItem('lantask-pro-settings', JSON.stringify(settings));
-            }
-
-            getSetting(key, defaultValue) {
-                const settings = JSON.parse(localStorage.getItem('lantask-pro-settings') || '{}');
-                return settings[key] !== undefined ? settings[key] : defaultValue;
-            }
-
-            // Import/Export functionality
-            exportTasks() {
-                const dataStr = JSON.stringify(this.tasks, null, 2);
-                const dataBlob = new Blob([dataStr], {
-                    type: 'application/json'
-                });
-
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(dataBlob);
-                link.download = 'lantask-pro-tasks.json';
-                link.click();
-
-                this.showNotification('Tasks exported successfully', 'success');
-            }
-
-            importTasks(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const importedTasks = JSON.parse(e.target.result);
-                        this.showConfirmation(
-                            "Import Tasks",
-                            "This will replace your current tasks. Are you sure?",
-                            () => {
-                                this.tasks = importedTasks;
-                                this.saveTasks();
-                                this.renderTasks();
-                                this.showNotification('Tasks imported successfully', 'success');
-                            }
-                        );
-                    } catch (error) {
-                        this.showNotification('Error importing tasks: Invalid file format', 'error');
-                    }
-                };
-                reader.readAsText(file);
-
-                // Reset file input
-                event.target.value = '';
-            }
-
-            clearCompletedTasks() {
-                this.showConfirmation(
-                    "Clear Completed Tasks",
-                    "This will permanently delete all completed tasks. This action cannot be undone.",
-                    () => {
-                        this.tasks = this.tasks.filter(task => !task.completed);
-                        this.saveTasks();
-                        this.renderTasks();
-                        this.showNotification('Completed tasks cleared', 'success');
-                    }
-                );
-            }
-
-            clearAllData() {
-                this.showConfirmation(
-                    "Clear All Data",
-                    "This will reset the application and delete all your tasks and settings. This action cannot be undone.",
-                    () => {
-                        localStorage.removeItem('lantask-pro-tasks');
-                        localStorage.removeItem('lantask-pro-settings');
-                        localStorage.removeItem('lantask-pro-theme');
-                        localStorage.removeItem('lantask-pro-greeting');
-                        this.tasks = [];
-                        this.saveTasks();
-                        this.renderTasks();
-                        this.showNotification('All data cleared', 'success');
-                    }
-                );
-            }
-
-            // Enhanced Analytics
-            setupChart() {
-                const ctx = document.getElementById('analytics-chart');
-                if (!ctx) return;
-
-                // Destroy existing chart if it exists
-                if (this.analyticsChart) {
-                    this.analyticsChart.destroy();
-                }
-
-                this.analyticsChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        datasets: [{
-                            label: 'Tasks Completed',
-                            data: [3, 5, 2, 6, 4, 2, 1],
-                            borderColor: 'var(--dynamic-primary)',
-                            backgroundColor: 'rgba(0, 122, 255, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'var(--dynamic-outline-variant)'
-                                },
-                                ticks: {
-                                    color: 'var(--dynamic-on-surface-variant)'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    color: 'var(--dynamic-outline-variant)'
-                                },
-                                ticks: {
-                                    color: 'var(--dynamic-on-surface-variant)'
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            updateChart() {
-                if (!this.analyticsChart) return;
-
-                // Update chart data based on actual task completion
-                const completedByDay = this.getCompletedTasksByDay();
-                this.analyticsChart.data.datasets[0].data = completedByDay;
-                this.analyticsChart.update();
-            }
-
-            getCompletedTasksByDay() {
-                // This is a simplified implementation
-                // In a real app, you would track completion dates
-                return [3, 5, 2, 6, 4, 2, 1];
-            }
-
-            // Enhanced Animations
-            animateNewTask(taskId) {
-                const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
-                if (taskElement) {
-                    taskElement.classList.add('spring-slide-up');
-                }
-            }
-
-            // Enhanced Event Handlers
-            setupEventListeners() {
-                // Navigation
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const page = item.getAttribute('data-page');
-                        this.navigateToPage(page);
-                    });
-                });
-
-                // Sidebar toggle
-                document.getElementById('sidebar-toggle').addEventListener('click', () => {
-                    this.toggleSidebar();
-                });
-
-                document.getElementById('menu-button').addEventListener('click', () => {
-                    this.toggleSidebar();
-                });
-
-                // Search functionality
-                document.getElementById('search-button').addEventListener('click', () => {
-                    this.openSearchPage();
-                });
-
-                document.getElementById('back-button').addEventListener('click', () => {
-                    this.closeSearchPage();
-                });
-
-                document.getElementById('search-input').addEventListener('input', (e) => {
-                    this.renderSearchResults(e.target.value);
-                });
-
-                // Stats modal
-                document.getElementById('stats-modal-button').addEventListener('click', () => {
-                    this.openStatsModal();
-                });
-
-                document.getElementById('close-stats-modal').addEventListener('click', () => {
-                    this.closeStatsModal();
-                });
-
-                // FAB and task modal
-                document.getElementById('add-task-fab').addEventListener('click', () => {
-                    this.openTaskModal();
-                });
-
-                document.getElementById('close-modal').addEventListener('click', () => {
-                    this.closeTaskModal();
-                });
-
-                document.getElementById('cancel-task').addEventListener('click', () => {
-                    this.closeTaskModal();
-                });
-
-                document.getElementById('save-task').addEventListener('click', () => {
-                    this.saveNewTask();
-                });
-
-                // Task input for suggestions
-                document.getElementById('task-title').addEventListener('input', (e) => {
-                    this.handleTaskInput(e.target.value);
-                });
-
-                // Focus timer controls
-                document.getElementById('start-focus-timer').addEventListener('click', () => {
-                    if (this.isFocusTimerRunning) {
-                        this.pauseFocusTimer();
-                    } else {
-                        this.startFocusTimer();
-                    }
-                });
-
-                document.getElementById('fullscreen-timer-button').addEventListener('click', () => {
-                    this.enterFullscreenTimer();
-                });
-
-                // Fullscreen timer controls
-                document.getElementById('pause-fullscreen-timer').addEventListener('click', () => {
-                    if (this.isFocusTimerRunning) {
-                        this.pauseFocusTimer();
-                    } else {
-                        this.startFocusTimer();
-                    }
-                });
-
-                document.getElementById('stop-fullscreen-timer').addEventListener('click', () => {
-                    this.stopFocusTimer();
-                });
-
-                // Music controls
-                document.getElementById('play-music').addEventListener('click', () => {
-                    this.toggleMusic();
-                });
-
-                document.getElementById('next-track').addEventListener('click', () => {
-                    this.nextTrack();
-                });
-
-                document.getElementById('prev-track').addEventListener('click', () => {
-                    this.prevTrack();
-                });
-
-                // Confirmation modal
-                document.getElementById('confirmation-cancel').addEventListener('click', () => {
-                    this.hideConfirmation();
-                });
-
-                document.getElementById('confirmation-confirm').addEventListener('click', () => {
-                    this.confirmAction();
-                });
-
-                // Theme selector
-                document.getElementById('theme-selector-button').addEventListener('click', () => {
-                    this.openThemeModal();
-                });
-
-                document.getElementById('close-theme-modal').addEventListener('click', () => {
-                    this.closeThemeModal();
-                });
-
-                document.getElementById('apply-theme').addEventListener('click', () => {
-                    this.applySelectedTheme();
-                });
-
-                document.querySelectorAll('.theme-option').forEach(option => {
-                    option.addEventListener('click', () => {
-                        document.querySelectorAll('.theme-option').forEach(opt => {
-                            opt.classList.remove('active');
-                        });
-                        option.classList.add('active');
-                    });
-                });
-
-                // Settings toggles
-                document.getElementById('dark-mode-toggle').addEventListener('change', (e) => {
-                    this.toggleDarkMode(e.target.checked);
-                });
-
-                document.getElementById('font-size-select').addEventListener('change', (e) => {
-                    this.saveSetting('fontSize', e.target.value);
-                });
-
-                document.getElementById('task-reminders-toggle').addEventListener('change', (e) => {
-                    this.saveSetting('taskReminders', e.target.checked);
-                });
-
-                document.getElementById('daily-digest-toggle').addEventListener('change', (e) => {
-                    this.saveSetting('dailyDigest', e.target.checked);
-                });
-
-                document.getElementById('auto-categorization-toggle').addEventListener('change', (e) => {
-                    this.saveSetting('autoCategorization', e.target.checked);
-                });
-
-                document.getElementById('smart-suggestions-toggle').addEventListener('change', (e) => {
-                    this.saveSetting('smartSuggestions', e.target.checked);
-                });
-
-                document.getElementById('priority-prediction-toggle').addEventListener('change', (e) => {
-                    this.saveSetting('priorityPrediction', e.target.checked);
-                });
-
-                document.getElementById('content-filtering-toggle').addEventListener('change', (e) => {
-                    this.saveSetting('contentFiltering', e.target.checked);
-                });
-
-                document.getElementById('default-sort').addEventListener('change', (e) => {
-                    this.saveSetting('defaultSort', e.target.value);
-                });
-
-                document.getElementById('group-by-category-toggle').addEventListener('change', (e) => {
-                    this.saveSetting('groupByCategory', e.target.checked);
-                });
-
-                document.getElementById('block-distractions-toggle').addEventListener('change', (e) => {
-                    this.saveSetting('blockDistractions', e.target.checked);
-                });
-
-                document.getElementById('focus-music-toggle').addEventListener('change', (e) => {
-                    this.saveSetting('focusMusic', e.target.checked);
-                });
-
-                document.getElementById('motivational-quotes-toggle').addEventListener('change', (e) => {
-                    this.saveSetting('motivationalQuotes', e.target.checked);
-                });
-
-                // Import/Export
-                document.getElementById('export-tasks').addEventListener('click', () => {
-                    this.exportTasks();
-                });
-
-                document.getElementById('import-tasks').addEventListener('change', (e) => {
-                    this.importTasks(e);
-                });
-
-                document.getElementById('clear-completed-tasks').addEventListener('click', () => {
-                    this.clearCompletedTasks();
-                });
-
-                document.getElementById('clear-all-data').addEventListener('click', () => {
-                    this.clearAllData();
-                });
-
-                // View all tasks button
-                document.getElementById('view-all-tasks').addEventListener('click', () => {
-                    this.navigateToPage('tasks');
-                });
-
-                // Go to focus mode from dashboard
-                document.getElementById('go-to-focus').addEventListener('click', () => {
-                    this.navigateToPage('focus');
-                });
-
-                // Add task buttons from empty states
-                document.getElementById('add-scheduled-task').addEventListener('click', () => {
-                    this.openTaskModal();
-                });
-
-                document.getElementById('add-important-task').addEventListener('click', () => {
-                    this.openTaskModal();
-                });
-
-                // Quick action buttons
-                document.getElementById('quick-timer').addEventListener('click', () => {
-                    this.navigateToPage('focus');
-                });
-
-                document.getElementById('quick-task').addEventListener('click', () => {
-                    this.openTaskModal();
-                });
-
-                document.getElementById('quick-break').addEventListener('click', () => {
-                    this.showNotification('Take a 5-minute break!', 'info');
-                });
-
-                // Editable greeting
-                document.getElementById('greeting-text').addEventListener('click', () => {
-                    this.editGreeting();
-                });
-
-                // Close modals when clicking backdrop
-                document.addEventListener('click', (e) => {
-                    if (e.target.id === 'add-task-modal') {
-                        this.closeTaskModal();
-                    }
-                    if (e.target.id === 'theme-modal') {
-                        this.closeThemeModal();
-                    }
-                    if (e.target.id === 'stats-modal') {
-                        this.closeStatsModal();
-                    }
-                    if (e.target.id === 'confirmation-modal') {
-                        this.hideConfirmation();
-                    }
-                });
-            }
-
-            navigateToPage(page) {
-                // Update active nav item
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                document.querySelector(`[data-page="${page}"]`).classList.add('active');
-
-                // Update page title
-                const pageTitles = {
-                    'dashboard': 'Dashboard',
-                    'tasks': 'All Tasks',
-                    'today': 'Today',
-                    'scheduled': 'Scheduled',
-                    'important': 'Important',
-                    'completed': 'Completed',
-                    'analytics': 'Analytics',
-                    'focus': 'Focus Mode',
-                    'settings': 'Settings',
-                    'help': 'Help & Feedback'
-                };
-
-                document.getElementById('page-title').textContent = pageTitles[page] || 'LanTask Pro';
-
-                // Hide all pages
-                document.querySelectorAll('.page').forEach(pageEl => {
-                    pageEl.classList.remove('active');
-                });
-
-                // Show current page
-                document.getElementById(page).classList.add('active');
-
-                this.currentPage = page;
-
-                // Special handling for specific pages
-                if (page === 'analytics') {
-                    setTimeout(() => {
-                        this.setupChart();
-                    }, 100);
-                }
-            }
-
-            toggleSidebar() {
-                const sidebar = document.getElementById('sidebar');
-                const mainContent = document.getElementById('main-content');
-
-                if (window.innerWidth < 1024) {
-                    // Mobile behavior
-                    sidebar.classList.toggle('active');
-                } else {
-                    // Desktop behavior
-                    this.isSidebarCollapsed = !this.isSidebarCollapsed;
-                    sidebar.classList.toggle('collapsed');
-                    mainContent.classList.toggle('expanded');
-                }
-            }
-
-            openStatsModal() {
-                document.getElementById('stats-modal').classList.add('active');
-            }
-
-            closeStatsModal() {
-                document.getElementById('stats-modal').classList.remove('active');
-            }
-
-            openSearchPage() {
-                document.getElementById('search-page').classList.add('active');
-                document.getElementById('search-input').focus();
-            }
-
-            closeSearchPage() {
-                document.getElementById('search-page').classList.remove('active');
-                document.getElementById('search-input').value = '';
-                this.renderSearchResults('');
-            }
-
-            openTaskModal() {
-                document.getElementById('add-task-modal').classList.add('active');
-                document.getElementById('task-title').focus();
-            }
-
-            closeTaskModal() {
-                document.getElementById('add-task-modal').classList.remove('active');
-                document.getElementById('task-title').value = '';
-                document.getElementById('task-description').value = '';
-                document.getElementById('task-priority').value = 'medium';
-                document.getElementById('task-category').value = 'personal';
-                document.getElementById('task-due-date').value = '';
-                document.getElementById('task-time-estimate').value = '';
-
-                // Clear suggestions
-                document.getElementById('suggestions-container').innerHTML = '';
-            }
-
-            handleTaskInput(text) {
-                const suggestionsContainer = document.getElementById('suggestions-container');
-                suggestionsContainer.innerHTML = '';
-
-                const suggestions = this.generateSmartSuggestions(text);
-
-                suggestions.forEach((suggestion, index) => {
-                    const suggestionElement = document.createElement('div');
-                    suggestionElement.className = 'suggestion-chip';
-                    suggestionElement.textContent = suggestion.text;
-                    suggestionElement.addEventListener('click', suggestion.action);
-
-                    suggestionsContainer.appendChild(suggestionElement);
-
-                    // Animate suggestion with staggered delay
-                    setTimeout(() => {
-                        suggestionElement.classList.add('visible');
-                        if (index === 0) {
-                            suggestionElement.classList.add('micro-bounce');
-                        }
-                    }, 100 * (index + 1));
-                });
-            }
-
-            saveNewTask() {
-                const title = document.getElementById('task-title').value.trim();
-                if (!title) return;
-
-                const taskData = {
-                    title: title,
-                    description: document.getElementById('task-description').value,
-                    priority: document.getElementById('task-priority').value,
-                    category: document.getElementById('task-category').value,
-                    dueDate: document.getElementById('task-due-date').value || null,
-                    timeEstimate: document.getElementById('task-time-estimate').value || null
-                };
-
-                this.addTask(taskData);
-                this.closeTaskModal();
-
-                // Show success notification
-                this.showNotification('Task added successfully!', 'success');
-            }
-
-            openEditTaskModal(taskId) {
-                const task = this.tasks.find(t => t.id === taskId);
-                if (!task) return;
-
-                // Populate the form with task data
-                document.getElementById('task-title').value = task.title;
-                document.getElementById('task-description').value = task.description || '';
-                document.getElementById('task-priority').value = task.priority;
-                document.getElementById('task-category').value = task.category;
-                document.getElementById('task-due-date').value = task.dueDate || '';
-                document.getElementById('task-time-estimate').value = task.timeEstimate || '';
-
-                // Change modal title and save button
-                document.querySelector('#add-task-modal .title-large').textContent = 'Edit Task';
-                document.getElementById('save-task').textContent = 'Save Changes';
-
-                // Remove existing event listener and add new one
-                const saveButton = document.getElementById('save-task');
-                const newSaveButton = saveButton.cloneNode(true);
-                saveButton.parentNode.replaceChild(newSaveButton, saveButton);
-
-                newSaveButton.addEventListener('click', () => {
-                    this.updateTask(taskId, {
-                        title: document.getElementById('task-title').value,
-                        description: document.getElementById('task-description').value,
-                        priority: document.getElementById('task-priority').value,
-                        category: document.getElementById('task-category').value,
-                        dueDate: document.getElementById('task-due-date').value || null,
-                        timeEstimate: document.getElementById('task-time-estimate').value || null
-                    });
-                    this.closeTaskModal();
-                    this.showNotification('Task updated successfully!', 'success');
-
-                    // Reset modal for future use
-                    document.querySelector('#add-task-modal .title-large').textContent = 'Add New Task';
-                    document.getElementById('save-task').textContent = 'Save Task';
-                });
-
-                this.openTaskModal();
-            }
-
-            openThemeModal() {
-                document.getElementById('theme-modal').classList.add('active');
-            }
-
-            closeThemeModal() {
-                document.getElementById('theme-modal').classList.remove('active');
-            }
-
-            applySelectedTheme() {
-                const selectedTheme = document.querySelector('.theme-option.active').getAttribute('data-theme');
-                this.applyTheme(selectedTheme);
-                this.closeThemeModal();
-
-                // Show notification
-                this.showNotification(`Theme changed to ${selectedTheme}`, 'success');
-            }
-
-            toggleDarkMode(enabled) {
-                if (enabled) {
-                    document.body.classList.add('dark-mode');
-                } else {
-                    document.body.classList.remove('dark-mode');
-                }
-
-                // Save preference
-                this.saveSetting('darkMode', enabled);
-            }
-
-            editGreeting() {
-                const greetingElement = document.getElementById('greeting-text');
-                const currentGreeting = greetingElement.textContent;
-
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.className = 'greeting-input';
-                input.value = currentGreeting;
-                input.maxLength = 50;
-
-                greetingElement.parentNode.replaceChild(input, greetingElement);
-                input.focus();
-                input.select();
-
-                const saveGreeting = () => {
-                    const newGreeting = input.value.trim() || 'Welcome to LanTask Pro!';
-                    if (newGreeting.length > 50) {
-                        this.showNotification('Greeting is too long (max 50 characters)', 'error');
-                        return;
-                    }
-
-                    const newGreetingElement = document.createElement('div');
-                    newGreetingElement.className = 'title-large greeting-editable';
-                    newGreetingElement.id = 'greeting-text';
-                    newGreetingElement.textContent = newGreeting;
-
-                    input.parentNode.replaceChild(newGreetingElement, input);
-
-                    // Save to localStorage
-                    localStorage.setItem('lantask-pro-greeting', newGreeting);
-
-                    // Re-add event listener
-                    newGreetingElement.addEventListener('click', () => {
-                        this.editGreeting();
-                    });
-                };
-
-                input.addEventListener('blur', saveGreeting);
-                input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        saveGreeting();
-                    } else if (e.key === 'Escape') {
-                        const newGreetingElement = document.createElement('div');
-                        newGreetingElement.className = 'title-large greeting-editable';
-                        newGreetingElement.id = 'greeting-text';
-                        newGreetingElement.textContent = currentGreeting;
-
-                        input.parentNode.replaceChild(newGreetingElement, input);
-
-                        // Re-add event listener
-                        newGreetingElement.addEventListener('click', () => {
-                            this.editGreeting();
-                        });
-                    }
-                });
-            }
-
-            // Utility Methods
-            showNotification(message, type = 'info') {
-                // Create notification element
-                const notification = document.createElement('div');
-                notification.className = `notification notification-${type}`;
-                notification.textContent = message;
-
-                // Style the notification
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 12px 20px;
-                    border-radius: 8px;
-                    background: var(--dynamic-surface);
-                    color: var(--dynamic-on-surface);
-                    box-shadow: var(--elevation-3);
-                    z-index: 10000;
-                    transform: translateX(100%);
-                    transition: transform 0.3s var(--spring-smooth);
-                    max-width: 300px;
-                `;
-
-                document.body.appendChild(notification);
-
-                // Animate in
-                setTimeout(() => {
-                    notification.style.transform = 'translateX(0)';
-                }, 10);
-
-                // Remove after delay
-                setTimeout(() => {
-                    notification.style.transform = 'translateX(100%)';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                }, 3000);
-            }
-
-            triggerHapticFeedback(type = 'light') {
-                // Simulate haptic feedback on supported devices
-                if (navigator.vibrate) {
-                    const patterns = {
-                        'light': [50],
-                        'medium': [100],
-                        'heavy': [200],
-                        'success': [100, 50, 100]
-                    };
-
-                    navigator.vibrate(patterns[type] || patterns.light);
-                }
-            }
-        }
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', () => {
-            window.lanTaskPro = new LanTaskPro();
-        });
-    </script>
+    <script src="task.js"></script>
 </body>
 
 </html>
