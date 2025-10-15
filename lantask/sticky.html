@@ -1,0 +1,2175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticky Notes</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.263.0/font/lucide.css">
+    <style>
+        :root {
+            /* Design Tokens */
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 6px 18px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 28px rgba(0,0,0,0.12);
+            --motion-curve: cubic-bezier(.16,.84,.24,1);
+            --transition-fast: 120ms;
+            --transition-medium: 200ms;
+            --transition-slow: 300ms;
+            
+            /* Colors - Light Theme (Default) */
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-color: #007aff;
+            --border-color: #d2d2d7;
+            
+            /* Note Colors */
+            --note-yellow: #ffd60a;
+            --note-blue: #64d2ff;
+            --note-green: #30d158;
+            --note-pink: #ff375f;
+            --note-purple: #bf5af2;
+            --note-orange: #ff9f0a;
+            --note-gray: #8e8e93;
+            --note-teal: #5ac8fa;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1c1c1e;
+            --bg-secondary: #2c2c2e;
+            --text-primary: #f5f5f7;
+            --text-secondary: #98989d;
+            --accent-color: #0a84ff;
+            --border-color: #38383a;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.24);
+            --shadow-md: 0 6px 18px rgba(0,0,0,0.24);
+            --shadow-lg: 0 12px 28px rgba(0,0,0,0.32);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color var(--transition-medium) var(--motion-curve);
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .logo-icon {
+            color: var(--accent-color);
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 24px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: inherit;
+            transition: all var(--transition-fast) var(--motion-curve);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            border: none;
+            background-color: transparent;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast) var(--motion-curve);
+        }
+
+        .btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            opacity: 0.9;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 16px 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            padding: 8px 24px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 24px;
+            cursor: pointer;
+            transition: background-color var(--transition-fast) var(--motion-curve);
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-item.active {
+            background-color: rgba(0, 122, 255, 0.1);
+            color: var(--accent-color);
+        }
+
+        .sidebar-item-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .tag-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 24px;
+            cursor: pointer;
+            transition: background-color var(--transition-fast) var(--motion-curve);
+        }
+
+        .tag-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .tag-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .tag-actions {
+            opacity: 0;
+            transition: opacity var(--transition-fast) var(--motion-curve);
+        }
+
+        .tag-item:hover .tag-actions {
+            opacity: 1;
+        }
+
+        /* Board Canvas */
+        .board-container {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+            padding: 24px;
+            background-color: var(--bg-primary);
+        }
+
+        .board-canvas {
+            position: relative;
+            min-height: 100%;
+            width: 100%;
+        }
+
+        /* Note Styles */
+        .note {
+            position: absolute;
+            width: 240px;
+            min-height: 200px;
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            box-shadow: var(--shadow-md);
+            cursor: move;
+            transition: box-shadow var(--transition-fast) var(--motion-curve),
+                        transform var(--transition-fast) var(--motion-curve);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .note:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .note.dragging {
+            transform: scale(1.02) rotate(2deg);
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .note-title {
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            background: transparent;
+            width: 100%;
+            color: inherit;
+            font-family: inherit;
+            margin-bottom: 4px;
+            resize: none;
+            overflow: hidden;
+            min-height: 24px;
+            max-height: 72px;
+        }
+
+        .note-title:focus {
+            outline: none;
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity var(--transition-fast) var(--motion-curve);
+        }
+
+        .note:hover .note-actions {
+            opacity: 1;
+        }
+
+        .note-action {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color var(--transition-fast) var(--motion-curve);
+        }
+
+        .note-action:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .note-body {
+            flex: 1;
+            border: none;
+            background: transparent;
+            resize: none;
+            font-family: inherit;
+            color: inherit;
+            line-height: 1.5;
+            min-height: 120px;
+        }
+
+        .note-body:focus {
+            outline: none;
+        }
+
+        .note-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .note-tags {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .note-tag {
+            padding: 2px 6px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.1);
+            font-size: 10px;
+        }
+
+        /* Note Colors */
+        .note-yellow { background-color: var(--note-yellow); color: #1d1d1f; }
+        .note-blue { background-color: var(--note-blue); color: #1d1d1f; }
+        .note-green { background-color: var(--note-green); color: #1d1d1f; }
+        .note-pink { background-color: var(--note-pink); color: white; }
+        .note-purple { background-color: var(--note-purple); color: white; }
+        .note-orange { background-color: var(--note-orange); color: #1d1d1f; }
+        .note-gray { background-color: var(--note-gray); color: white; }
+        .note-teal { background-color: var(--note-teal); color: #1d1d1f; }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: all var(--transition-medium) var(--motion-curve);
+            z-index: 100;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 14px 32px rgba(0, 122, 255, 0.3);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* Modal & Bottom Sheet */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition-medium) var(--motion-curve);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: auto;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all var(--transition-medium) var(--motion-curve);
+        }
+
+        .modal.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal-header {
+            padding: 20px 24px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color var(--transition-fast) var(--motion-curve);
+        }
+
+        .modal-close:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+        }
+
+        .modal-footer {
+            padding: 0 24px 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Bottom Sheet */
+        .bottom-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(100%);
+            transition: transform var(--transition-medium) var(--motion-curve);
+            z-index: 1000;
+            max-height: 80vh;
+            overflow: auto;
+        }
+
+        .bottom-sheet.active {
+            transform: translateY(0);
+        }
+
+        .bottom-sheet-header {
+            padding: 20px 24px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bottom-sheet-body {
+            padding: 20px 24px;
+        }
+
+        .bottom-sheet-footer {
+            padding: 0 24px 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Color Picker */
+        .color-picker {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .color-option {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform var(--transition-fast) var(--motion-curve);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 3px var(--bg-primary), 0 0 0 5px var(--accent-color);
+        }
+
+        .color-option .check-icon {
+            color: white;
+            opacity: 0;
+            transition: opacity var(--transition-fast) var(--motion-curve);
+        }
+
+        .color-option.active .check-icon {
+            opacity: 1;
+        }
+
+        /* Tag Editor */
+        .tag-editor {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tag-input {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .tag-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        /* Drawing Canvas */
+        .drawing-canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-secondary);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition-medium) var(--motion-curve);
+        }
+
+        .drawing-canvas-container.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .drawing-header {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .drawing-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .drawing-tools {
+            display: flex;
+            gap: 12px;
+            padding: 12px 24px;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .drawing-tool {
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all var(--transition-fast) var(--motion-curve);
+        }
+
+        .drawing-tool.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .drawing-canvas {
+            flex: 1;
+            background-color: white;
+            cursor: crosshair;
+        }
+
+        /* Context Menu */
+        .context-menu {
+            position: fixed;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: 8px 0;
+            z-index: 1000;
+            min-width: 180px;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+            transition: all var(--transition-fast) var(--motion-curve);
+        }
+
+        .context-menu.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: scale(1);
+        }
+
+        .context-menu-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color var(--transition-fast) var(--motion-curve);
+        }
+
+        .context-menu-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Settings */
+        .setting-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .setting-option:last-child {
+            border-bottom: none;
+        }
+
+        .setting-option label {
+            font-weight: 500;
+        }
+
+        .setting-option select {
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .setting-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Export Modal */
+        .export-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .export-option {
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast) var(--motion-curve);
+        }
+
+        .export-option:hover {
+            border-color: var(--accent-color);
+            background-color: rgba(0, 122, 255, 0.05);
+        }
+
+        .export-option-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .export-option-title {
+            font-weight: 600;
+        }
+
+        .export-option-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .note {
+                width: 220px;
+            }
+            
+            .header-actions .btn-text {
+                display: none;
+            }
+            
+            .search-container {
+                margin: 0 12px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .note {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .board-container {
+                padding: 16px;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="lucide lucide-sticky-note logo-icon"></i>
+                <span>Sticky Notes</span>
+            </div>
+            
+            <div class="search-container">
+                <i class="lucide lucide-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search notes..." id="search-input">
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn btn-icon" id="theme-toggle" title="Toggle theme">
+                    <i class="lucide lucide-moon"></i>
+                </button>
+                <button class="btn btn-icon" id="layout-toggle" title="Toggle layout">
+                    <i class="lucide lucide-grid"></i>
+                </button>
+                <button class="btn" id="export-btn">
+                    <i class="lucide lucide-download"></i>
+                    <span class="btn-text">Export</span>
+                </button>
+                <button class="btn btn-primary" id="new-board-btn">
+                    <i class="lucide lucide-plus"></i>
+                    <span class="btn-text">New Board</span>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Boards</div>
+                    <div class="sidebar-item active" data-board="default">
+                        <i class="lucide lucide-home sidebar-item-icon"></i>
+                        <span>Home</span>
+                    </div>
+                    <div class="sidebar-item" data-board="work">
+                        <i class="lucide lucide-briefcase sidebar-item-icon"></i>
+                        <span>Work</span>
+                    </div>
+                    <div class="sidebar-item" data-board="study">
+                        <i class="lucide lucide-book-open sidebar-item-icon"></i>
+                        <span>Study</span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Tags</div>
+                    <div class="tag-list" id="tag-list">
+                        <!-- Tags will be dynamically added here -->
+                    </div>
+                    <div class="sidebar-item" id="add-tag-btn">
+                        <i class="lucide lucide-plus sidebar-item-icon"></i>
+                        <span>Add Tag</span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Tools</div>
+                    <div class="sidebar-item" id="tidy-notes-btn">
+                        <i class="lucide lucide-align-justify sidebar-item-icon"></i>
+                        <span>Tidy Notes</span>
+                    </div>
+                    <div class="sidebar-item" id="settings-btn">
+                        <i class="lucide lucide-settings sidebar-item-icon"></i>
+                        <span>Settings</span>
+                    </div>
+                </div>
+            </aside>
+            
+            <!-- Board Canvas -->
+            <main class="board-container">
+                <div class="board-canvas" id="board-canvas">
+                    <!-- Notes will be dynamically added here -->
+                </div>
+            </main>
+        </div>
+        
+        <!-- FAB -->
+        <div class="fab" id="fab" title="Create new note">
+            <i class="lucide lucide-plus"></i>
+        </div>
+        
+        <!-- Context Menu -->
+        <div class="context-menu" id="context-menu">
+            <div class="context-menu-item" data-action="duplicate">
+                <i class="lucide lucide-copy"></i>
+                <span>Duplicate</span>
+            </div>
+            <div class="context-menu-item" data-action="export-png">
+                <i class="lucide lucide-image"></i>
+                <span>Export as PNG</span>
+            </div>
+            <div class="context-menu-item" data-action="export-json">
+                <i class="lucide lucide-file-json"></i>
+                <span>Export as JSON</span>
+            </div>
+            <div class="context-menu-item" data-action="delete">
+                <i class="lucide lucide-trash-2"></i>
+                <span>Delete</span>
+            </div>
+        </div>
+        
+        <!-- Bottom Sheet for Note Properties -->
+        <div class="bottom-sheet" id="note-properties-sheet">
+            <div class="bottom-sheet-header">
+                <h2 class="bottom-sheet-title">Note Properties</h2>
+                <div class="modal-close" id="close-properties-sheet">
+                    <i class="lucide lucide-x"></i>
+                </div>
+            </div>
+            <div class="bottom-sheet-body">
+                <h3>Color</h3>
+                <div class="color-picker" id="color-picker">
+                    <div class="color-option note-yellow active" data-color="yellow">
+                        <i class="lucide lucide-check check-icon"></i>
+                    </div>
+                    <div class="color-option note-blue" data-color="blue">
+                        <i class="lucide lucide-check check-icon"></i>
+                    </div>
+                    <div class="color-option note-green" data-color="green">
+                        <i class="lucide lucide-check check-icon"></i>
+                    </div>
+                    <div class="color-option note-pink" data-color="pink">
+                        <i class="lucide lucide-check check-icon"></i>
+                    </div>
+                    <div class="color-option note-purple" data-color="purple">
+                        <i class="lucide lucide-check check-icon"></i>
+                    </div>
+                    <div class="color-option note-orange" data-color="orange">
+                        <i class="lucide lucide-check check-icon"></i>
+                    </div>
+                    <div class="color-option note-gray" data-color="gray">
+                        <i class="lucide lucide-check check-icon"></i>
+                    </div>
+                    <div class="color-option note-teal" data-color="teal">
+                        <i class="lucide lucide-check check-icon"></i>
+                    </div>
+                </div>
+                
+                <h3>Tags</h3>
+                <div class="tag-editor">
+                    <input type="text" class="tag-input" id="tag-input" placeholder="Add a tag...">
+                    <button class="btn btn-primary" id="add-tag-to-note">Add</button>
+                </div>
+                <div class="note-tags" id="note-tags-list">
+                    <!-- Note tags will be dynamically added here -->
+                </div>
+            </div>
+            <div class="bottom-sheet-footer">
+                <button class="btn" id="draw-on-note">
+                    <i class="lucide lucide-pen-tool"></i>
+                    <span>Draw</span>
+                </button>
+                <button class="btn" id="duplicate-note">
+                    <i class="lucide lucide-copy"></i>
+                    <span>Duplicate</span>
+                </button>
+                <button class="btn btn-primary" id="save-note-properties">Save</button>
+            </div>
+        </div>
+        
+        <!-- Drawing Canvas -->
+        <div class="drawing-canvas-container" id="drawing-canvas-container">
+            <div class="drawing-header">
+                <h2 class="drawing-title">Draw on Note</h2>
+                <div class="drawing-actions">
+                    <button class="btn" id="clear-drawing">
+                        <i class="lucide lucide-trash-2"></i>
+                        <span>Clear</span>
+                    </button>
+                    <button class="btn btn-primary" id="save-drawing">
+                        <i class="lucide lucide-check"></i>
+                        <span>Save</span>
+                    </button>
+                    <button class="btn" id="close-drawing">
+                        <i class="lucide lucide-x"></i>
+                        <span>Close</span>
+                    </button>
+                </div>
+            </div>
+            <div class="drawing-tools">
+                <button class="drawing-tool active" data-tool="pen">Pen</button>
+                <button class="drawing-tool" data-tool="eraser">Eraser</button>
+                <input type="color" id="drawing-color" value="#000000">
+                <input type="range" id="drawing-size" min="1" max="20" value="3">
+            </div>
+            <canvas class="drawing-canvas" id="drawing-canvas"></canvas>
+        </div>
+        
+        <!-- Modal for Settings -->
+        <div class="modal-overlay" id="settings-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">Settings</h2>
+                    <div class="modal-close" id="close-settings-modal">
+                        <i class="lucide lucide-x"></i>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <h3>Appearance</h3>
+                    <div class="setting-option">
+                        <label for="theme-select">Theme</label>
+                        <select id="theme-select">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="auto">Auto (System)</option>
+                        </select>
+                    </div>
+                    
+                    <h3>Behavior</h3>
+                    <div class="setting-option">
+                        <label for="autosave-toggle">Auto-save</label>
+                        <input type="checkbox" id="autosave-toggle" checked>
+                    </div>
+                    
+                    <div class="setting-option">
+                        <label for="snap-to-grid-toggle">Snap to Grid</label>
+                        <input type="checkbox" id="snap-to-grid-toggle">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="close-settings">Close</button>
+                    <button class="btn btn-primary" id="save-settings">Save</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal for Export -->
+        <div class="modal-overlay" id="export-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">Export Notes</h2>
+                    <div class="modal-close" id="close-export-modal">
+                        <i class="lucide lucide-x"></i>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <p>Choose how you want to export your notes:</p>
+                    <div class="export-options">
+                        <div class="export-option" data-export-type="json">
+                            <div class="export-option-header">
+                                <i class="lucide lucide-file-json"></i>
+                                <div class="export-option-title">Export as JSON</div>
+                            </div>
+                            <div class="export-option-description">
+                                Export all notes as a JSON file for backup or transfer.
+                            </div>
+                        </div>
+                        <div class="export-option" data-export-type="png">
+                            <div class="export-option-header">
+                                <i class="lucide lucide-image"></i>
+                                <div class="export-option-title">Export as PNG</div>
+                            </div>
+                            <div class="export-option-description">
+                                Export the current board as a PNG image.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="close-export">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal for New Board -->
+        <div class="modal-overlay" id="new-board-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">Create New Board</h2>
+                    <div class="modal-close" id="close-new-board-modal">
+                        <i class="lucide lucide-x"></i>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-option">
+                        <label for="board-name">Board Name</label>
+                        <input type="text" id="board-name" placeholder="Enter board name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="close-new-board">Cancel</button>
+                    <button class="btn btn-primary" id="create-new-board">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        const state = {
+            notes: [],
+            boards: [
+                { id: 'default', name: 'Home', icon: 'home' },
+                { id: 'work', name: 'Work', icon: 'briefcase' },
+                { id: 'study', name: 'Study', icon: 'book-open' }
+            ],
+            currentBoard: 'default',
+            tags: ['Important', 'Todo', 'Idea', 'Personal'],
+            settings: {
+                theme: 'light',
+                autosave: true,
+                snapToGrid: false
+            },
+            selectedNote: null,
+            isDragging: false,
+            dragOffset: { x: 0, y: 0 },
+            dragStartPos: { x: 0, y: 0 },
+            drawing: {
+                isDrawing: false,
+                tool: 'pen',
+                color: '#000000',
+                size: 3,
+                lastX: 0,
+                lastY: 0
+            }
+        };
+
+        // DOM Elements
+        const elements = {
+            boardCanvas: document.getElementById('board-canvas'),
+            fab: document.getElementById('fab'),
+            searchInput: document.getElementById('search-input'),
+            themeToggle: document.getElementById('theme-toggle'),
+            layoutToggle: document.getElementById('layout-toggle'),
+            exportBtn: document.getElementById('export-btn'),
+            newBoardBtn: document.getElementById('new-board-btn'),
+            tagList: document.getElementById('tag-list'),
+            addTagBtn: document.getElementById('add-tag-btn'),
+            tidyNotesBtn: document.getElementById('tidy-notes-btn'),
+            settingsBtn: document.getElementById('settings-btn'),
+            contextMenu: document.getElementById('context-menu'),
+            notePropertiesSheet: document.getElementById('note-properties-sheet'),
+            colorPicker: document.getElementById('color-picker'),
+            tagInput: document.getElementById('tag-input'),
+            addTagToNote: document.getElementById('add-tag-to-note'),
+            noteTagsList: document.getElementById('note-tags-list'),
+            drawOnNote: document.getElementById('draw-on-note'),
+            duplicateNote: document.getElementById('duplicate-note'),
+            saveNoteProperties: document.getElementById('save-note-properties'),
+            closePropertiesSheet: document.getElementById('close-properties-sheet'),
+            drawingCanvasContainer: document.getElementById('drawing-canvas-container'),
+            drawingCanvas: document.getElementById('drawing-canvas'),
+            clearDrawing: document.getElementById('clear-drawing'),
+            saveDrawing: document.getElementById('save-drawing'),
+            closeDrawing: document.getElementById('close-drawing'),
+            drawingTools: document.querySelectorAll('.drawing-tool'),
+            drawingColor: document.getElementById('drawing-color'),
+            drawingSize: document.getElementById('drawing-size'),
+            settingsModal: document.getElementById('settings-modal'),
+            themeSelect: document.getElementById('theme-select'),
+            autosaveToggle: document.getElementById('autosave-toggle'),
+            snapToGridToggle: document.getElementById('snap-to-grid-toggle'),
+            closeSettingsModal: document.getElementById('close-settings-modal'),
+            closeSettings: document.getElementById('close-settings'),
+            saveSettings: document.getElementById('save-settings'),
+            exportModal: document.getElementById('export-modal'),
+            closeExportModal: document.getElementById('close-export-modal'),
+            closeExport: document.getElementById('close-export'),
+            exportOptions: document.querySelectorAll('.export-option'),
+            newBoardModal: document.getElementById('new-board-modal'),
+            closeNewBoardModal: document.getElementById('close-new-board-modal'),
+            closeNewBoard: document.getElementById('close-new-board'),
+            createNewBoard: document.getElementById('create-new-board'),
+            boardName: document.getElementById('board-name')
+        };
+
+        // Initialize the app
+        function init() {
+            loadSettings();
+            loadNotes();
+            renderBoards();
+            renderTags();
+            renderNotes();
+            setupEventListeners();
+            setupDrawingCanvas();
+            applyTheme();
+        }
+
+        // Load settings from localStorage
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('stickyNotesSettings');
+            if (savedSettings) {
+                state.settings = { ...state.settings, ...JSON.parse(savedSettings) };
+            }
+            
+            // Update UI to reflect settings
+            elements.themeSelect.value = state.settings.theme;
+            elements.autosaveToggle.checked = state.settings.autosave;
+            elements.snapToGridToggle.checked = state.settings.snapToGrid;
+        }
+
+        // Save settings to localStorage
+        function saveSettings() {
+            localStorage.setItem('stickyNotesSettings', JSON.stringify(state.settings));
+        }
+
+        // Load notes from localStorage
+        function loadNotes() {
+            const savedNotes = localStorage.getItem('stickyNotes');
+            if (savedNotes) {
+                state.notes = JSON.parse(savedNotes);
+            }
+        }
+
+        // Save notes to localStorage
+        function saveNotes() {
+            localStorage.setItem('stickyNotes', JSON.stringify(state.notes));
+        }
+
+        // Render boards in sidebar
+        function renderBoards() {
+            const boardItems = document.querySelectorAll('.sidebar-item[data-board]');
+            boardItems.forEach(item => {
+                if (item.getAttribute('data-board') === state.currentBoard) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // Render tags in sidebar
+        function renderTags() {
+            elements.tagList.innerHTML = '';
+            
+            state.tags.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag-item';
+                tagElement.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div class="tag-color" style="background-color: ${getRandomColor()}"></div>
+                        <span>${tag}</span>
+                    </div>
+                    <div class="tag-actions">
+                        <i class="lucide lucide-edit" style="font-size: 14px;"></i>
+                    </div>
+                `;
+                elements.tagList.appendChild(tagElement);
+            });
+        }
+
+        // Render notes on the board
+        function renderNotes() {
+            elements.boardCanvas.innerHTML = '';
+            
+            const boardNotes = state.notes.filter(note => note.board === state.currentBoard);
+            
+            boardNotes.forEach(note => {
+                const noteElement = createNoteElement(note);
+                elements.boardCanvas.appendChild(noteElement);
+            });
+        }
+
+        // Create a note element
+        function createNoteElement(note) {
+            const noteElement = document.createElement('div');
+            noteElement.className = `note note-${note.color}`;
+            noteElement.style.left = `${note.position.x}px`;
+            noteElement.style.top = `${note.position.y}px`;
+            noteElement.style.zIndex = note.zIndex;
+            noteElement.setAttribute('data-note-id', note.id);
+            
+            noteElement.innerHTML = `
+                <div class="note-header">
+                    <textarea class="note-title" placeholder="Title">${note.title}</textarea>
+                    <div class="note-actions">
+                        <div class="note-action" data-action="properties">
+                            <i class="lucide lucide-more-horizontal"></i>
+                        </div>
+                        <div class="note-action" data-action="pin">
+                            <i class="lucide ${note.pinned ? 'lucide-pin' : 'lucide-pin-off'}"></i>
+                        </div>
+                        <div class="note-action" data-action="close">
+                            <i class="lucide lucide-x"></i>
+                        </div>
+                    </div>
+                </div>
+                <textarea class="note-body" placeholder="Start typing...">${note.content}</textarea>
+                <div class="note-footer">
+                    <div class="note-tags">
+                        ${note.tags.map(tag => `<span class="note-tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="note-date">${formatDate(note.updatedAt)}</div>
+                </div>
+            `;
+            
+            return noteElement;
+        }
+
+        // Create a new note
+        function createNote() {
+            const newNote = {
+                id: Date.now().toString(),
+                title: 'New Note',
+                content: '',
+                color: 'yellow',
+                tags: [],
+                position: { 
+                    x: Math.max(20, Math.random() * (elements.boardCanvas.offsetWidth - 260)),
+                    y: Math.max(20, Math.random() * (elements.boardCanvas.offsetHeight - 220))
+                },
+                zIndex: 10,
+                pinned: false,
+                board: state.currentBoard,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+            
+            state.notes.push(newNote);
+            saveNotes();
+            renderNotes();
+            
+            // Focus on the new note's title
+            setTimeout(() => {
+                const noteElement = document.querySelector(`[data-note-id="${newNote.id}"]`);
+                if (noteElement) {
+                    const titleInput = noteElement.querySelector('.note-title');
+                    titleInput.focus();
+                    titleInput.select();
+                }
+            }, 10);
+        }
+
+        // Update a note
+        function updateNote(noteId, updates) {
+            const noteIndex = state.notes.findIndex(note => note.id === noteId);
+            if (noteIndex !== -1) {
+                state.notes[noteIndex] = {
+                    ...state.notes[noteIndex],
+                    ...updates,
+                    updatedAt: new Date()
+                };
+                saveNotes();
+                
+                // Update the note element if it exists
+                const noteElement = document.querySelector(`[data-note-id="${noteId}"]`);
+                if (noteElement) {
+                    if (updates.title !== undefined) {
+                        noteElement.querySelector('.note-title').value = updates.title;
+                    }
+                    if (updates.content !== undefined) {
+                        noteElement.querySelector('.note-body').value = updates.content;
+                    }
+                    if (updates.color !== undefined) {
+                        // Update note color class
+                        noteElement.className = noteElement.className.replace(/note-\w+/, `note-${updates.color}`);
+                    }
+                    if (updates.tags !== undefined) {
+                        const tagsContainer = noteElement.querySelector('.note-tags');
+                        tagsContainer.innerHTML = updates.tags.map(tag => `<span class="note-tag">${tag}</span>`).join('');
+                    }
+                    if (updates.pinned !== undefined) {
+                        const pinIcon = noteElement.querySelector('[data-action="pin"] i');
+                        pinIcon.className = updates.pinned ? 'lucide lucide-pin' : 'lucide lucide-pin-off';
+                    }
+                    if (updates.position !== undefined) {
+                        noteElement.style.left = `${updates.position.x}px`;
+                        noteElement.style.top = `${updates.position.y}px`;
+                    }
+                }
+            }
+        }
+
+        // Delete a note
+        function deleteNote(noteId) {
+            state.notes = state.notes.filter(note => note.id !== noteId);
+            saveNotes();
+            renderNotes();
+        }
+
+        // Duplicate a note
+        function duplicateNote(noteId) {
+            const originalNote = state.notes.find(note => note.id === noteId);
+            if (originalNote) {
+                const duplicatedNote = {
+                    ...originalNote,
+                    id: Date.now().toString(),
+                    title: `${originalNote.title} (Copy)`,
+                    position: {
+                        x: originalNote.position.x + 20,
+                        y: originalNote.position.y + 20
+                    },
+                    zIndex: originalNote.zIndex + 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+                
+                state.notes.push(duplicatedNote);
+                saveNotes();
+                renderNotes();
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // FAB - Create new note
+            elements.fab.addEventListener('click', createNote);
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+            
+            // Theme toggle
+            elements.themeToggle.addEventListener('click', toggleTheme);
+            
+            // Search
+            elements.searchInput.addEventListener('input', handleSearch);
+            
+            // Board switching
+            document.querySelectorAll('.sidebar-item[data-board]').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.sidebar-item[data-board]').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    state.currentBoard = item.getAttribute('data-board');
+                    renderNotes();
+                });
+            });
+            
+            // Add tag
+            elements.addTagBtn.addEventListener('click', () => {
+                const tagName = prompt('Enter tag name:');
+                if (tagName && !state.tags.includes(tagName)) {
+                    state.tags.push(tagName);
+                    renderTags();
+                }
+            });
+            
+            // Tidy notes
+            elements.tidyNotesBtn.addEventListener('click', tidyNotes);
+            
+            // Settings
+            elements.settingsBtn.addEventListener('click', () => {
+                elements.settingsModal.classList.add('active');
+            });
+            
+            // Close settings modal
+            elements.closeSettingsModal.addEventListener('click', () => {
+                elements.settingsModal.classList.remove('active');
+            });
+            
+            elements.closeSettings.addEventListener('click', () => {
+                elements.settingsModal.classList.remove('active');
+            });
+            
+            // Save settings
+            elements.saveSettings.addEventListener('click', () => {
+                state.settings.theme = elements.themeSelect.value;
+                state.settings.autosave = elements.autosaveToggle.checked;
+                state.settings.snapToGrid = elements.snapToGridToggle.checked;
+                
+                saveSettings();
+                applyTheme();
+                elements.settingsModal.classList.remove('active');
+            });
+            
+            // Note properties sheet
+            elements.closePropertiesSheet.addEventListener('click', () => {
+                elements.notePropertiesSheet.classList.remove('active');
+            });
+            
+            // Color picker
+            elements.colorPicker.addEventListener('click', (e) => {
+                if (e.target.classList.contains('color-option')) {
+                    document.querySelectorAll('.color-option').forEach(option => {
+                        option.classList.remove('active');
+                    });
+                    e.target.classList.add('active');
+                }
+            });
+            
+            // Add tag to note
+            elements.addTagToNote.addEventListener('click', () => {
+                const tagName = elements.tagInput.value.trim();
+                if (tagName && state.selectedNote) {
+                    const note = state.notes.find(n => n.id === state.selectedNote);
+                    if (note && !note.tags.includes(tagName)) {
+                        note.tags.push(tagName);
+                        updateNote(state.selectedNote, { tags: note.tags });
+                        renderNoteTags(note.tags);
+                        elements.tagInput.value = '';
+                    }
+                }
+            });
+            
+            // Draw on note
+            elements.drawOnNote.addEventListener('click', () => {
+                elements.notePropertiesSheet.classList.remove('active');
+                elements.drawingCanvasContainer.classList.add('active');
+            });
+            
+            // Duplicate note
+            elements.duplicateNote.addEventListener('click', () => {
+                if (state.selectedNote) {
+                    duplicateNote(state.selectedNote);
+                    elements.notePropertiesSheet.classList.remove('active');
+                }
+            });
+            
+            // Save note properties
+            elements.saveNoteProperties.addEventListener('click', () => {
+                if (state.selectedNote) {
+                    const selectedColor = document.querySelector('.color-option.active').getAttribute('data-color');
+                    updateNote(state.selectedNote, { color: selectedColor });
+                    elements.notePropertiesSheet.classList.remove('active');
+                }
+            });
+            
+            // Drawing tools
+            elements.drawingTools.forEach(tool => {
+                tool.addEventListener('click', () => {
+                    elements.drawingTools.forEach(t => t.classList.remove('active'));
+                    tool.classList.add('active');
+                    state.drawing.tool = tool.getAttribute('data-tool');
+                });
+            });
+            
+            // Drawing color
+            elements.drawingColor.addEventListener('input', (e) => {
+                state.drawing.color = e.target.value;
+            });
+            
+            // Drawing size
+            elements.drawingSize.addEventListener('input', (e) => {
+                state.drawing.size = parseInt(e.target.value);
+            });
+            
+            // Clear drawing
+            elements.clearDrawing.addEventListener('click', () => {
+                const ctx = elements.drawingCanvas.getContext('2d');
+                ctx.clearRect(0, 0, elements.drawingCanvas.width, elements.drawingCanvas.height);
+            });
+            
+            // Save drawing
+            elements.saveDrawing.addEventListener('click', () => {
+                // In a real implementation, you would save the drawing data
+                // For now, we'll just close the drawing canvas
+                elements.drawingCanvasContainer.classList.remove('active');
+            });
+            
+            // Close drawing
+            elements.closeDrawing.addEventListener('click', () => {
+                elements.drawingCanvasContainer.classList.remove('active');
+            });
+            
+            // Export
+            elements.exportBtn.addEventListener('click', () => {
+                elements.exportModal.classList.add('active');
+            });
+            
+            // Close export modal
+            elements.closeExportModal.addEventListener('click', () => {
+                elements.exportModal.classList.remove('active');
+            });
+            
+            elements.closeExport.addEventListener('click', () => {
+                elements.exportModal.classList.remove('active');
+            });
+            
+            // Export options
+            elements.exportOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const exportType = option.getAttribute('data-export-type');
+                    if (exportType === 'json') {
+                        exportBoardAsJSON();
+                    } else if (exportType === 'png') {
+                        exportBoardAsPNG();
+                    }
+                    elements.exportModal.classList.remove('active');
+                });
+            });
+            
+            // New board
+            elements.newBoardBtn.addEventListener('click', () => {
+                elements.newBoardModal.classList.add('active');
+            });
+            
+            // Close new board modal
+            elements.closeNewBoardModal.addEventListener('click', () => {
+                elements.newBoardModal.classList.remove('active');
+            });
+            
+            elements.closeNewBoard.addEventListener('click', () => {
+                elements.newBoardModal.classList.remove('active');
+            });
+            
+            // Create new board
+            elements.createNewBoard.addEventListener('click', () => {
+                const boardName = elements.boardName.value.trim();
+                if (boardName) {
+                    const newBoard = {
+                        id: boardName.toLowerCase().replace(/\s+/g, '-'),
+                        name: boardName,
+                        icon: 'folder'
+                    };
+                    
+                    state.boards.push(newBoard);
+                    
+                    // Add to sidebar
+                    const sidebarSection = document.querySelector('.sidebar-section:first-child');
+                    const boardItem = document.createElement('div');
+                    boardItem.className = 'sidebar-item';
+                    boardItem.setAttribute('data-board', newBoard.id);
+                    boardItem.innerHTML = `
+                        <i class="lucide lucide-${newBoard.icon} sidebar-item-icon"></i>
+                        <span>${newBoard.name}</span>
+                    `;
+                    sidebarSection.appendChild(boardItem);
+                    
+                    // Add event listener to new board
+                    boardItem.addEventListener('click', () => {
+                        document.querySelectorAll('.sidebar-item[data-board]').forEach(i => i.classList.remove('active'));
+                        boardItem.classList.add('active');
+                        state.currentBoard = newBoard.id;
+                        renderNotes();
+                    });
+                    
+                    elements.boardName.value = '';
+                    elements.newBoardModal.classList.remove('active');
+                }
+            });
+            
+            // Context menu
+            document.addEventListener('contextmenu', handleContextMenu);
+            document.addEventListener('click', () => {
+                elements.contextMenu.classList.remove('active');
+            });
+            
+            // Context menu actions
+            elements.contextMenu.addEventListener('click', (e) => {
+                const menuItem = e.target.closest('.context-menu-item');
+                if (menuItem) {
+                    const action = menuItem.getAttribute('data-action');
+                    const noteId = elements.contextMenu.getAttribute('data-note-id');
+                    
+                    switch (action) {
+                        case 'duplicate':
+                            duplicateNote(noteId);
+                            break;
+                        case 'export-png':
+                            exportNoteAsPNG(noteId);
+                            break;
+                        case 'export-json':
+                            exportNoteAsJSON(noteId);
+                            break;
+                        case 'delete':
+                            deleteNote(noteId);
+                            break;
+                    }
+                    
+                    elements.contextMenu.classList.remove('active');
+                }
+            });
+            
+            // Close modals when clicking outside
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-overlay')) {
+                    e.target.classList.remove('active');
+                }
+            });
+            
+            // Note dragging functionality
+            setupNoteDragging();
+            
+            // Auto-save note content
+            document.addEventListener('input', (e) => {
+                if (e.target.classList.contains('note-title') || e.target.classList.contains('note-body')) {
+                    const noteElement = e.target.closest('.note');
+                    if (noteElement && state.settings.autosave) {
+                        const noteId = noteElement.getAttribute('data-note-id');
+                        const title = noteElement.querySelector('.note-title').value;
+                        const content = noteElement.querySelector('.note-body').value;
+                        
+                        updateNote(noteId, { title, content });
+                    }
+                }
+            });
+            
+            // Note actions (properties, pin, close)
+            document.addEventListener('click', (e) => {
+                const noteAction = e.target.closest('.note-action');
+                if (noteAction) {
+                    const action = noteAction.getAttribute('data-action');
+                    const noteElement = noteAction.closest('.note');
+                    const noteId = noteElement.getAttribute('data-note-id');
+                    
+                    switch (action) {
+                        case 'properties':
+                            state.selectedNote = noteId;
+                            const note = state.notes.find(n => n.id === noteId);
+                            if (note) {
+                                // Set active color
+                                document.querySelectorAll('.color-option').forEach(option => {
+                                    option.classList.remove('active');
+                                    if (option.getAttribute('data-color') === note.color) {
+                                        option.classList.add('active');
+                                    }
+                                });
+                                
+                                renderNoteTags(note.tags);
+                                elements.notePropertiesSheet.classList.add('active');
+                            }
+                            break;
+                        case 'pin':
+                            const noteToPin = state.notes.find(n => n.id === noteId);
+                            if (noteToPin) {
+                                updateNote(noteId, { pinned: !noteToPin.pinned });
+                            }
+                            break;
+                        case 'close':
+                            deleteNote(noteId);
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Setup note dragging
+        function setupNoteDragging() {
+            document.addEventListener('mousedown', startDrag);
+            document.addEventListener('touchstart', startDrag, { passive: false });
+            
+            function startDrag(e) {
+                const noteElement = e.target.closest('.note');
+                if (noteElement) {
+                    e.preventDefault();
+                    state.isDragging = true;
+                    state.selectedNote = noteElement.getAttribute('data-note-id');
+                    noteElement.classList.add('dragging');
+                    
+                    const rect = noteElement.getBoundingClientRect();
+                    const boardRect = elements.boardCanvas.getBoundingClientRect();
+                    
+                    if (e.type === 'mousedown') {
+                        state.dragOffset.x = e.clientX - rect.left;
+                        state.dragOffset.y = e.clientY - rect.top;
+                    } else if (e.type === 'touchstart') {
+                        state.dragOffset.x = e.touches[0].clientX - rect.left;
+                        state.dragOffset.y = e.touches[0].clientY - rect.top;
+                    }
+                    
+                    state.dragStartPos.x = rect.left - boardRect.left;
+                    state.dragStartPos.y = rect.top - boardRect.top;
+                    
+                    document.addEventListener('mousemove', handleDrag);
+                    document.addEventListener('touchmove', handleDrag, { passive: false });
+                    document.addEventListener('mouseup', stopDrag);
+                    document.addEventListener('touchend', stopDrag);
+                }
+            }
+            
+            function handleDrag(e) {
+                if (!state.isDragging) return;
+                
+                const noteElement = document.querySelector(`[data-note-id="${state.selectedNote}"]`);
+                if (noteElement) {
+                    e.preventDefault();
+                    
+                    const boardRect = elements.boardCanvas.getBoundingClientRect();
+                    let clientX, clientY;
+                    
+                    if (e.type === 'mousemove') {
+                        clientX = e.clientX;
+                        clientY = e.clientY;
+                    } else if (e.type === 'touchmove') {
+                        clientX = e.touches[0].clientX;
+                        clientY = e.touches[0].clientY;
+                    }
+                    
+                    let x = clientX - state.dragOffset.x - boardRect.left;
+                    let y = clientY - state.dragOffset.y - boardRect.top;
+                    
+                    // Boundary checking
+                    x = Math.max(0, Math.min(x, boardRect.width - noteElement.offsetWidth));
+                    y = Math.max(0, Math.min(y, boardRect.height - noteElement.offsetHeight));
+                    
+                    // Snap to grid if enabled
+                    if (state.settings.snapToGrid) {
+                        const gridSize = 20;
+                        x = Math.round(x / gridSize) * gridSize;
+                        y = Math.round(y / gridSize) * gridSize;
+                    }
+                    
+                    noteElement.style.left = `${x}px`;
+                    noteElement.style.top = `${y}px`;
+                }
+            }
+            
+            function stopDrag() {
+                if (state.isDragging && state.selectedNote) {
+                    const noteElement = document.querySelector(`[data-note-id="${state.selectedNote}"]`);
+                    if (noteElement) {
+                        noteElement.classList.remove('dragging');
+                        
+                        const x = parseInt(noteElement.style.left);
+                        const y = parseInt(noteElement.style.top);
+                        
+                        updateNote(state.selectedNote, { position: { x, y } });
+                    }
+                    
+                    state.isDragging = false;
+                    document.removeEventListener('mousemove', handleDrag);
+                    document.removeEventListener('touchmove', handleDrag);
+                    document.removeEventListener('mouseup', stopDrag);
+                    document.removeEventListener('touchend', stopDrag);
+                }
+            }
+        }
+
+        // Handle keyboard shortcuts
+        function handleKeyboardShortcuts(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            
+            switch (e.key) {
+                case 'n':
+                case 'N':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        createNote();
+                    }
+                    break;
+                case 'Delete':
+                case 'Backspace':
+                    // In a real implementation, you would delete the selected note
+                    break;
+                case 'z':
+                case 'Z':
+                    if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+                        e.preventDefault();
+                        // Undo implementation would go here
+                    }
+                    break;
+                case 'y':
+                case 'Y':
+                    if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+                        e.preventDefault();
+                        // Redo implementation would go here
+                    }
+                    break;
+            }
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            state.settings.theme = newTheme;
+            saveSettings();
+            
+            // Update theme toggle icon
+            const icon = elements.themeToggle.querySelector('i');
+            icon.className = newTheme === 'light' ? 'lucide lucide-moon' : 'lucide lucide-sun';
+        }
+
+        // Apply theme based on settings
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', state.settings.theme);
+            
+            // Update theme toggle icon
+            const icon = elements.themeToggle.querySelector('i');
+            icon.className = state.settings.theme === 'light' ? 'lucide lucide-moon' : 'lucide lucide-sun';
+        }
+
+        // Handle search
+        function handleSearch() {
+            const query = elements.searchInput.value.toLowerCase();
+            
+            document.querySelectorAll('.note').forEach(noteElement => {
+                const noteId = noteElement.getAttribute('data-note-id');
+                const note = state.notes.find(n => n.id === noteId);
+                
+                if (note) {
+                    const matches = note.title.toLowerCase().includes(query) || 
+                                   note.content.toLowerCase().includes(query) ||
+                                   note.tags.some(tag => tag.toLowerCase().includes(query));
+                    
+                    noteElement.style.display = matches ? 'block' : 'none';
+                }
+            });
+        }
+
+        // Tidy notes (arrange in grid)
+        function tidyNotes() {
+            const notes = state.notes.filter(note => note.board === state.currentBoard);
+            const containerWidth = elements.boardCanvas.offsetWidth;
+            const noteWidth = 240;
+            const noteHeight = 200;
+            const margin = 20;
+            
+            const notesPerRow = Math.floor((containerWidth - margin) / (noteWidth + margin));
+            
+            notes.forEach((note, index) => {
+                const row = Math.floor(index / notesPerRow);
+                const col = index % notesPerRow;
+                
+                const x = margin + col * (noteWidth + margin);
+                const y = margin + row * (noteHeight + margin);
+                
+                updateNote(note.id, { position: { x, y } });
+            });
+            
+            renderNotes();
+        }
+
+        // Handle context menu
+        function handleContextMenu(e) {
+            const noteElement = e.target.closest('.note');
+            if (noteElement) {
+                e.preventDefault();
+                
+                const noteId = noteElement.getAttribute('data-note-id');
+                elements.contextMenu.setAttribute('data-note-id', noteId);
+                
+                elements.contextMenu.style.left = `${e.pageX}px`;
+                elements.contextMenu.style.top = `${e.pageY}px`;
+                elements.contextMenu.classList.add('active');
+            }
+        }
+
+        // Setup drawing canvas
+        function setupDrawingCanvas() {
+            const canvas = elements.drawingCanvas;
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            function resizeCanvas() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                // Set default drawing styles
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Drawing functionality
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            canvas.addEventListener('touchstart', startDrawingTouch, { passive: false });
+            canvas.addEventListener('touchmove', drawTouch, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing);
+            
+            function startDrawing(e) {
+                state.drawing.isDrawing = true;
+                state.drawing.lastX = e.offsetX;
+                state.drawing.lastY = e.offsetY;
+            }
+            
+            function startDrawingTouch(e) {
+                e.preventDefault();
+                state.drawing.isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                state.drawing.lastX = e.touches[0].clientX - rect.left;
+                state.drawing.lastY = e.touches[0].clientY - rect.top;
+            }
+            
+            function draw(e) {
+                if (!state.drawing.isDrawing) return;
+                
+                ctx.lineWidth = state.drawing.size;
+                
+                if (state.drawing.tool === 'pen') {
+                    ctx.strokeStyle = state.drawing.color;
+                    ctx.globalCompositeOperation = 'source-over';
+                } else if (state.drawing.tool === 'eraser') {
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.globalCompositeOperation = 'destination-out';
+                }
+                
+                ctx.beginPath();
+                ctx.moveTo(state.drawing.lastX, state.drawing.lastY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+                
+                state.drawing.lastX = e.offsetX;
+                state.drawing.lastY = e.offsetY;
+            }
+            
+            function drawTouch(e) {
+                if (!state.drawing.isDrawing) return;
+                
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const x = e.touches[0].clientX - rect.left;
+                const y = e.touches[0].clientY - rect.top;
+                
+                ctx.lineWidth = state.drawing.size;
+                
+                if (state.drawing.tool === 'pen') {
+                    ctx.strokeStyle = state.drawing.color;
+                    ctx.globalCompositeOperation = 'source-over';
+                } else if (state.drawing.tool === 'eraser') {
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.globalCompositeOperation = 'destination-out';
+                }
+                
+                ctx.beginPath();
+                ctx.moveTo(state.drawing.lastX, state.drawing.lastY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                
+                state.drawing.lastX = x;
+                state.drawing.lastY = y;
+            }
+            
+            function stopDrawing() {
+                state.drawing.isDrawing = false;
+            }
+        }
+
+        // Render note tags in properties sheet
+        function renderNoteTags(tags) {
+            elements.noteTagsList.innerHTML = '';
+            
+            tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'note-tag';
+                tagElement.textContent = tag;
+                
+                // Add remove button
+                const removeBtn = document.createElement('span');
+                removeBtn.innerHTML = ' &times;';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.style.marginLeft = '4px';
+                removeBtn.addEventListener('click', () => {
+                    const note = state.notes.find(n => n.id === state.selectedNote);
+                    if (note) {
+                        note.tags = note.tags.filter(t => t !== tag);
+                        updateNote(state.selectedNote, { tags: note.tags });
+                        renderNoteTags(note.tags);
+                    }
+                });
+                
+                tagElement.appendChild(removeBtn);
+                elements.noteTagsList.appendChild(tagElement);
+            });
+        }
+
+        // Export note as PNG
+        function exportNoteAsPNG(noteId) {
+            const note = state.notes.find(n => n.id === noteId);
+            if (note) {
+                // In a real implementation, you would convert the note to PNG
+                // For now, we'll create a simple representation
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = 240;
+                canvas.height = 200;
+                
+                // Draw note background
+                ctx.fillStyle = getComputedStyle(document.querySelector(`.note-${note.color}`)).backgroundColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw note content
+                ctx.fillStyle = getComputedStyle(document.querySelector('.note-title')).color;
+                ctx.font = '16px Inter';
+                ctx.fillText(note.title, 16, 30);
+                
+                ctx.font = '14px Inter';
+                const lines = note.content.split('\n');
+                lines.forEach((line, i) => {
+                    ctx.fillText(line, 16, 60 + i * 20);
+                });
+                
+                // Convert to data URL and download
+                const dataUrl = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `note-${noteId}.png`;
+                link.href = dataUrl;
+                link.click();
+            }
+        }
+
+        // Export note as JSON
+        function exportNoteAsJSON(noteId) {
+            const note = state.notes.find(n => n.id === noteId);
+            if (note) {
+                const dataStr = JSON.stringify(note, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `note-${noteId}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+            }
+        }
+
+        // Export board as JSON
+        function exportBoardAsJSON() {
+            const boardNotes = state.notes.filter(note => note.board === state.currentBoard);
+            const dataStr = JSON.stringify(boardNotes, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `board-${state.currentBoard}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        // Export board as PNG
+        function exportBoardAsPNG() {
+            // In a real implementation, you would convert the board to PNG
+            // For now, we'll use html2canvas or similar library
+            // This is a simplified version
+            alert('Board export as PNG would be implemented with a library like html2canvas in a production app');
+        }
+
+        // Utility functions
+        function getRandomColor() {
+            const colors = ['#ffd60a', '#64d2ff', '#30d158', '#ff375f', '#bf5af2', '#ff9f0a', '#8e8e93', '#5ac8fa'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
