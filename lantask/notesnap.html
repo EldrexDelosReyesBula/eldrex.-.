@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NoteSnap - Snap your thoughts. Stick them anywhere.</title>
+    
+    <!-- Critical Permissions Policy Meta Tag -->
+    <meta http-equiv="Permissions-Policy" content="camera=(self)">
+    
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <style>
@@ -757,7 +761,10 @@
                 </div>
                 <h1 class="welcome-title">NoteSnap</h1>
                 <p class="welcome-text">Snap your thoughts. Stick them anywhere. A camera-based note-taking app that lets you place virtual sticky notes in your real environment.</p>
-                <button class="welcome-btn" id="start-btn">Get Started</button>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                    <button class="welcome-btn" id="start-with-camera-btn">Start with Camera</button>
+                    <button class="btn btn-secondary" id="start-without-camera-btn">Use Without Camera</button>
+                </div>
             </div>
         </div>
 
@@ -787,6 +794,7 @@
                 <div class="fallback-text">Camera Access Required</div>
                 <div class="fallback-subtext">NoteSnap works best with camera access to create an AR-like experience. You can still use the app without camera.</div>
                 <button class="retry-button" id="retry-camera-btn">Try Again</button>
+                <button class="retry-button" id="continue-without-camera-btn" style="margin-top: 10px;">Continue Without Camera</button>
             </div>
             <div class="camera-overlay"></div>
             <div class="note-container" id="note-container"></div>
@@ -903,16 +911,20 @@
             cameraEnabled: false,
             isDragging: false,
             dragNote: null,
-            dragOffset: { x: 0, y: 0 }
+            dragOffset: { x: 0, y: 0 },
+            cameraStream: null,
+            useCamera: true
         };
 
         // DOM Elements
         const elements = {
             welcomeScreen: document.getElementById('welcome-screen'),
-            startBtn: document.getElementById('start-btn'),
+            startWithCameraBtn: document.getElementById('start-with-camera-btn'),
+            startWithoutCameraBtn: document.getElementById('start-without-camera-btn'),
             cameraFeed: document.getElementById('camera-feed'),
             cameraFallback: document.getElementById('camera-fallback'),
             retryCameraBtn: document.getElementById('retry-camera-btn'),
+            continueWithoutCameraBtn: document.getElementById('continue-without-camera-btn'),
             noteContainer: document.getElementById('note-container'),
             addNoteBtn: document.getElementById('add-note-btn'),
             noteModal: document.getElementById('note-modal'),
@@ -952,10 +964,19 @@
         // Setup all event listeners
         function setupEventListeners() {
             // Welcome screen
-            elements.startBtn.addEventListener('click', startCamera);
+            elements.startWithCameraBtn.addEventListener('click', () => {
+                state.useCamera = true;
+                startCamera();
+            });
+            
+            elements.startWithoutCameraBtn.addEventListener('click', () => {
+                state.useCamera = false;
+                startWithoutCamera();
+            });
             
             // Camera controls
             elements.retryCameraBtn.addEventListener('click', startCamera);
+            elements.continueWithoutCameraBtn.addEventListener('click', startWithoutCamera);
             elements.toggleCameraBtn.addEventListener('click', toggleCamera);
             elements.enableCameraBtn.addEventListener('click', startCamera);
             elements.disableCameraBtn.addEventListener('click', disableCamera);
@@ -1023,6 +1044,26 @@
             window.addEventListener('resize', repositionNotes);
         }
 
+        // Start without camera
+        function startWithoutCamera() {
+            elements.welcomeScreen.classList.add('hidden');
+            state.cameraEnabled = false;
+            state.useCamera = false;
+            
+            // Stop any existing stream
+            if (state.cameraStream) {
+                const tracks = state.cameraStream.getTracks();
+                tracks.forEach(track => track.stop());
+                state.cameraStream = null;
+            }
+            
+            elements.cameraFeed.style.display = 'none';
+            elements.cameraFallback.classList.remove('hidden');
+            elements.cameraFallback.querySelector('.fallback-text').textContent = 'Camera Disabled';
+            elements.cameraFallback.querySelector('.fallback-subtext').textContent = 'You can still use NoteSnap with the static background.';
+            updateCameraButton();
+        }
+
         // Start camera
         function startCamera() {
             elements.welcomeScreen.classList.add('hidden');
@@ -1034,9 +1075,10 @@
             }
             
             // Stop any existing stream
-            if (elements.cameraFeed.srcObject) {
-                const tracks = elements.cameraFeed.srcObject.getTracks();
+            if (state.cameraStream) {
+                const tracks = state.cameraStream.getTracks();
                 tracks.forEach(track => track.stop());
+                state.cameraStream = null;
             }
             
             navigator.mediaDevices.getUserMedia({ 
@@ -1047,10 +1089,12 @@
                 } 
             })
             .then(stream => {
+                state.cameraStream = stream;
                 elements.cameraFeed.srcObject = stream;
                 elements.cameraFeed.style.display = 'block';
                 elements.cameraFallback.classList.add('hidden');
                 state.cameraEnabled = true;
+                state.useCamera = true;
                 updateCameraButton();
             })
             .catch(err => {
@@ -1079,9 +1123,10 @@
 
         // Disable camera
         function disableCamera() {
-            if (elements.cameraFeed.srcObject) {
-                const tracks = elements.cameraFeed.srcObject.getTracks();
+            if (state.cameraStream) {
+                const tracks = state.cameraStream.getTracks();
                 tracks.forEach(track => track.stop());
+                state.cameraStream = null;
                 elements.cameraFeed.srcObject = null;
             }
             
@@ -1090,6 +1135,7 @@
             elements.cameraFallback.querySelector('.fallback-text').textContent = 'Camera Disabled';
             elements.cameraFallback.querySelector('.fallback-subtext').textContent = 'You can still use NoteSnap with the static background.';
             state.cameraEnabled = false;
+            state.useCamera = false;
             updateCameraButton();
         }
 
@@ -1111,9 +1157,10 @@
             }
             
             // Stop current stream
-            if (elements.cameraFeed.srcObject) {
-                const tracks = elements.cameraFeed.srcObject.getTracks();
+            if (state.cameraStream) {
+                const tracks = state.cameraStream.getTracks();
                 tracks.forEach(track => track.stop());
+                state.cameraStream = null;
             }
             
             // Toggle camera
@@ -1195,7 +1242,12 @@
                     color: state.selectedColor,
                     position: { x: 50, y: 50 }, // Default position
                     createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
+                    updatedAt: new Date().toISOString(),
+                    // Store relative position for camera-based placement
+                    relativePosition: state.useCamera ? {
+                        x: Math.random() * 0.7 + 0.15, // Random position in camera view
+                        y: Math.random() * 0.7 + 0.15
+                    } : null
                 };
                 
                 state.notes.push(newNote);
@@ -1211,8 +1263,17 @@
             const noteEl = document.createElement('div');
             noteEl.className = 'note';
             noteEl.id = `note-${note.id}`;
-            noteEl.style.left = `${note.position.x}px`;
-            noteEl.style.top = `${note.position.y}px`;
+            
+            // Calculate position based on camera or static view
+            if (state.useCamera && note.relativePosition) {
+                const containerRect = elements.noteContainer.getBoundingClientRect();
+                noteEl.style.left = `${note.relativePosition.x * containerRect.width}px`;
+                noteEl.style.top = `${note.relativePosition.y * containerRect.height}px`;
+            } else {
+                noteEl.style.left = `${note.position.x}px`;
+                noteEl.style.top = `${note.position.y}px`;
+            }
+            
             noteEl.style.backgroundColor = note.color;
             noteEl.style.color = getContrastColor(note.color);
             
@@ -1330,8 +1391,18 @@
                 
                 // Update note position in state
                 if (state.dragNote) {
+                    // Store both absolute and relative positions
                     state.dragNote.position.x = parseInt(noteEl.style.left);
                     state.dragNote.position.y = parseInt(noteEl.style.top);
+                    
+                    if (state.useCamera) {
+                        const containerRect = elements.noteContainer.getBoundingClientRect();
+                        state.dragNote.relativePosition = {
+                            x: parseInt(noteEl.style.left) / containerRect.width,
+                            y: parseInt(noteEl.style.top) / containerRect.height
+                        };
+                    }
+                    
                     saveNotes();
                 }
                 
@@ -1445,11 +1516,18 @@
             state.notes.forEach(note => {
                 const noteEl = document.getElementById(`note-${note.id}`);
                 if (noteEl) {
-                    const maxX = containerRect.width - noteEl.offsetWidth;
-                    const maxY = containerRect.height - noteEl.offsetHeight;
-                    
-                    noteEl.style.left = `${Math.max(0, Math.min(note.position.x, maxX))}px`;
-                    noteEl.style.top = `${Math.max(0, Math.min(note.position.y, maxY))}px`;
+                    // If using camera and note has relative position, use it
+                    if (state.useCamera && note.relativePosition) {
+                        noteEl.style.left = `${note.relativePosition.x * containerRect.width}px`;
+                        noteEl.style.top = `${note.relativePosition.y * containerRect.height}px`;
+                    } else {
+                        // Otherwise use absolute positioning with constraints
+                        const maxX = containerRect.width - noteEl.offsetWidth;
+                        const maxY = containerRect.height - noteEl.offsetHeight;
+                        
+                        noteEl.style.left = `${Math.max(0, Math.min(note.position.x, maxX))}px`;
+                        noteEl.style.top = `${Math.max(0, Math.min(note.position.y, maxY))}px`;
+                    }
                 }
             });
         }
