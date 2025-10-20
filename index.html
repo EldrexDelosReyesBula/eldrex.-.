@@ -1,1 +1,609 @@
-index.
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Eldrex Delos Reyes Bula</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link rel="preload" href="https://ucarecdn.com/f7a97b92-31bd-4e03-a3f4-af5c99c95453/-/preview/750x1000/" as="image">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js" as="script">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://eldrex.vercel.app/css/main.css?v=527c888a8584de9b371ebd0c2139c5eb08d8803612ce216cabbdd765643c24c3" integrity"527c888a8584de9b371ebd0c2139c5eb08d8803612ce216cabbdd765643c24c3">
+    <script src="https://eldrex.vercel.app/functions/main.js"></script>
+</head>
+
+
+<video autoplay muted loop playsinline id="bg-video">
+    <source src="https://eldrex.landecs.org/functions/eldrexbg01.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+<script>
+    const video = document.getElementById('bg-video');
+
+    // Restart instantly when it ends (avoids "pause" from loop attr)
+    video.addEventListener('ended', () => {
+        video.currentTime = 0;
+        video.play();
+    });
+</script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!('vibrate' in navigator)) return;
+
+        const hapticLinks = document.querySelectorAll('.haptic-link');
+        if (!hapticLinks.length) return;
+
+        let lastVibration = 0;
+        const cooldown = 300;
+
+
+        function triggerVibration(pattern) {
+            const now = Date.now();
+            if (now - lastVibration < cooldown) return;
+            lastVibration = now;
+            try {
+                navigator.vibrate(pattern);
+            } catch {
+
+            }
+        }
+
+
+        const patterns = {
+            tap: [12, 8, 20],
+            longPress: [30, 10, 30],
+            contextMenu: [15, 5, 15, 5, 15],
+            fallback: [20]
+        };
+
+        hapticLinks.forEach(link => {
+            link.addEventListener('touchstart', () => triggerVibration(patterns.tap), {
+                passive: true
+            });
+
+
+            link.addEventListener('mousedown', () => triggerVibration(patterns.tap));
+
+
+            link.addEventListener('click', e => {
+                if (e.screenX !== 0) {
+                    setTimeout(() => triggerVibration(patterns.tap), 15);
+                }
+            });
+
+
+            link.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                triggerVibration(patterns.contextMenu);
+
+            });
+        });
+
+
+        let touchTimer = null;
+        hapticLinks.forEach(link => {
+            link.addEventListener('touchstart', () => {
+                touchTimer = setTimeout(() => {
+                    triggerVibration(patterns.longPress);
+                }, 600);
+            }, {
+                passive: true
+            });
+
+            link.addEventListener('touchend', () => {
+                if (touchTimer) clearTimeout(touchTimer);
+            }, {
+                passive: true
+            });
+
+            link.addEventListener('touchmove', () => {
+                if (touchTimer) clearTimeout(touchTimer);
+            }, {
+                passive: true
+            });
+        });
+    });
+</script>
+
+<body>
+    <canvas id="particles-canvas" class="particles-canvas"></canvas>
+
+    <div class="container">
+        <div class="header">
+            <div class="profile-container">
+                <div class="profile-picture haptic-link" id="profile-picture">
+                    <img src="https://eldrex.landecs.org/eldrex01.png" alt="Eldrex Delos Reyes Bula" crossorigin="anonymous" id="profile-image">
+                </div>
+            </div>
+            <h1 class="name" id="dust-name">Eldrex Delos Reyes Bula</h1>
+            <p class="username" style="margin-top: -20px;">eldrex.landecs.org</p>
+        </div>
+        <div class="links-section">
+            <!--
+<a style="border-radius: 50px;" href="https://eldrex.neocities.org/about" class="link-item haptic-link special-link-item" rel="noopener noreferrer">
+                <div class="link-image-top" style="border-radius: 20px 20px 0 0;">
+                    <img src="When nothing moves, everything begins_20250928_195843_0000.png" alt="About eldrex" class="top-image">
+                    <div class="image-bottom-gradient"></div>
+                </div>
+                <div class="link-content-bottom">
+                    <div class="link-icon haptic-link">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="link-text">
+                        <div class="link-title">About eldrex.</div>
+                        <div class="link-url">It's me. Get to know me.</div>
+                    </div>
+                    <i class="fas fa-chevron-right link-arrow"></i>
+                </div>
+            </a>
+-->
+            <a href="https://eldrex.neocities.org/archives/about" class="link-item haptic-link" rel="noopener noreferrer">
+                <div class="link-icon haptic-link">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="link-text">
+                    <div class="link-title">About eldrex.</div>
+                    <div class="link-url">It's me. Get to know me.</div>
+                </div>
+                <i class="fas fa-chevron-right link-arrow"></i>
+            </a>
+            <a href="#" class="link-item haptic-link" id="squad-link">
+                <div class="link-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="link-text">
+                    <div class="link-title">Socratic Squad</div>
+                    <div class="link-url">Get to know the Socratic Squad</div>
+                </div>
+                <i class="fas fa-chevron-right link-arrow"></i>
+            </a>
+            <a href="https://www.facebook.com/eldrex.landecs.org" class="link-item haptic-link" target="_blank" rel="noopener noreferrer">
+                <div class="link-icon">
+                    <i class="fab fa-facebook-f"></i>
+                </div>
+                <div class="link-text">
+                    <div class="link-title">Facebook</div>
+                    <div class="link-url">@eldrex.landecs.org</div>
+                </div>
+                <i class="fas fa-chevron-right link-arrow"></i>
+            </a>
+
+            <a href="https://www.instagram.com/landecs_ld" class="link-item haptic-link" target="_blank" rel="noopener noreferrer">
+                <div class="link-icon">
+                    <i class="fab fa-instagram"></i>
+                </div>
+                <div class="link-text">
+                    <div class="link-title">Instagram</div>
+                    <div class="link-url">@landecs_ld</div>
+                </div>
+                <i class="fas fa-chevron-right link-arrow"></i>
+            </a>
+
+            <a href="https://www.threads.net/@landecs_ld" class="link-item haptic-link" target="_blank" rel="noopener noreferrer">
+                <div class="link-icon">
+                    <i class="fab fa-threads"></i>
+                </div>
+                <div class="link-text">
+                    <div class="link-title">Threads</div>
+                    <div class="link-url">@landecs_ld</div>
+                </div>
+                <i class="fas fa-chevron-right link-arrow"></i>
+            </a>
+
+            <a href="https://bsky.app/profile/eldrex16-org.bsky.social" class="link-item haptic-link" target="_blank" rel="noopener noreferrer">
+                <div class="link-icon">
+                    <i class="fab fa-bluesky"></i>
+                </div>
+                <div class="link-text">
+                    <div class="link-title">Bluesky</div>
+                    <div class="link-url">@eldrex16-org.bsky.social</div>
+                </div>
+                <i class="fas fa-chevron-right link-arrow"></i>
+            </a>
+            <a href="https://www.medium.com/@eldrexdelosreyesbula" class="link-item haptic-link" target="_blank" rel="noopener noreferrer">
+                <div class="link-icon">
+                    <i class="fab fa-medium-m"></i>
+                </div>
+                <div class="link-text">
+                    <div class="link-title">Medium</div>
+                    <div class="link-url">@eldrexdelosreyesbula</div>
+                </div>
+                <i class="fas fa-chevron-right link-arrow"></i>
+            </a>
+
+            <div class="profile-actions">
+
+                <p style="font-size: 12px; color: #D2D2D2; text-align: center; margin-top: 20px;">
+                    By using this site, you agree to our
+                    <a href="https://eldrex.neocities.org/archives/terms.html" style="color: #0073e6; text-decoration: none; font-weight: 500;">
+                        Terms of Use
+                    </a>
+                    and
+                    <a href="https://eldrex.landecs.org/archives/license" style="color: #0073e6; text-decoration: none; font-weight: 500;">
+                        Landecs Proprietary Software License (LPSL)
+                    </a>.
+                    Please review them to ensure compliance.
+                </p>
+              
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-sheet" id="profile-sheet">
+        <div class="bottom-sheet-header">
+            <h2 class="bottom-sheet-title">Profile</h2>
+            <button class="close-sheet haptic-link" id="close-profile-sheet">&times;</button>
+        </div>
+
+        <div class="profile-details">
+            <div class="profile-row">
+                <img src="https://eldrex.landecs.org/IMG20250824111846~2.jpg" alt="Eldrex Delos Reyes Bula" class="profile-avatar" style="border: none;">
+                <div class="profile-info">
+                    <h3 class="profile-name">Eldrex Delos Reyes Bula</h3>
+                    <p class="profile-bio">"When nothing moves, everything begins"</p>
+                </div>
+            </div>
+
+            <!-- Modified detail items container -->
+            <div class="detail-items-row">
+                <div class="detail-item">
+                    <span class="detail-label">
+                        <i class="fas fa-flag"></i> Website ID
+                    </span>
+                    <span class="detail-value">LDX09229783</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">
+                        <i class="fas fa-edit"></i> Created
+                    </span>
+                    <span class="detail-value">June 18, 2022</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <a href="/archives/logs.html" class="action-link license-link haptic-link">
+                <i class="fas fa-code-branch"></i>
+                <span>Updates</span>
+            </a>
+            <a href="https://neocities.org/site/eldrex/stats" class="action-link donate-link haptic-link">
+                <i class="fas fa-chart-bar"></i>
+                <span>Analytics</span>
+            </a>
+        </div>
+        
+    </div>
+    <div class="bottom-sheet" id="squad-sheet" style="border-top-left-radius: 60px; border-top-right-radius: 60px;">
+        <!-- <div class="bottom-sheet-header">
+            <h2 class="bottom-sheet-title">Socratic Squad</h2>
+            <button class="close-sheet haptic-link" id="close-squad-sheet">&times;</button>
+             </div> -->
+
+        <div class="profile-details">
+            <div class="squad-card" style="border-radius: 70px;margin-bottom: 20px;">
+                <img style="border-radius: 50%;" src="https://eldrex.neocities.org/squad.jpg" alt="Socratic Squad" class="squad-image">
+                <div class="squad-info">
+                    <h3 class="squad-name">Socratic Squad</h3>
+                    <p class="squad-description">
+                        "One for all. All for one"
+                    </p>
+                    <p style="font-size: 10px;" class="squad-description">
+                        2023 — 2025
+                    </p>
+                </div>
+            </div>
+            <p style="margin: 10px; margin-top: -20px; color: var(--text-primary);" class="squad-description">
+                Alright, let me enlighten you, my fellow Socratic, for thoughts are meant to be shared.
+            </p>
+            <p style="margin: 10px; margin-top: -20px; color: var(--text-primary);" class="squad-description">
+                Socratic Squad is a group of average-looking students that hides some of the most extraordinary talents known to mankind. Though weird in some ways, the unity between them is unbreakable all throughout the day. It reflects the phrase "limit knows no bounds" because everyone shines in their own unique way, even within their so-called 😒 comfort zones. This group shares knowledge and memories that stay deeply rooted within each member, creating a connection that lasts beyond time. They grow, learn, and uplift one another through thoughtful questions, honest conversations, and deep reflections. Bound together by values such as wisdom, peace, friendship, support, and the ongoing journey of self-discovery, they embrace both the silence and the laughter. They are hungry, sleepy, and endlessly funny when together, but through every laugh, pause, and shared story, they become stronger, braver, and wiser.
+            </p>
+
+            <div class="detail-item" style="margin: 10px;">
+                <span class="detail-label">Members</span>
+                <span class="detail-value">6 active members</span>
+            </div>
+            <hr style="width: 100%;">
+            <div class="detail-item" style="margin: 10px;">
+                <span class="detail-label" style="color: white; font-size: 24px;  font-weight: bold;  color: var(--text-primary);">Our Characters</span>
+                <span class="detail-value" style="color: var(--text-primary); font-size: 12px; ">
+                    Each of our predator characters reflects the soul and silent strength we carry within Socratic Squad. The Tiger stands firm, embodying leadership, silent passion, and courage even in stillness. The Owl watches with quiet wisdom, guiding without needing attention, present in the dark when clarity is needed most. The Capybara, often underestimated, holds the gift of patience, calmness, and adaptability, reminding us that gentleness doesn't mean weakness. The Fox is clever, quick-witted, and full of heart, often the spark of laughter and brilliance when the group needs light. The Eagle soars, not just to escape but to see beyond, always seeking truth, justice, and the bigger picture that many miss. The Wolf, loyal and fierce, may walk alone at times but never forgets its pack, always ready to protect, to create, to fight for what matters.
+                    <br><br>
+                    Together, these characters aren’t just roles or symbols. They’re reflections of who we are, why we matter to each other, and how our individual strengths form something unbreakable when united.
+
+                </span><br><br>
+                <p style="font-size: 10px; color: #FF8BA2;">“Study? Maybe. Sleep? Definitely. Laugh? Always.”
+                </p>
+            </div>
+            <div class="members-scroll-container haptic-link" style="margin: 10px; overflow-x: auto; white-space: nowrap; padding-bottom: 10px;">
+                <div class="member-card" style="display: inline-block; width: 80px; margin-right: 15px; text-align: center; vertical-align: top;">
+                    <img src="https://eldrex.neocities.org/tiger.svg" alt="Member 6" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                    <p style="margin-top: 5px; font-size: 12px; white-space: normal; word-wrap: break-word;">Eldrex Bula — 2023</p>
+                </div>
+                <div class="member-card haptic-link" style="display: inline-block; width: 80px; margin-right: 15px; text-align: center; vertical-align: top;">
+                    <img src="https://eldrex.neocities.org/5_20250703_110015_0004.svg" alt="Member 3" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                    <p style="margin-top: 5px; font-size: 12px; white-space: normal; word-wrap: break-word;">Ara Bella Rivera — 2023</p>
+                </div>
+                <div class="member-card haptic-link" style="display: inline-block; width: 80px; margin-right: 15px; text-align: center; vertical-align: top;">
+                    <img src="https://eldrex.neocities.org/6_20250703_110016_0005.svg" alt="Member 1" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                    <p style="margin-top: 5px; font-size: 12px; white-space: normal; word-wrap: break-word;">Jasmin Tegio — 2023</p>
+                </div>
+                <div class="member-card haptic-link" style="display: inline-block; width: 80px; margin-right: 15px; text-align: center; vertical-align: top;">
+                    <img src="https://eldrex.neocities.org/file_000000006a2c61fd9b5dbf5b7db72520.png" alt="Member 2" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                    <p style="margin-top: 5px; font-size: 12px; white-space: normal; word-wrap: break-word;">Gabryl Olegario — 2023</p>
+                </div>
+                <div class="member-card haptic-link" style="display: inline-block; width: 80px; margin-right: 15px; text-align: center; vertical-align: top;">
+                    <img src="https://eldrex.neocities.org/3_20250703_110015_0002.svg" alt="Member 4" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                    <p style="margin-top: 5px; font-size: 12px; white-space: normal; word-wrap: break-word;">Yrik Timosan —2024</p>
+                </div>
+                <div class="member-card haptic-link" style="display: inline-block; width: 80px; margin-right: 15px; text-align: center; vertical-align: top;">
+                    <img src="https://eldrex.neocities.org/2_20250703_110015_0001.svg" alt="Member 5" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                    <p style="margin-top: 5px; font-size: 12px; white-space: normal; word-wrap: break-word;">Shereen Robredillo — 2024</p>
+                </div>
+            </div>
+        </div>
+        <hr style="width: 100%;">
+        <div class="image-gallery-container">
+            <div class="gallery-header">
+                <h2>Our Gallery</h2>
+                <p style="font-size: 12px;color: var(--text-primary); "><i style="color: #FF2E45;" class="fas fa-info-circle"></i> Kindly be advised that this gallery showcases meaningful and personal moments shared by the Socratic Squad. We ask all visitors to view these images with respect and understanding, as each photo reflects important chapters of our journey together.</p>
+                <div></div>
+                <div class="scroll-controls">
+                    <button class="scroll-btn left"><i class="fas fa-chevron-left"></i></button>
+                    <button class="scroll-btn right"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="image-scroll-gallery">
+                <div class="scroll-container">
+                    <div class="gallery-item haptic-link">
+                        <img src="https://eldrex.landecs.org/20240416143441634.jpg" alt="Eat before to start research paper hahahah">
+                        <div class="image-caption">M researchers</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="20240418081204944.jpg" alt="M researchers complete team at school">
+                        <div class="image-caption">M researchers</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="20240423133836560.jpg" alt="Socratic Squad (M researchers, collecting sargassum seaweeds to use for our research study)">
+                        <div class="image-caption">M researchers</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="20240423133839990.jpg" alt="Socratic Squad (M researchers, collecting sargassum seaweeds to use for our research study)">
+                        <div class="image-caption haptic-link">M researchers</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="20240429154629665.jpg" alt="Socratic Squad at the moment">
+                        <div class="image-caption">PerDev project</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="20250327163721114.jpg" alt="Socratic Squad bonding at dolores eastern samar boulivard">
+                        <div class="image-caption">Socratic Squad</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="20250327163721250.jpg" alt="Socratic Squad bonding at dolores eastern samar boulivard">
+                        <div class="image-caption">Socratic Squad</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="20250327163721454.jpg" alt="Socratic Squad at the moment">
+                        <div class="image-caption">Socratic Squad</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="IMG_20240422_175034_197.jpg" alt="Socratic Squad bonding at dolores eastern samar boulivard">
+                        <div class="image-caption">Socratic Squad</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="IMG_20241009_160851_379.jpg" alt="Socratic Squad bonding at dolores eastern samar boulivard">
+                        <div class="image-caption">Socratic Squad</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="IMG_20250228_155825_906.jpg" alt="Socratic Squad (ReaCom Edu research study) at the moment">
+                        <div class="image-caption">ReaCom Edu</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="IMG_20250228_155837_006.jpg" alt="Socratic Squad bonding at dolores eastern samar boulivard">
+                        <div class="image-caption">ReaCom Edu</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="IMG_20250414_214109_706.jpg" alt="Socratic Squad bonding at dolores eastern samar plaza for graduation day">
+                        <div class="image-caption">Graduation</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="IMG_20250414_214517_366.jpg" alt="Socratic Squad bonding at dolores eastern samar plaza for graduation day">
+                        <div class="image-caption">Graduation</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="Screenshot_2025-05-19-18-42-37-66_965bbf4d18d205f782c6b8409c5773a4.jpg" alt="Socratic Squad (M researchers research defense)">
+                        <div class="image-caption">(M researchers) Research Defense</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="_DSC3010.jpg" alt="Socratic Squad (Pictorial)">
+                        <div class="image-caption">Socratic Squad pictorial</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="_DSC3015.jpg" alt="Socratic Squad (Pictorial)">
+                        <div class="image-caption">Socratic Squad pictorial</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="_DSC3029.jpg" alt="Socratic Squad (Pictorial)">
+                        <div class="image-caption">Socratic Squad pictorial</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="received_1040371244805884.jpeg" alt="Socratic Squad (Pictorial)">
+                        <div class="image-caption">Socratic Squad pictorial</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="received_633732216175653.jpeg" alt="Socratic Squad (Pictorial)">
+                        <div class="image-caption">Socratic Squad pictorial</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="received_2783049701897478.jpeg" alt="Socratic Squad (Pictorial)">
+                        <div class="image-caption">Socratic Squad pictorial</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="received_648342381339699.jpeg" alt="Socratic Squad (Pictorial)">
+                        <div class="image-caption">Socratic Squad pictorial</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="received_1644193309855004.jpeg" alt="Socratic Squad ">
+                        <div class="image-caption">Socratic Squad</div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="received_2216085662144774.jpeg" alt="Socratic Squad">
+                        <div class="image-caption">Socratic Squad</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="received_608480185538282.jpeg" alt="Socratic Squad">
+                        <div class="image-caption">Socratic Squad</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="received_650742411252714.jpeg" alt="Socratic Squad ReaCom Edu survey">
+                        <div class="image-caption">Socratic Squad Survey</div>
+                    </div>
+                    <div class="gallery-item haptic-link">
+                        <img src="received_9412065465545066.jpeg" alt="Socratic Squad ReaCom Edu survey">
+                        <div class="image-caption">Socratic Squad Survey</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="profile-actions">
+
+            <p style="font-size: 12px; color: #D2D2D2; text-align: center; margin-top: 20px;">
+                By using this site, you agree to our
+                <a href="https://eldrex.landecs.org/terms" style="color: #0073e6; text-decoration: none; font-weight: 500;">
+                    Terms of Use
+                </a>
+                and
+                <a href="https://eldrex.landecs.org/license" style="color: #0073e6; text-decoration: none; font-weight: 500;">
+                    Landecs Proprietary Software License (LPSL)
+                </a>.
+                Please review them to ensure compliance.
+            </p>
+        </div>
+
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+
+    <footer id="pageFooter" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 50px;
+    backdrop-filter: 
+        blur(8px)
+        contrast(130%)
+        saturate(280%);
+    -webkit-backdrop-filter: 
+        blur(8px)
+        contrast(130%)
+        saturate(280%);
+    border-top: 0.5px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 
+        0 -5px 30px rgba(0, 0, 0, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    text-align: center;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: 
+        all 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+        backdrop-filter 0.4s ease-out;
+    /* Refraction distortion effect */
+    --refraction-intensity: 0.5;
+    mask-image: 
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        white 15%,
+        white 85%,
+        transparent 100%
+    );
+">
+        <!-- Refraction effect container -->
+        <div style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        overflow: hidden;
+        pointer-events: none;
+    ">
+            <div style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.5;
+            transition: all 0.3s ease-out;
+        " class="refraction-highlight"></div>
+        </div>
+        <style>
+            /* Prevent link preview on mobile */
+            a {
+                -webkit-touch-callout: none;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            /* Disable text selection globally */
+            * {
+                user-select: none;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+            }
+        </style>
+
+
+        <a href="https://www.landecs.org/" target="_blank" style="
+        display: inline-flex;
+        position: relative;
+        z-index: 2;
+    ">
+            <img src="https://eldrex.neocities.org/landecs.png" alt="Logo" style="
+            height: 50px;
+            width: auto;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+            filter: 
+                drop-shadow(0 1px 2px rgba(0,0,0,0.2))
+                brightness(1.1);
+        " class="footer-logo">
+        </a>
+    </footer>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
+
+</body>
+
+</html>
