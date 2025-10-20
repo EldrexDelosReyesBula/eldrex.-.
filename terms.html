@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms of Use | Landecs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="landecs.png" type="image/png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<style>
+    :root {
+        --primary: #0071e3;
+        --primary-hover: #0062c4;
+        --text-primary: #1d1d1f;
+        --text-secondary: #555;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f5f5f7;
+        --bg-tertiary: #e6e6ea;
+        --shadow-color: rgba(0, 0, 0, 0.08);
+        --card-bg: #ffffff;
+        --quote-bg: #f8f8fa;
+        --border-radius: 40px;
+        --transition-all: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        --header-height: 70px;
+        --skeleton-color: rgba(0, 0, 0, 0.05);
+        --skeleton-animation: skeleton-loading 1.5s ease-in-out infinite;
+        --overlay-icon: #ff6b6b;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --primary: #0a84ff;
+            --primary-hover: #399cff;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --bg-primary: #1c1c1e;
+            --bg-secondary: #2c2c2e;
+            --bg-tertiary: #3a3a3c;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --card-bg: #2c2c2e;
+            --quote-bg: #3a3a3c;
+            --skeleton-color: rgba(255, 255, 255, 0.05);
+        }
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        transition: var(--transition-all);
+        overflow-x: hidden;
+    }
+
+    .loading-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-primary);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+    }
+
+    .loader {
+        width: 50px;
+        height: 50px;
+        border: 6px solid var(--bg-secondary);
+        border-top: 6px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+    }
+
+    .loading-text {
+        font-size: 1rem;
+        color: var(--text-secondary);
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .header-container {
+        margin: 20px;
+        margin-top: 10px;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .back-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        color: var(--primary);
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        transition: var(--transition-all);
+        background-color: var(--bg-secondary);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    .back-button:hover {
+        background-color: var(--bg-tertiary);
+        transform: translateX(-5px);
+    }
+
+    .back-button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    .back-button:focus:not(:active)::after {
+        animation: ripple 1s ease-out;
+    }
+
+    .profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        transition: var(--transition-all);
+        border: 2px solid var(--bg-secondary);
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    .profile-avatar:hover {
+        transform: scale(1.05);
+        border-color: var(--primary);
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .hero {
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    .hero-tag {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: var(--primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        display: inline-block;
+    }
+
+    .hero-tag::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        transform: scaleX(0);
+        transform-origin: center;
+        transition: transform 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+    }
+
+    .hero-tag.animate::after {
+        transform: scaleX(1);
+    }
+
+    .tagline {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        font-style: none;
+        margin-bottom: 2rem;
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    .quick-guide {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 0;
+        margin-bottom: 3rem;
+        transition: var(--transition-all);
+        overflow: hidden;
+        box-shadow: 0 4px 20px var(--shadow-color);
+        transform: translateY(20px);
+        opacity: 0;
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    .guide-header {
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: var(--transition-all);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .guide-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.7s ease;
+
+    }
+
+    .guide-header:hover::before {
+        left: 100%;
+    }
+
+    .guide-header:hover {
+        background-color: var(--bg-secondary);
+    }
+
+    .guide-header.active {
+        border-bottom: 1px solid var(--bg-tertiary);
+    }
+
+    .guide-title {
+        font-size: 1.5rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .guide-toggle {
+        transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    .guide-toggle.active {
+        transform: rotate(180deg);
+    }
+
+    .guide-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .guide-content.active {
+        max-height: 1000px;
+    }
+
+    .guide-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 0 2rem 2rem;
+        transform: translateY(10px);
+        opacity: 0;
+        transition: all 0.5s ease 0.2s;
+    }
+
+    .guide-content.active .guide-grid {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .guide-card {
+        background-color: var(--bg-secondary);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        transition: var(--transition-all);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transform: translateY(20px);
+        opacity: 0;
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    .guide-card:nth-child(1) {
+        transition-delay: 0.1s;
+    }
+
+    .guide-card:nth-child(2) {
+        transition-delay: 0.2s;
+    }
+
+    .guide-card:nth-child(3) {
+        transition-delay: 0.3s;
+    }
+
+    .guide-content.active .guide-card {
+        transform: translateY(0);
+        opacity: 1;
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    .guide-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        background-color: var(--bg-tertiary);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    .guide-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .guide-card-content {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+    }
+
+    .guide-card-content p {
+        margin-bottom: 0.5rem;
+    }
+
+    .terms-container {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        margin-bottom: 3rem;
+        transition: var(--transition-all);
+        box-shadow: 0 4px 20px var(--shadow-color);
+        transform: translateY(20px);
+        opacity: 0;
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    .terms-title {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+        border-bottom: 2px solid var(--bg-tertiary);
+        padding-bottom: 0.5rem;
+        position: relative;
+    }
+
+    .terms-title::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100px;
+        height: 2px;
+        background: var(--primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.6s cubic-bezier(0.23, 1, 0.320, 1) 0.3s;
+    }
+
+    .terms-title.animate::after {
+        transform: scaleX(1);
+    }
+
+    .terms-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        transition: var(--transition-all);
+        transform: translateX(-10px);
+        opacity: 0;
+    }
+
+    .terms-section:nth-child(odd) {
+        transform: translateX(10px);
+    }
+
+    .terms-section-title {
+        font-size: 1.3rem;
+        margin-bottom: 0.8rem;
+        color: var(--text-primary);
+        position: relative;
+        padding-left: 1rem;
+    }
+
+    .terms-section-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: var(--primary);
+        border-radius: 2px;
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+    }
+
+    .terms-section.in-view .terms-section-title::before {
+        transform: scaleY(1);
+    }
+
+    .terms-section-content {
+        color: var(--text-secondary);
+        margin-left: 0;
+    }
+
+    .terms-section-content p {
+        margin-bottom: 0.8rem;
+    }
+
+    .terms-section-content ul {
+        margin-left: 1.5rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .terms-section-content li {
+        margin-bottom: 0.5rem;
+        position: relative;
+        padding-left: 0.5rem;
+    }
+
+    .terms-section-content li::before {
+        color: var(--primary);
+        position: absolute;
+        left: -0.8rem;
+    }
+
+    .highlight {
+        background-color: var(--quote-bg);
+        padding: 1.5rem;
+        border-left: 4px solid var(--primary);
+        border-radius: var(--border-radius);
+        margin: 1.5rem 0;
+        font-size: 0.9rem;
+        transform: translateY(10px);
+        opacity: 0;
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        border-top: 1px solid var(--bg-tertiary);
+        margin-top: 2rem;
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+        /* Subtle 3D edges */
+        box-shadow:
+            inset 0.5px 1px 0 rgba(255, 255, 255, 0.2),
+            inset -1px -1.5px 0 rgba(0, 0, 0, 0.05),
+            0 1px 1.5px rgba(0, 0, 0, 0.08),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+
+    }
+
+    @media (max-width: 768px) {
+        main {
+            padding: 1rem;
+        }
+
+        .hero-tag {
+            font-size: 1.5rem;
+        }
+
+        .tagline {
+            font-size: 1rem;
+        }
+
+        .guide-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .guide-header,
+        .guide-grid {
+            padding: 1.5rem;
+        }
+
+        .terms-container {
+            padding: 1.5rem;
+        }
+
+        .terms-section {
+            padding: 1rem;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in {
+        animation: fadeInUp 0.8s ease forwards;
+    }
+
+    /* Physics-based animations */
+    @keyframes gentleBounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+
+    .gentle-bounce {
+        animation: gentleBounce 2s ease-in-out infinite;
+    }
+
+    /* Ripple effect */
+    @keyframes ripple {
+        0% {
+            transform: scale(0, 0);
+            opacity: 0.5;
+        }
+
+        100% {
+            transform: scale(20, 20);
+            opacity: 0;
+        }
+    }
+
+    /* Floating animation */
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .floating {
+        animation: float 6s ease-in-out infinite;
+    }
+</style>
+
+<body>
+
+    <div class="loading-container">
+        <div class="loader"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+
+    <div class="header-container">
+        <div class="header-content">
+            <a href="index.html" class="back-button" aria-label="Go back">
+                <i class="fas fa-chevron-left"></i>
+                Back
+            </a>
+            <img src="https://eldrex.landecs.org/eldrex.png" alt="Profile Avatar" class="profile-avatar">
+        </div>
+    </div>
+
+    <main>
+        <div class="hero">
+            <div class="hero-tag">Terms of Use</div>
+            <p class="tagline">Last updated on September 27, 2025</p>
+        </div>
+
+        <div class="quick-guide">
+            <div class="guide-header" id="guideToggle">
+                <h2 class="guide-title"><i class="fas fa-info-circle"></i> Quick Guide</h2>
+                <i class="fas fa-chevron-down guide-toggle" id="guideChevron"></i>
+            </div>
+            <div class="guide-content" id="guideContent">
+                <div class="guide-grid">
+                    <div class="guide-card">
+                        <h3 class="guide-card-title"><i class="fas fa-check-circle" style="color: #4CAF50;"></i> You Can</h3>
+                        <div class="guide-card-content">
+                            <p>View the website for personal, educational, or non-commercial purposes</p>
+                            <p>Share original quotes with proper attribution</p>
+                            <p>Enjoy the content as intended</p>
+                        </div>
+                    </div>
+                    <div class="guide-card">
+                        <h3 class="guide-card-title"><i class="fas fa-times-circle" style="color: #f44336;"></i> You Cannot</h3>
+                        <div class="guide-card-content">
+                            <p>Use content for AI training or machine learning</p>
+                            <p>Copy, modify, or distribute Socratic Squad images</p>
+                            <p>Reverse engineer or extract source code</p>
+                            <p>Use automated tools to collect content</p>
+                        </div>
+                    </div>
+                    <div class="guide-card">
+                        <h3 class="guide-card-title"><i class="fas fa-exclamation-triangle" style="color: #FF9800;"></i> Important Notes</h3>
+                        <div class="guide-card-content">
+                            <p>All content is protected by the <a href="https://eldrex.landecs.org/license" style="font-style: normal;  color: var(--primary);text-decoration: none;">Landecs Proprietary Software License (LPSL)</a></p>
+                            <p>Socratic Squad images are private and protected</p>
+                            <p>Third-party assets are used with proper attribution</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="terms-container">
+            <h1 class="terms-title">Terms of Use</h1>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">1. Acceptance of Terms</h2>
+                <div class="terms-section-content">
+                    <p>By accessing the Website, you acknowledge that you have read, understood, and agreed to these Terms. You also agree to comply with the <a href="https://eldrex.landecs.org/license" style="font-style: normal; color: var(--primary);text-decoration: none;">Landecs Proprietary Software License (LPSL)</a>, Version 1.1.0, which applies to all Website content.</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">2. Ownership and Intellectual Property</h2>
+                <div class="terms-section-content">
+                    <p><strong>2.1</strong> All content on the Website, including but not limited to text, quotes, writings, designs, source code, images, user interface, animations, collections, and the Landecs L3UI system, is the sole intellectual property of Eldrex Delos Reyes Bula ("Owner"), unless otherwise stated.</p>
+                    <p><strong>2.2</strong> The Socratic Squad's images, likenesses, names, and related content are private. They must not be reused, shared, edited, or distributed without explicit written consent from the Owner.</p>
+                    <p><strong>2.3</strong> You are strictly prohibited from using the Website or its content for any kind of AI training, dataset creation, machine learning, or automated analysis, especially involving personal faces, quotes, or private collections.</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">3. Permitted Use</h2>
+                <div class="terms-section-content">
+                    <p><strong>3.1</strong> You may view the Website and access its content strictly for personal, educational, or non-commercial purposes.</p>
+                    <p><strong>3.2</strong> You may share original quotes by Eldrex Delos Reyes Bula only if you provide proper and visible attribution to the Owner and Website.</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">4. Prohibited Use</h2>
+                <div class="terms-section-content">
+                    <p>You agree not to:</p>
+                    <ul>
+                        <li>Copy, reproduce, modify, or distribute Website content except as expressly allowed under Section 3.</li>
+                        <li>Use or misrepresent Socratic Squad images for cyber discrimination, bullying, humor, disrespect, or any personal agenda.</li>
+                        <li>Host, embed, or republish the Website or its components on third-party platforms.</li>
+                        <li>Reverse engineer, decompile, or attempt to extract source code, interface logic, or design elements.</li>
+                        <li>Use automated tools, bots, crawlers, or AI systems to collect or process content.</li>
+                        <li>Exploit the Landecs name, logos, or design patterns in commercial or derivative works.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">5. Third-Party Assets and Transparency</h2>
+                <div class="terms-section-content">
+                    <p>For transparency, the Website uses the following third-party resources under their respective licenses:</p>
+                    <ul>
+                        <li>Google Fonts – Poppins</li>
+                        <li>Font Awesome icons</li>
+                    </ul>
+                    <p>These assets are not owned by the Owner and remain subject to their respective providers' licenses.</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">6. Disclaimer of Warranties</h2>
+                <div class="terms-section-content">
+                    <p>The Website and its contents are provided "as is" and "as available." The Owner does not guarantee uninterrupted access, accuracy, or security of the Website. You use the Website at your own risk.</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">7. Limitation of Liability</h2>
+                <div class="terms-section-content">
+                    <p>The Owner shall not be held liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the Website. If you are dissatisfied with the Website or its Terms, your only remedy is to stop using it.</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">8. Termination</h2>
+                <div class="terms-section-content">
+                    <p>The Owner reserves the right to suspend or terminate your access to the Website at any time without notice if you violate these Terms or the accompanying License.</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">9. Governing Law</h2>
+                <div class="terms-section-content">
+                    <p>These Terms are governed by the laws of the Republic of the Philippines. Any disputes shall be resolved exclusively in the courts of the Philippines.</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">10. Contact Information</h2>
+                <div class="terms-section-content">
+                    <p>For permissions, licensing requests, or inquiries, contact:</p>
+<p>Email: 
+  <a href="mailto:eldrexdelosreyesbula@gmail.com" 
+     style="color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+          background: rgba(0, 123, 255, 0.25); /* Blue tint */
+            backdrop-filter: blur(6px) saturate(160%);
+            -webkit-backdrop-filter: blur(6px) saturate(160%);
+            box-shadow: inset 0.5px 1px 0 rgba(255,255,255,0.2),
+                        inset -1px -1.5px 0 rgba(0,0,0,0.05),
+                        0 1px 1.5px rgba(0,0,0,0.08),
+                        0 2px 4px rgba(0,0,0,0.06);">
+     eldrexdelosreyesbula@gmail.com
+  </a>
+</p>
+
+<p>Website: 
+<a href="https://eldrex.landecs.org" target="_blank"
+   style="color: rgba(255,255,255,0.9);
+          text-decoration: none;
+          padding: 6px 12px;
+          border-radius: 20px;
+          background: rgba(0, 123, 255, 0.25); /* Blue tint */
+          backdrop-filter: blur(6px) saturate(160%);
+          -webkit-backdrop-filter: blur(6px) saturate(160%);
+          box-shadow: inset 0.5px 1px 0 rgba(255,255,255,0.2),
+                      inset -1px -1.5px 0 rgba(0,0,0,0.05),
+                      0 1px 1.5px rgba(0,0,0,0.08),
+                      0 2px 4px rgba(0,0,0,0.06);">
+   Eldrex Delos Reyes Bula
+</a>
+</p>
+                </div>
+            </div>
+
+            <div class="terms-section">
+                <h2 class="terms-section-title">11. Entire Agreement</h2>
+                <div class="terms-section-content">
+                    <p>These Terms, together with the Landecs Proprietary Software License (LPSL), form the complete agreement between you and the Owner regarding the use of the Website.</p>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <p>Copyright © <span id="current-year"></span> Eldrex Delos Reyes Bula.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        © <span id="current-year-footer"></span> landecs
+    </footer>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        document.getElementById('current-year-footer').textContent = new Date().getFullYear();
+
+        // Initialize GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Quick Guide toggle functionality
+        const guideToggle = document.getElementById('guideToggle');
+        const guideContent = document.getElementById('guideContent');
+        const guideChevron = document.getElementById('guideChevron');
+
+        guideToggle.addEventListener('click', function() {
+            const isActive = guideContent.classList.contains('active');
+
+            if (isActive) {
+                guideContent.classList.remove('active');
+                guideChevron.classList.remove('active');
+                guideToggle.classList.remove('active');
+
+                // Animate collapse with physics
+                gsap.to(guideContent, {
+                    duration: 0.6,
+                    height: 0,
+                    ease: "power2.in"
+                });
+
+                // Animate cards out
+                gsap.to('.guide-card', {
+                    duration: 0.3,
+                    y: 20,
+                    opacity: 0,
+                    stagger: 0.05,
+                    ease: "power2.in"
+                });
+            } else {
+                guideContent.classList.add('active');
+                guideChevron.classList.add('active');
+                guideToggle.classList.add('active');
+
+                // Animate expand with physics
+                gsap.fromTo(guideContent, {
+                    height: 0
+                }, {
+                    duration: 0.8,
+                    height: "auto",
+                    ease: "power2.out"
+                });
+
+                // Animate cards with staggered effect
+                gsap.fromTo('.guide-card', {
+                    y: 20,
+                    opacity: 0
+                }, {
+                    duration: 0.6,
+                    y: 0,
+                    opacity: 1,
+                    stagger: 0.1,
+                    ease: "back.out(1.7)",
+                    delay: 0.2
+                });
+            }
+        });
+
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const loadingContainer = document.querySelector('.loading-container');
+
+                // Fade out loading screen
+                gsap.to(loadingContainer, {
+                    duration: 0.5,
+                    opacity: 0,
+                    onComplete: function() {
+                        loadingContainer.style.display = 'none';
+
+                        // Animate hero elements
+                        gsap.to('.hero-tag', {
+                            duration: 0.8,
+                            y: 0,
+                            opacity: 1,
+                            ease: "power2.out",
+                            onComplete: function() {
+                                document.querySelector('.hero-tag').classList.add('animate');
+                            }
+                        });
+
+                        gsap.to('.tagline', {
+                            duration: 0.8,
+                            y: 0,
+                            opacity: 1,
+                            delay: 0.3,
+                            ease: "power2.out"
+                        });
+
+                        // Animate quick guide
+                        gsap.to('.quick-guide', {
+                            duration: 0.8,
+                            y: 0,
+                            opacity: 1,
+                            delay: 0.6,
+                            ease: "power2.out"
+                        });
+
+                        // Animate terms container
+                        gsap.to('.terms-container', {
+                            duration: 0.8,
+                            y: 0,
+                            opacity: 1,
+                            delay: 0.9,
+                            ease: "power2.out",
+                            onComplete: function() {
+                                document.querySelector('.terms-title').classList.add('animate');
+
+                                // Animate highlight
+                                gsap.to('.highlight', {
+                                    duration: 0.6,
+                                    y: 0,
+                                    opacity: 1,
+                                    delay: 0.3,
+                                    ease: "power2.out"
+                                });
+                            }
+                        });
+
+                        // Set up scroll animations for terms sections
+                        gsap.utils.toArray('.terms-section').forEach((section, i) => {
+                            gsap.to(section, {
+                                scrollTrigger: {
+                                    trigger: section,
+                                    start: "top 85%",
+                                    end: "bottom 20%",
+                                    toggleActions: "play none none reverse"
+                                },
+                                x: 0,
+                                opacity: 1,
+                                duration: 0.8,
+                                delay: i * 0.1,
+                                ease: "power2.out",
+                                onComplete: function() {
+                                    section.classList.add('in-view');
+                                }
+                            });
+                        });
+                    }
+                });
+            }, 1000);
+        });
+
+        // Add hover effects to guide cards
+        const guideCards = document.querySelectorAll('.guide-card');
+        guideCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                gsap.to(this, {
+                    duration: 0.3,
+                    y: -5,
+                    scale: 1.02,
+                    boxShadow: "0 8px 25px rgba(0,0,0,0.1)",
+                    ease: "power2.out"
+                });
+            });
+
+            card.addEventListener('mouseleave', function() {
+                gsap.to(this, {
+                    duration: 0.3,
+                    y: 0,
+                    scale: 1,
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+                    ease: "power2.out"
+                });
+            });
+        });
+
+        // Add subtle floating animation to hero
+        gsap.to('.hero-tag', {
+            duration: 6,
+            y: -5,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: 2
+        });
+    </script>
+</body>
+
+</html>
