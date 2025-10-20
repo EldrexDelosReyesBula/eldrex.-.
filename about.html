@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="landecs.png" type="image/png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://eldrex.vercel.app/css/about.css">
+    <link rel="stylesheet" href="https://eldrex.vercel.app/css/newa.css">
+</head>
+
+<body>
+
+    <div class="loading-container">
+        <div class="loader"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+
+
+    <div class="header-container" style="margin: 20px; margin-top: -30px;">
+        <div class="header-content">
+            <a href="index.html" class="back-button haptic-link" aria-label="Go back">
+                <i class="fas fa-chevron-left"></i>
+                Back
+            </a>
+            <img src="https://eldrex.landecs.org/eldrex.png" alt="Profile Avatar" class="profile-avatar haptic-link">
+        </div>
+    </div>
+
+    <main>
+        <div class="hero">
+            <div class="hero-tag">Featured</div>
+            <p class="tagline">When nothing moves, everything begins.</p>
+        </div>
+
+        <div class="posts-section" style="border-radius: 50px;">
+            <div class="posts-carousel">
+                <div class="posts-container">
+                </div>
+                <div class="carousel-controls">
+                    <button class="carousel-prev haptic-link" aria-label="Previous post">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-next haptic-link" aria-label="Next post">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottomsheet-post-modal" id="bottomsheetPostModal">
+            <div class="bottomsheet-overlay"></div>
+            <div class="bottomsheet-content">
+                <div class="bottomsheet-header">
+                    <button class="bottomsheet-close haptic-link" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="bottomsheet-body">
+                    <div class="bottomsheet-image-container">
+                        <img id="bottomsheetPostImage" src="" alt="Post image">
+                    </div>
+                    <div class="bottomsheet-description" id="bottomsheetPostDescription"></div>
+                    <div class="bottomsheet-date" id="bottomsheetPostDate"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quotes-section" style="border-radius: 40px;">
+            <h2 class="section-title">Quotes~</h2>
+            <div class="quotes-container">
+            </div>
+        </div>
+    </main>
+
+    <div class="profile-actions">
+
+        <p style="font-size: 12px; color: #D2D2D2; text-align: center; margin-top: 20px;">
+            By using this site, you agree to our
+            <a href="https://eldrex.landecs.org/terms" style="color: #0073e6; text-decoration: none; font-weight: 500;">
+                Terms of Use
+            </a>
+            and
+            <a href="https://eldrex.landecs.org/license" style="color: #0073e6; text-decoration: none; font-weight: 500;">
+                Landecs Proprietary Software License (LPSL)
+            </a>.
+            Please review them to ensure compliance.
+        </p>
+    </div>
+
+    <footer>
+        © <span id="current-year"></span> landecs
+    </footer>
+
+    <script src="https://eldrex.vercel.app/functions/about.js">
+        < script src = "https://eldrex.vercel.app/functions/int.js" >
+    </script>
+    <script src="https://eldrex.vercel.app/functions/newa.js"></script>
+</body>
+
+</html>
